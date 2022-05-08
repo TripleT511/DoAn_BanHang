@@ -1,0 +1,39 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('hoa_dons', function (Blueprint $table) {
+            $table->id();
+            $table->string('hoTen');
+            $table->string('diaChi');
+            $table->string('email');
+            $table->string('soDienThoai');
+            $table->dateTime('ngayXuatHD');
+            $table->double('tongTien');
+            $table->string('ghiChu');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('hoa_dons');
+    }
+};
