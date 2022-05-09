@@ -13,10 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('phan_quyens', function (Blueprint $table) {
+        Schema::create('ma_giam_gias', function (Blueprint $table) {
             $table->id();
-            $table->string('tenViTri');
-            $table->tinyInteger('viTri')->unique();
+            $table->string('tenMa');
+            $table->string('code');
+            $table->dateTime('ngayKetThuc');
+            $table->integer('soLuong');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('phan_quyens');
+        Schema::dropIfExists('ma_giam_gias');
     }
 };

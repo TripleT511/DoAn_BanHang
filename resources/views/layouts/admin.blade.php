@@ -154,6 +154,12 @@
                 <div data-i18n="Layouts">Quản lý loại sản phẩm</div>
               </a>
             </li>
+            <li class="menu-item ">
+              <a href="{{ route('phanQuyen.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-paper-plane"></i>
+                <div data-i18n="Layouts">Quản lý phân quyền</div>
+              </a>
+            </li>
           </ul>
         </aside>
         <!-- / Menu -->

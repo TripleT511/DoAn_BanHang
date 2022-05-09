@@ -20,7 +20,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->text('anhDaiDien');
-            $table->tinyInteger('phanQuyen');
+            $table->tinyInteger('phan_quyen_id');
+            $table->foreign('phan_quyen_id')->references('viTri')->on('phan_quyens')->onUpdate('cascade')->onDelete('cascade');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

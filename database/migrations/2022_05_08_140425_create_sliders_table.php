@@ -13,10 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('phan_quyens', function (Blueprint $table) {
+        Schema::create('sliders', function (Blueprint $table) {
             $table->id();
-            $table->string('tenViTri');
-            $table->tinyInteger('viTri')->unique();
+            $table->text('hinhAnh');
+            $table->string('tieuDe');
+            $table->string('noiDung');
+            $table->string('url');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('phan_quyens');
+        Schema::dropIfExists('sliders');
     }
 };

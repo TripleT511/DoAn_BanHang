@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PhanQuyen;
-use App\Http\Requests\StorePhanQuyenRequest;
-use App\Http\Requests\UpdatePhanQuyenRequest;
+use App\Models\DanhMuc;
+use App\Http\Requests\StoreDanhMucRequest;
+use App\Http\Requests\UpdateDanhMucRequest;
 
-class PhanQuyenController extends Controller
+class DanhMucController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +15,7 @@ class PhanQuyenController extends Controller
      */
     public function index()
     {
-        return view('admin.phanquyen.index-phanquyen');
+        //
     }
 
     /**
@@ -25,16 +25,16 @@ class PhanQuyenController extends Controller
      */
     public function create()
     {
-        return view('admin.phanquyen.create-phanquyen');
+        //
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StorePhanQuyenRequest  $request
+     * @param  \App\Http\Requests\StoreDanhMucRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StorePhanQuyenRequest $request)
+    public function store(StoreDanhMucRequest $request)
     {
         //
     }
@@ -42,10 +42,10 @@ class PhanQuyenController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\PhanQuyen  $phanQuyen
+     * @param  \App\Models\DanhMuc  $danhMuc
      * @return \Illuminate\Http\Response
      */
-    public function show(PhanQuyen $phanQuyen)
+    public function show(DanhMuc $danhMuc)
     {
         //
     }
@@ -53,22 +53,22 @@ class PhanQuyenController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\PhanQuyen  $phanQuyen
+     * @param  \App\Models\DanhMuc  $danhMuc
      * @return \Illuminate\Http\Response
      */
-    public function edit(PhanQuyen $phanQuyen)
+    public function edit(DanhMuc $danhMuc)
     {
-        return view('admin.phanquyen.edit-phanquyen');
+        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdatePhanQuyenRequest  $request
-     * @param  \App\Models\PhanQuyen  $phanQuyen
+     * @param  \App\Http\Requests\UpdateDanhMucRequest  $request
+     * @param  \App\Models\DanhMuc  $danhMuc
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePhanQuyenRequest $request, PhanQuyen $phanQuyen)
+    public function update(UpdateDanhMucRequest $request, DanhMuc $danhMuc)
     {
         //
     }
@@ -76,10 +76,10 @@ class PhanQuyenController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\PhanQuyen  $phanQuyen
+     * @param  \App\Models\DanhMuc  $danhMuc
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PhanQuyen $phanQuyen)
+    public function destroy(DanhMuc $danhMuc)
     {
         //
     }
