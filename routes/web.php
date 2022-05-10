@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PhanQuyenController;
+use App\Http\Controllers\SanPhamController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -68,7 +69,7 @@ Route::prefix('admin')->group(function () {
     });
 
     Route::resource('phanQuyen', PhanQuyenController::class);
-
+    Route::resource('sanpham', SanPhamController::class);
     Route::get('/login', function () {
         return view('admin.login');
     });

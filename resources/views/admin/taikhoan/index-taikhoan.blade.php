@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title','Quản lý sản phẩm')
+@section('title','Quản lý tài khoản')
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">

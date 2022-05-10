@@ -25,6 +25,7 @@ class SanPhamController extends Controller
     }
     public function index()
     {
+        return View('admin.sanpham.index-sanpham');
     }
 
     /**
@@ -34,7 +35,7 @@ class SanPhamController extends Controller
      */
     public function create()
     {
-        //
+        return View('admin.sanpham.create-sanpham');
     }
 
     /**
@@ -67,7 +68,7 @@ class SanPhamController extends Controller
      */
     public function edit(SanPham $sanPham)
     {
-        //
+        return View('admin.sanpham.edit-sanpham');
     }
 
     /**
