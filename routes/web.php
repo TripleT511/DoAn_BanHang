@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PhanQuyenController;
 use App\Http\Controllers\SanPhamController;
+use App\Http\Controllers\GioHangController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,9 +20,7 @@ Route::get('/', function () {
     return view('home');
 });
 
-Route::get('/gio-hang', function () {
-    return view('cart');
-});
+Route::resource('giohang', GioHangController::class);
 
 Route::get('/contacts', function () {
     return view('contacts');

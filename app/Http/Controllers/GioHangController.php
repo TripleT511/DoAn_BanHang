@@ -15,8 +15,9 @@ class GioHangController extends Controller
      */
     public function index()
     {
-        //
+        return view('cart');
     }
+    
 
     /**
      * Show the form for creating a new resource.
@@ -25,7 +26,7 @@ class GioHangController extends Controller
      */
     public function create()
     {
-        //
+        return view('checkout');
     }
 
     /**

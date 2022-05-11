@@ -143,7 +143,7 @@
               </a>
             </li>
             <li class="menu-item">
-              <a href="{{ route('sanpham.index') }}" class="menu-link menu-toggle">
+              <a href="{{ route('sanpham.create') }}" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bxs-t-shirt"></i>
                 <div data-i18n="Layouts">Quản lý sản phẩm</div>
               </a>
