@@ -143,7 +143,7 @@
               </a>
             </li>
             <li class="menu-item">
-              <a href="{{ route('sanpham.create') }}" class="menu-link menu-toggle">
+              <a href="{{ route('sanpham.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-t-shirt"></i>
                 <div data-i18n="Layouts">Quản lý sản phẩm</div>
               </a>
@@ -158,6 +158,18 @@
               <a href="{{ route('phanQuyen.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-paper-plane"></i>
                 <div data-i18n="Layouts">Quản lý phân quyền</div>
+              </a>
+            </li>
+            <li class="menu-item ">
+              <a href="{{ route('SlideShow.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-paper-plane"></i>
+                <div data-i18n="Layouts">Quản lý SlideShow</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="{{ route('danhgia.index') }}" class="menu-link ">
+                <i class="menu-icon tf-icons bx bxs-user-circle"></i>
+                <div data-i18n="Layouts">Quản lý Đánh giá</div>
               </a>
             </li>
           </ul>

@@ -15,7 +15,7 @@ class DanhGiaController extends Controller
      */
     public function index()
     {
-        //
+        return View('admin.danhgia.index-danhgia');
     }
 
     /**
@@ -25,7 +25,7 @@ class DanhGiaController extends Controller
      */
     public function create()
     {
-        //
+        return View('admin.danhgia.create-danhgia');
     }
 
     /**
@@ -58,7 +58,7 @@ class DanhGiaController extends Controller
      */
     public function edit(DanhGia $danhGia)
     {
-        //
+        return View('admin.danhgia.edit-danhgia');
     }
 
     /**

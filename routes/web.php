@@ -3,6 +3,8 @@
 use App\Http\Controllers\PhanQuyenController;
 use App\Http\Controllers\SanPhamController;
 use App\Http\Controllers\GioHangController;
+use App\Http\Controllers\DanhGiaController;
+use App\Http\Controllers\SliderController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -69,6 +71,8 @@ Route::prefix('admin')->group(function () {
 
     Route::resource('phanQuyen', PhanQuyenController::class);
     Route::resource('sanpham', SanPhamController::class);
+    Route::resource('danhgia', DanhGiaController::class);
+    Route::resource('SlideShow', SliderController::class);
     Route::get('/login', function () {
         return view('admin.login');
     });
