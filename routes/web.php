@@ -5,8 +5,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PhanQuyenController;
 use App\Http\Controllers\Admin\SanPhamController;
 use App\Http\Controllers\GioHangController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\PhieuKhoController;
+use App\Http\Controllers\DanhGiaController;
+use App\Http\Controllers\SliderController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -71,14 +71,8 @@ Route::prefix('admin')->group(function () {
 
     Route::resource('phanquyen', PhanQuyenController::class);
     Route::resource('sanpham', SanPhamController::class);
-    Route::resource('danhmuc', DanhMucController::class);
-    Route::resource('taikhoan', HomeController::class);
-    Route::resource('phieukho', PhieuKhoController::class);
-
-    // Search sản phẩm ( tạo phiếu kho )
-    Route::get('/kho/timkiem', [PhieuKhoController::class, 'searchSanPham']);
-
-
+    Route::resource('danhgia', DanhGiaController::class);
+    Route::resource('SlideShow', SliderController::class);
     Route::get('/login', function () {
         return view('admin.login');
     })->name('adminlogin');;
