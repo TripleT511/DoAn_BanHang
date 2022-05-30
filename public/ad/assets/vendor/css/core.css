@@ -3321,6 +3321,9 @@ textarea.form-control-lg {
   background: none;
   border: 0;
   border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 .nav-pills .nav-link.active,
 .nav-pills .show > .nav-link {

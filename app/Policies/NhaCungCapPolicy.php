@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\ChiTietSanPham;
+use App\Models\NhaCungCap;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ChiTietSanPhamPolicy
+class NhaCungCapPolicy
 {
     use HandlesAuthorization;
 
@@ -25,10 +25,10 @@ class ChiTietSanPhamPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\ChiTietSanPham  $chiTietSanPham
+     * @param  \App\Models\NhaCungCap  $nhaCungCap
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, ChiTietSanPham $chiTietSanPham)
+    public function view(User $user, NhaCungCap $nhaCungCap)
     {
         //
     }
@@ -48,10 +48,10 @@ class ChiTietSanPhamPolicy
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\ChiTietSanPham  $chiTietSanPham
+     * @param  \App\Models\NhaCungCap  $nhaCungCap
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, ChiTietSanPham $chiTietSanPham)
+    public function update(User $user, NhaCungCap $nhaCungCap)
     {
         //
     }
@@ -60,10 +60,10 @@ class ChiTietSanPhamPolicy
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\ChiTietSanPham  $chiTietSanPham
+     * @param  \App\Models\NhaCungCap  $nhaCungCap
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, ChiTietSanPham $chiTietSanPham)
+    public function delete(User $user, NhaCungCap $nhaCungCap)
     {
         //
     }
@@ -72,10 +72,10 @@ class ChiTietSanPhamPolicy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\ChiTietSanPham  $chiTietSanPham
+     * @param  \App\Models\NhaCungCap  $nhaCungCap
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, ChiTietSanPham $chiTietSanPham)
+    public function restore(User $user, NhaCungCap $nhaCungCap)
     {
         //
     }
@@ -84,10 +84,10 @@ class ChiTietSanPhamPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\ChiTietSanPham  $chiTietSanPham
+     * @param  \App\Models\NhaCungCap  $nhaCungCap
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, ChiTietSanPham $chiTietSanPham)
+    public function forceDelete(User $user, NhaCungCap $nhaCungCap)
     {
         //
     }

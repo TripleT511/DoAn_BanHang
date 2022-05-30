@@ -6,11 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class HinhAnh extends Model
+class NhaCungCap extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
     protected $fillable = [
-        'san_pham_id',
-        'hinhAnh',
+        'tenNhaCungCap',
+        'soDienThoai',
+        'email',
+        'diaChi',
     ];
 }

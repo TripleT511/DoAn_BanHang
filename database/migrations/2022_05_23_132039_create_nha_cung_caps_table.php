@@ -13,15 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('chi_tiet_san_phams', function (Blueprint $table) {
+        Schema::create('nha_cung_caps', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('san_pham_id');
-            $table->foreign('san_pham_id')->references('id')->on('san_phams')->onUpdate('cascade')->onDelete('cascade');
-            $table->string('mauSac');
-            $table->string('size');
-            $table->integer('soLuong');
-            $table->timestamps();
+            $table->string('tenNhaCungCap');
+            $table->string('soDienThoai');
+            $table->string('email');
+            $table->string('diaChi');
             $table->softDeletes();
+            $table->timestamps();
         });
     }
 
@@ -32,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chi_tiet_san_phams');
+        Schema::dropIfExists('nha_cung_caps');
     }
 };

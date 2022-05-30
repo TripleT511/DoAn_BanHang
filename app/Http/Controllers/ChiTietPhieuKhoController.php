@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PhanQuyen;
-use App\Http\Requests\StorePhanQuyenRequest;
-use App\Http\Requests\UpdatePhanQuyenRequest;
+use App\Models\ChiTietPhieuKho;
+use App\Http\Requests\StoreChiTietPhieuKhoRequest;
+use App\Http\Requests\UpdateChiTietPhieuKhoRequest;
 
-class PhanQuyenController extends Controller
+class ChiTietPhieuKhoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +15,7 @@ class PhanQuyenController extends Controller
      */
     public function index()
     {
-        $listPhanQuyen = PhanQuyen::all();
-        return view('admin.phanquyen.index-phanquyen', ['lstPhanQuyen' => $listPhanQuyen]);
+        //
     }
 
     /**
@@ -26,16 +25,16 @@ class PhanQuyenController extends Controller
      */
     public function create()
     {
-        return view('admin.phanquyen.create-phanquyen');
+        //
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StorePhanQuyenRequest  $request
+     * @param  \App\Http\Requests\StoreChiTietPhieuKhoRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StorePhanQuyenRequest $request)
+    public function store(StoreChiTietPhieuKhoRequest $request)
     {
         //
     }
@@ -43,10 +42,10 @@ class PhanQuyenController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\PhanQuyen  $phanQuyen
+     * @param  \App\Models\ChiTietPhieuKho  $chiTietPhieuKho
      * @return \Illuminate\Http\Response
      */
-    public function show(PhanQuyen $phanQuyen)
+    public function show(ChiTietPhieuKho $chiTietPhieuKho)
     {
         //
     }
@@ -54,22 +53,22 @@ class PhanQuyenController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\PhanQuyen  $phanQuyen
+     * @param  \App\Models\ChiTietPhieuKho  $chiTietPhieuKho
      * @return \Illuminate\Http\Response
      */
-    public function edit(PhanQuyen $phanQuyen)
+    public function edit(ChiTietPhieuKho $chiTietPhieuKho)
     {
-        return view('admin.phanquyen.edit-phanquyen');
+        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdatePhanQuyenRequest  $request
-     * @param  \App\Models\PhanQuyen  $phanQuyen
+     * @param  \App\Http\Requests\UpdateChiTietPhieuKhoRequest  $request
+     * @param  \App\Models\ChiTietPhieuKho  $chiTietPhieuKho
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePhanQuyenRequest $request, PhanQuyen $phanQuyen)
+    public function update(UpdateChiTietPhieuKhoRequest $request, ChiTietPhieuKho $chiTietPhieuKho)
     {
         //
     }
@@ -77,10 +76,10 @@ class PhanQuyenController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\PhanQuyen  $phanQuyen
+     * @param  \App\Models\ChiTietPhieuKho  $chiTietPhieuKho
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PhanQuyen $phanQuyen)
+    public function destroy(ChiTietPhieuKho $chiTietPhieuKho)
     {
         //
     }

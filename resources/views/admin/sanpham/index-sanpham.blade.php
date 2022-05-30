@@ -1,7 +1,20 @@
 @extends('layouts.admin')
 
 @section('title','Quản lý Sản Phẩm')
-
+@section('css')
+    <style>
+      .img {
+        width: 60px;
+        position: relative;
+      }
+      .image-product {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      
+    </style>
+@endsection
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
               <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tables /</span> Bảng Sản Phẩm</h4>
@@ -17,44 +30,43 @@
                   <table class="table">
                     <thead>
                       <tr>
-                        <th>Tên Sản Phẩm</th>
                         <th>Hình Ảnh</th>
-                        <th>Mô tả</th>
-                        <th>Đặc trưng</th>
-                        <th>Chất Liệu</th>
-                        <th>Màu Sắc</th>
-                        <th>Số Lượng</th>
+                        <th>Tên Sản Phẩm</th>
+                        <th>Danh mục</th></th>
                         <th>Giá</th>
-                        <th>Hành Động</th>              
+                        <th>Giá khuyến mãi</th>
+                        <th>Hành động</th>              
                       </tr>
                     </thead>
                     <tbody class="table-border-bottom-0">
+                      @foreach ($lstSanPham as $item)
                       <tr>
-                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>Angular Project</strong></td>
-                        <td><img src="{ asset('ad/assets/img/avatars/5.png') }}" class="card-img-top" style="width:300px;max-height:300px;object-fit:contain"></td>
-                        <td>Albert Cook</td>
-                        <td>dac trung</td>
-                        <td>vai to tam</td>
-                        <td>vang</td>
-                        <td>10</td>
-                        <td>10.000.000.000 vnd</td>
                         <td>
-                          <div class="dropdown">
-                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                              <i class="bx bx-dots-vertical-rounded"></i>
-                            </button>
-                            <div class="dropdown-menu">
-                              <a class="dropdown-item" href="javascript:void(0);"
-                                ><i class="bx bx-edit-alt me-1"></i>Sửa</a
-                              >
-                              <a class="dropdown-item" href="javascript:void(0);"
+                          <div class="img">
+                            <img src="{{ asset('storage/'.$item->hinhanhs[0]->hinhAnh) }}" class="image-product" alt="{{ $item->tenSanPham }}">
+                          </div>
+                          
+                        </td>
+                        <td><strong>{{ $item->tenSanPham }}</strong></td>
+                        <td>
+                          {{ $item->danhmuc->tenDanhMuc }}
+                        </td>
+                        <td>
+                          {{ $item->gia }}
+                        </td>
+                        <td>
+                          {{ $item->giaKhuyenMai }}
+                        </td>
+                        <td>
+                          <a class="btn btn-success" href="{{ route('sanpham.edit', ['sanpham' => $item]) }}">
+                            <i class="bx bx-edit-alt me-1"></i>Sửa
+                          </a>
+                              <a class="btn btn-danger" href=""
                                 ><i class="bx bx-trash me-1"></i> Xoá</a
                               >
-                            </div>
-                          </div>
                         </td>
                       </tr>
-                     
+                     @endforeach
                     </tbody>
                   </table>
                 </div>

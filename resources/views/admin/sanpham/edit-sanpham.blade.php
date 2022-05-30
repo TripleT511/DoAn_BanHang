@@ -1,53 +1,121 @@
 @extends('layouts.admin')
 
-@section('title','Chỉnh sửa Sản Phẩm')
+@section('title','Sửa Sản Phẩm')
+@section('css')
+    <style>
+        .list-preview-image {
+            display: flex;
+            align-content: center;
+            gap: 10px;
+        }
+        .preview-image-item {
+            width: 100px;
+            height: 150px;
+            padding: 5px;
+            position: relative;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid #d7d7d7;
+        }
 
+        .preview-image-item img {
+            display: flex;
+            margin: auto;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
+@endsection
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Sản Phẩm/</span> Sửa Sản phẩm</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Sản Phẩm/</span> Sửa Sản Phẩm</h4>
     <!-- Basic Layout -->
     <div class="row">
-        
         <div class="col-xl">
             <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
             </div>
             <div class="card-body">
-                <form>
+                @if($errors->any()) 
+                    @foreach ($errors->all() as $err)
+                        <li class="card-description" style="color: #fc424a;">{{ $err }}</li>
+                    @endforeach
+                @endif
+                <form method="post" action="{{ route('sanpham.update', ['sanpham' => $sanpham]) }}" enctype="multipart/form-data">
+                    @csrf
+                    @method("PATCH")
                 <div class="mb-3">
                     <label class="form-label" for="basic-default-fullname">Tên Sản Phẩm</label>
-                    <input type="text" name="tenViTri" class="form-control" id="basic-default-fullname" placeholder="Nhập tên sản phẩm..." />
+                    <input type="text" name="tenSanPham" class="form-control" id="basic-default-fullname" value="{{ $sanpham->tenSanPham }}" placeholder="Nhập tên sản phẩm..." />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="basic-default-fullname">Mã sản phẩm</label>
+                    <input type="text" name="maSKU" class="form-control" id="basic-default-fullname" 
+                    value="{{ $sanpham->sku }}" placeholder="Nhập mã sản phẩm (SKU) nếu có..." />
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="basic-default-fullname">Mô Tả</label>
-                    <input type="text" name="maViTri" class="form-control" id="basic-default-fullname" placeholder="Nhập mô tả..." />
+                    <textarea name="moTa" id="moTa" 
+                     class="form-control moTa">
+                     {{ $sanpham->moTa }}
+                    </textarea>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="basic-default-fullname">Đặc trưng</label>
-                    <input type="text" name="tenViTri" class="form-control" id="basic-default-fullname" placeholder="Nhập đặc trưng sản phẩm... " />
+                    <label class="form-label" for="basic-default-fullname">Nội dung</label>
+                    <textarea name="noiDung" id="noiDung" 
+                     class="form-control noidung-sp">
+                     {{ $sanpham->noiDung }}
+                    </textarea>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="basic-default-fullname">Chất Liệu</label>
-                    <input type="text" name="tenViTri" class="form-control" id="basic-default-fullname" placeholder="Nhập tên chất liệu..." />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="basic-default-fullname">Màu Sắc</label>
-                    <input type="text" name="tenViTri" class="form-control" id="basic-default-fullname" placeholder="Nhập tên màu sắc..." />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="basic-default-fullname">Số Lượng</label>
-                    <input type="text" name="tenViTri" class="form-control" id="basic-default-fullname" placeholder="Nhập Số lượng..." />
+                    <label for="defaultSelect" class="form-label">Đặc trưng</label>
+                    <select id="defaultSelect" name="dacTrung" class="form-select">
+                        <option value="0">Chọn đặc trưng</option>
+                        <option value="1">Sản phẩm mới</option>
+                        <option value="2">Sản phẩm hot</option>
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="basic-default-fullname">Giá</label>
-                    <input type="text" name="tenViTri" class="form-control" id="basic-default-fullname" placeholder="Nhập Giá..." />
+                    <input type="text" name="gia" class="form-control" value="{{ $sanpham->gia }}"  id="basic-default-fullname" placeholder="Nhập giá..." />
                 </div>
-                <div class="md-3">
-                        <label for="formFile" class="form-label">Hình Ảnh</label>
-                         <input class="form-control" type="file" id="formFile" name="hinh">
+                <div class="mb-3">
+                    <label class="form-label" for="basic-default-fullname">Giá khuyến mãi</label>
+                    <input type="text" name="giaKhuyenMai" class="form-control" 
+                    value="{{ $sanpham->giaKhuyenMai }}" id="basic-default-fullname" placeholder="Nhập giá khuyến mãi ..." />
                 </div>
-                <button type="submit" class="btn btn-primary">Sửa</button>
-                <button type="submit" class="btn btn-primary">Cancel</button>
+                <div class="mb-3">
+                    <label class="form-label" for="basic-default-fullname">Slug</label>
+                    <input type="text" name="slug" class="form-control" 
+                    value="{{ $sanpham->slug }}" id="basic-default-fullname" placeholder="Nhập slug ..." />
+                </div>
+                <div class="mb-3">
+                    <label for="defaultSelect" class="form-label">Danh mục sản phẩm</label>
+                    <select id="defaultSelect" name="danhmucid" class="form-select">
+                        <option value="0">Chọn danh mục sản phẩm</option>
+                        @foreach($lstDanhMuc as $dm)
+                        <option value="{{$dm->id}}" {{ $sanpham->danh_muc_id == $dm->id ? 'selected' : '' }} >{{$dm->tenDanhMuc}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="hinhAnh" class="form-label">Hình Ảnh</label>
+                    <input class="form-control" type="file" id="hinhAnh" name="hinhAnh[]" multiple>
+                </div>
+                <div class="mb-3">
+                    <div class="list-preview-image">
+                        <div class="preview-image-item">
+                            <img src="{{ asset('storage/'.$lstHinhAnh[0]->hinhAnh) }}" alt="imgPreview" id="imgPreview1">
+                        </div>
+                        <div class="preview-image-item">
+                            <img src="{{ asset('storage/'.$lstHinhAnh[1]->hinhAnh) }}" alt="imgPreview"
+                            id="imgPreview2">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
+                <button type="button" class="btn btn-dark" onclick="history.back()">Thoát</button>
                 </form>
             </div>
             </div>
@@ -55,4 +123,43 @@
     
     </div>
 </div>
+@endsection
+@section('js')
+    <script src="https://cdn.tiny.cloud/1/c4yq515bjllc9t8mkucpjw8rmw5jnuktk654ihvvk2k4ve5f/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+
+        // === Preview Image === // 
+       
+        $("#hinhAnh").on("change", function (e) {
+                var filePath = URL.createObjectURL(e.target.files[0]);
+                var filePath2 = URL.createObjectURL(e.target.files[1]);
+               
+                
+                $("#imgPreview1").show().attr("src", filePath);
+                $("#imgPreview2").show().attr("src", filePath2);
+               
+            });
+
+        // === Preview Image === // 
+
+        // === wysiwyg Editor === // 
+        tinymce.init({
+            selector: '#moTa',
+            plugins: 'a11ychecker advcode casechange export formatpainter image editimage linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tableofcontents tinycomments tinymcespellchecker',
+            toolbar: 'a11ycheck addcomment showcomments casechange checklist code export formatpainter image editimage pageembed permanentpen table tableofcontents',
+            toolbar_mode: 'floating',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+            language: 'vi'
+            });
+        tinymce.init({
+            selector: '#noiDung',
+            plugins: 'a11ychecker advcode casechange export formatpainter image editimage linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tableofcontents tinycomments tinymcespellchecker',
+            toolbar: 'a11ycheck addcomment showcomments casechange checklist code export formatpainter image editimage pageembed permanentpen table tableofcontents',
+            toolbar_mode: 'floating',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+            language: 'vi'
+            });
+    </script>
 @endsection

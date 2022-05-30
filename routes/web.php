@@ -1,8 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\DanhMucController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PhanQuyenController;
-use App\Http\Controllers\SanPhamController;
+use App\Http\Controllers\Admin\SanPhamController;
 use App\Http\Controllers\GioHangController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PhieuKhoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -63,29 +67,33 @@ Route::get('/chi-tiet-bai-viet', function () {
 });
 
 Route::prefix('admin')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    });
+    Route::get('/', [DashboardController::class, 'index']);
 
-    Route::resource('phanQuyen', PhanQuyenController::class);
+    Route::resource('phanquyen', PhanQuyenController::class);
     Route::resource('sanpham', SanPhamController::class);
+    Route::resource('danhmuc', DanhMucController::class);
+    Route::resource('taikhoan', HomeController::class);
+    Route::resource('phieukho', PhieuKhoController::class);
+
+    // Search sản phẩm ( tạo phiếu kho )
+    Route::get('/kho/timkiem', [PhieuKhoController::class, 'searchSanPham']);
+
+
     Route::get('/login', function () {
         return view('admin.login');
-    });
+    })->name('adminlogin');;
+
+    Route::post('/login', [
+        HomeController::class,
+        'login'
+    ])->name('login');
+
+    Route::get('/logout', [
+        HomeController::class,
+        'logout'
+    ])->name('logout');
 
     Route::get('/forgot', function () {
         return view('admin.forgot');
-    });
-
-    Route::get('/taikhoan', function () {
-        return view('admin.taikhoan.index-taikhoan');
-    });
-
-    Route::get('/taikhoan/create', function () {
-        return view('admin.taikhoan.create-taikhoan');
-    });
-
-    Route::get('/taikhoan/edit', function () {
-        return view('admin.taikhoan.edit-taikhoan');
     });
 });

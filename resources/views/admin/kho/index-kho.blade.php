@@ -1,33 +1,37 @@
 @extends('layouts.admin')
 
-@section('title','Quản lý phân quyền')
+@section('title','Quản lý kho')
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-              <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tables /</span> Bảng phân quyền</h4>
+            <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tables /</span> Bảng phiếu kho</h4>
             <ul class="nav nav-pills flex-column flex-md-row mb-3">
               <li class="nav-item">
-                  <a class="nav-link active" href="{{ route('phanquyen.create') }}"><i class="bx bx-user me-1"></i> Thêm quyền</a>
+                  <a class="nav-link active" href="{{ route('phieukho.create') }}">
+                    <i class='bx bx-plus'></i> Thêm phiếu kho</a>
               </li>
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">
-                <h5 class="card-header">Danh sách phân quyền</h5>
+                <h5 class="card-header">Danh sách phiếu</h5>
                 <div class="table-responsive text-nowrap">
                   <table class="table">
                     <thead>
                       <tr>
-                        <th>Tên vị trí</th>
-                        <th>Mã vị trí</th>
-                        <th>Hành động</th>
+                        <th>Phiếu</th>
+                        <th>Ngày</th>
+                        <th>Mã phiếu</th>
+                        <th>Người tạo</th>
+                        <th>Ghi chú</th>
+                        <th>Trạng thái</th>
                       </tr>
                     </thead>
                     <tbody class="table-border-bottom-0">
-                      @foreach ($lstPhanQuyen as $item)
+                      @foreach ($lstPhieu as $item)
                         <tr>
-                          <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $item->tenViTri }}</strong></td>
+                          {{-- <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $item->tenViTri }}</strong></td>
                           <td><i class="fab fa-angular fa-lg text-danger me-3"></i> {{ $item->viTri }}</td>
-                          <td>
+                          <td> --}}
                             <div class="dropdown">
                               <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
                                 <i class="bx bx-dots-vertical-rounded"></i>

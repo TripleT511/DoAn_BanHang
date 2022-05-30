@@ -50,6 +50,7 @@
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('ad/assets/js/config.js') }}"></script>
+    @yield('css')
   </head>
 
   <body>
@@ -149,13 +150,13 @@
               </a>
             </li>
             <li class="menu-item">
-              <a href="" class="menu-link menu-toggle">
+              <a href="{{ route('danhmuc.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-paper-plane"></i>
-                <div data-i18n="Layouts">Quản lý loại sản phẩm</div>
+                <div data-i18n="Layouts">Quản lý danh mục sản phẩm</div>
               </a>
             </li>
             <li class="menu-item ">
-              <a href="{{ route('phanQuyen.index') }}" class="menu-link">
+              <a href="{{ route('phanquyen.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-paper-plane"></i>
                 <div data-i18n="Layouts">Quản lý phân quyền</div>
               </a>
@@ -213,8 +214,12 @@
                             </div>
                           </div>
                           <div class="flex-grow-1">
-                            <span class="fw-semibold d-block">John Doe</span>
-                            <small class="text-muted">Admin</small>
+                            <span class="fw-semibold d-block">@auth
+                                        {{ Auth::user()->hoTen }}
+                                    @endauth</span>
+                            <small class="text-muted">@auth
+                                        {{ auth()->user()->load(['phanquyen'])->phanquyen->tenViTri }}
+                                    @endauth</small>
                           </div>
                         </div>
                       </a>
@@ -247,7 +252,7 @@
                       <div class="dropdown-divider"></div>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="auth-login-basic.html">
+                      <a class="dropdown-item" href="{{ route('logout') }}">
                         <i class="bx bx-power-off me-2"></i>
                         <span class="align-middle">Log Out</span>
                       </a>
@@ -318,7 +323,7 @@
 
     <script src="{{ asset('ad/assets/vendor/js/menu.js') }}"></script>
     <!-- endbuild -->
-
+    @yield('js')
     <!-- Vendors JS -->
     <script src="{{ asset('ad/assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
 

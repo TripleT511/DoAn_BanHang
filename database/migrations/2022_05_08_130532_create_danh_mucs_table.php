@@ -16,7 +16,9 @@ return new class extends Migration
         Schema::create('danh_mucs', function (Blueprint $table) {
             $table->id();
             $table->string('tenDanhMuc');
-            $table->integer('idDanhMucCha')->nullable();
+            $table->string('slug')->unique();
+            $table->unsignedBigInteger('idDanhMucCha')->nullable();
+            $table->foreign('idDanhMucCha')->references('id')->on('danh_mucs')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

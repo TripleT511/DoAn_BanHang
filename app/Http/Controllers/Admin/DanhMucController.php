@@ -1,10 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\DanhMuc;
 use App\Http\Requests\StoreDanhMucRequest;
 use App\Http\Requests\UpdateDanhMucRequest;
+use Illuminate\Support\Facades\Redirect;
 
 class DanhMucController extends Controller
 {
@@ -15,7 +18,19 @@ class DanhMucController extends Controller
      */
     public function index()
     {
-        //
+        $listDanhMuc = DanhMuc::with('childs')->get();
+
+        return view('admin.danhmuc.index-danhmuc', ['lstDanhMuc' => $listDanhMuc]);
+    }
+
+    public function getDanhMucSanPham()
+    {
+        $lstdanhMuc =
+            DanhMuc::orderBy('id', 'desc')->get();
+
+        $lstDanhMucNew = [];
+        DanhMuc::dequyDanhMuc($lstdanhMuc, $idDanhMucCha = 0, $level = 1, $lstDanhMucNew);
+        return $lstDanhMucNew;
     }
 
     /**
@@ -25,7 +40,8 @@ class DanhMucController extends Controller
      */
     public function create()
     {
-        //
+        $listDanhMucCha = DanhMuc::orderBy('id', 'desc')->get();
+        return view('admin.danhmuc.create-danhmuc', ['danhMucCha' => $listDanhMucCha]);
     }
 
     /**
@@ -36,7 +52,29 @@ class DanhMucController extends Controller
      */
     public function store(StoreDanhMucRequest $request)
     {
-        //
+        $request->validate([
+            'tenDanhMuc' => 'required|unique:danh_mucs',
+            'slug' => 'required|unique:danh_mucs',
+        ], [
+            'tenDanhMuc.required' => "Tên danh mục không được bỏ trống",
+            'tenDanhMuc.unique' => 'Tên danh mục không được trùng',
+            'slug.required' => "Slug không được bỏ trống",
+            'slug.unique' => 'Slug không được trùng',
+        ]);
+
+        $danhmuc = new DanhMuc();
+        $idDanhMucCha = $request->input('idDanhMucCha') != 0 ? $request->input('idDanhMucCha') : 0;
+
+        $danhmuc->fill([
+            'tenDanhMuc' => $request->input('tenDanhMuc'),
+            'slug' => $request->input('slug'),
+            'idDanhMucCha' => $idDanhMucCha,
+        ]);
+
+        $danhmuc->save();
+
+
+        return Redirect::route('danhmuc.index', ['danhmuc' => $danhmuc]);
     }
 
     /**
@@ -58,7 +96,7 @@ class DanhMucController extends Controller
      */
     public function edit(DanhMuc $danhMuc)
     {
-        //
+        return view('admin.danhmuc.edit-danhmuc');
     }
 
     /**

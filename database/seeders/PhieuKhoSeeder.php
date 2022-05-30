@@ -4,9 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
-class MaGiamGiaSeeder extends Seeder
+class PhieuKhoSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,5 +14,6 @@ class MaGiamGiaSeeder extends Seeder
      */
     public function run()
     {
+        //
     }
 }

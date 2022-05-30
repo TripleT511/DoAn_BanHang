@@ -2,20 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ChiTietSanPham;
-use App\Http\Requests\StoreChiTietSanPhamRequest;
-use App\Http\Requests\UpdateChiTietSanPhamRequest;
+use Illuminate\Http\Request;
 
-class ChiTietSanPhamController extends Controller
+class DashboardController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function __construct()
+    {
+    }
+
     public function index()
     {
-        //
+        return view('admin.dashboard');
     }
 
     /**
@@ -31,10 +34,10 @@ class ChiTietSanPhamController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreChiTietSanPhamRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreChiTietSanPhamRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -42,10 +45,10 @@ class ChiTietSanPhamController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\ChiTietSanPham  $chiTietSanPham
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(ChiTietSanPham $chiTietSanPham)
+    public function show($id)
     {
         //
     }
@@ -53,10 +56,10 @@ class ChiTietSanPhamController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\ChiTietSanPham  $chiTietSanPham
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(ChiTietSanPham $chiTietSanPham)
+    public function edit($id)
     {
         //
     }
@@ -64,11 +67,11 @@ class ChiTietSanPhamController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateChiTietSanPhamRequest  $request
-     * @param  \App\Models\ChiTietSanPham  $chiTietSanPham
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateChiTietSanPhamRequest $request, ChiTietSanPham $chiTietSanPham)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -76,10 +79,10 @@ class ChiTietSanPhamController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\ChiTietSanPham  $chiTietSanPham
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ChiTietSanPham $chiTietSanPham)
+    public function destroy($id)
     {
         //
     }
