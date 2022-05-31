@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Models\ChiTietHoaDon;
-use App\Http\Requests\StoreChiTietHoaDonRequest;
-use App\Http\Requests\UpdateChiTietHoaDonRequest;
+use App\Http\Controllers\Controller;
 
-class ChiTietHoaDonController extends Controller
+use App\Models\NhaCungCap;
+use App\Http\Requests\StoreNhaCungCapRequest;
+use App\Http\Requests\UpdateNhaCungCapRequest;
+
+class NhaCungCapController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -31,10 +33,10 @@ class ChiTietHoaDonController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreChiTietHoaDonRequest  $request
+     * @param  \App\Http\Requests\StoreNhaCungCapRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreChiTietHoaDonRequest $request)
+    public function store(StoreNhaCungCapRequest $request)
     {
         //
     }
@@ -42,10 +44,10 @@ class ChiTietHoaDonController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\ChiTietHoaDon  $chiTietHoaDon
+     * @param  \App\Models\NhaCungCap  $nhaCungCap
      * @return \Illuminate\Http\Response
      */
-    public function show(ChiTietHoaDon $chiTietHoaDon)
+    public function show(NhaCungCap $nhaCungCap)
     {
         //
     }
@@ -53,10 +55,10 @@ class ChiTietHoaDonController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\ChiTietHoaDon  $chiTietHoaDon
+     * @param  \App\Models\NhaCungCap  $nhaCungCap
      * @return \Illuminate\Http\Response
      */
-    public function edit(ChiTietHoaDon $chiTietHoaDon)
+    public function edit(NhaCungCap $nhaCungCap)
     {
         //
     }
@@ -64,11 +66,11 @@ class ChiTietHoaDonController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateChiTietHoaDonRequest  $request
-     * @param  \App\Models\ChiTietHoaDon  $chiTietHoaDon
+     * @param  \App\Http\Requests\UpdateNhaCungCapRequest  $request
+     * @param  \App\Models\NhaCungCap  $nhaCungCap
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateChiTietHoaDonRequest $request, ChiTietHoaDon $chiTietHoaDon)
+    public function update(UpdateNhaCungCapRequest $request, NhaCungCap $nhaCungCap)
     {
         //
     }
@@ -76,10 +78,10 @@ class ChiTietHoaDonController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\ChiTietHoaDon  $chiTietHoaDon
+     * @param  \App\Models\NhaCungCap  $nhaCungCap
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ChiTietHoaDon $chiTietHoaDon)
+    public function destroy(NhaCungCap $nhaCungCap)
     {
         //
     }

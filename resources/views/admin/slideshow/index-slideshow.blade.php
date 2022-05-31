@@ -7,7 +7,7 @@
               <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tables /</span> Bảng SlideShow</h4>
             <ul class="nav nav-pills flex-column flex-md-row mb-3">
               <li class="nav-item">
-                  <a class="nav-link active" href="{{ route('SlideShow.create') }}"><i class="bx bx-user me-1"></i> Thêm SlideShow</a>
+                  <a class="nav-link active" href="{{ route('slideshow.create') }}"><i class="bx bx-user me-1"></i> Thêm SlideShow</a>
               </li>
             </ul>
               <!-- Basic Bootstrap Table -->

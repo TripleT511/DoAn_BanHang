@@ -151,25 +151,25 @@
             </li>
             <li class="menu-item">
               <a href="{{ route('danhmuc.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bxs-paper-plane"></i>
+                <i class="menu-icon tf-icons bx bxs-category"></i>
                 <div data-i18n="Layouts">Quản lý danh mục sản phẩm</div>
               </a>
             </li>
             <li class="menu-item ">
               <a href="{{ route('phanquyen.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bxs-paper-plane"></i>
+                <i class="menu-icon tf-icons bx bxs-component"></i>
                 <div data-i18n="Layouts">Quản lý phân quyền</div>
               </a>
             </li>
             <li class="menu-item ">
-              <a href="{{ route('SlideShow.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bxs-paper-plane"></i>
+              <a href="{{ route('slideshow.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-book-bookmark"></i>
                 <div data-i18n="Layouts">Quản lý SlideShow</div>
               </a>
             </li>
             <li class="menu-item">
               <a href="{{ route('danhgia.index') }}" class="menu-link ">
-                <i class="menu-icon tf-icons bx bxs-user-circle"></i>
+                <i class="menu-icon tf-icons bx bxs-star"></i>
                 <div data-i18n="Layouts">Quản lý Đánh giá</div>
               </a>
             </li>

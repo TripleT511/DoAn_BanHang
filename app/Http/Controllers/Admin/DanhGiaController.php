@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Models\NhaCungCap;
-use App\Http\Requests\StoreNhaCungCapRequest;
-use App\Http\Requests\UpdateNhaCungCapRequest;
+use App\Http\Controllers\Controller;
 
-class NhaCungCapController extends Controller
+use App\Models\DanhGia;
+use App\Http\Requests\StoreDanhGiaRequest;
+use App\Http\Requests\UpdateDanhGiaRequest;
+
+class DanhGiaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +17,7 @@ class NhaCungCapController extends Controller
      */
     public function index()
     {
-        //
+        return View('admin.danhgia.index-danhgia');
     }
 
     /**
@@ -25,16 +27,16 @@ class NhaCungCapController extends Controller
      */
     public function create()
     {
-        //
+        return View('admin.danhgia.create-danhgia');
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreNhaCungCapRequest  $request
+     * @param  \App\Http\Requests\StoreDanhGiaRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreNhaCungCapRequest $request)
+    public function store(StoreDanhGiaRequest $request)
     {
         //
     }
@@ -42,10 +44,10 @@ class NhaCungCapController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\NhaCungCap  $nhaCungCap
+     * @param  \App\Models\DanhGia  $danhGia
      * @return \Illuminate\Http\Response
      */
-    public function show(NhaCungCap $nhaCungCap)
+    public function show(DanhGia $danhGia)
     {
         //
     }
@@ -53,22 +55,22 @@ class NhaCungCapController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\NhaCungCap  $nhaCungCap
+     * @param  \App\Models\DanhGia  $danhGia
      * @return \Illuminate\Http\Response
      */
-    public function edit(NhaCungCap $nhaCungCap)
+    public function edit(DanhGia $danhGia)
     {
-        //
+        return View('admin.danhgia.edit-danhgia');
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateNhaCungCapRequest  $request
-     * @param  \App\Models\NhaCungCap  $nhaCungCap
+     * @param  \App\Http\Requests\UpdateDanhGiaRequest  $request
+     * @param  \App\Models\DanhGia  $danhGia
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateNhaCungCapRequest $request, NhaCungCap $nhaCungCap)
+    public function update(UpdateDanhGiaRequest $request, DanhGia $danhGia)
     {
         //
     }
@@ -76,10 +78,10 @@ class NhaCungCapController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\NhaCungCap  $nhaCungCap
+     * @param  \App\Models\DanhGia  $danhGia
      * @return \Illuminate\Http\Response
      */
-    public function destroy(NhaCungCap $nhaCungCap)
+    public function destroy(DanhGia $danhGia)
     {
         //
     }

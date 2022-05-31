@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\GioHang;
 use App\Http\Requests\StoreGioHangRequest;
@@ -17,7 +19,7 @@ class GioHangController extends Controller
     {
         return view('cart');
     }
-    
+
 
     /**
      * Show the form for creating a new resource.

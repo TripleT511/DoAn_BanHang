@@ -1,12 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Models\DanhGia;
-use App\Http\Requests\StoreDanhGiaRequest;
-use App\Http\Requests\UpdateDanhGiaRequest;
+use App\Http\Controllers\Controller;
 
-class DanhGiaController extends Controller
+
+use App\Models\Slider;
+use App\Http\Requests\StoreSliderRequest;
+use App\Http\Requests\UpdateSliderRequest;
+
+class SliderController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +18,7 @@ class DanhGiaController extends Controller
      */
     public function index()
     {
-        return View('admin.danhgia.index-danhgia');
+        return View('admin.slideshow.index-slideshow');
     }
 
     /**
@@ -25,16 +28,16 @@ class DanhGiaController extends Controller
      */
     public function create()
     {
-        return View('admin.danhgia.create-danhgia');
+        return View('admin.slideshow.create-slideshow');
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreDanhGiaRequest  $request
+     * @param  \App\Http\Requests\StoreSliderRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreDanhGiaRequest $request)
+    public function store(StoreSliderRequest $request)
     {
         //
     }
@@ -42,10 +45,10 @@ class DanhGiaController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\DanhGia  $danhGia
+     * @param  \App\Models\Slider  $slider
      * @return \Illuminate\Http\Response
      */
-    public function show(DanhGia $danhGia)
+    public function show(Slider $slider)
     {
         //
     }
@@ -53,22 +56,22 @@ class DanhGiaController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\DanhGia  $danhGia
+     * @param  \App\Models\Slider  $slider
      * @return \Illuminate\Http\Response
      */
-    public function edit(DanhGia $danhGia)
+    public function edit(Slider $slider)
     {
-        return View('admin.danhgia.edit-danhgia');
+        return View('admin.slideshow.edit-slideshow');
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateDanhGiaRequest  $request
-     * @param  \App\Models\DanhGia  $danhGia
+     * @param  \App\Http\Requests\UpdateSliderRequest  $request
+     * @param  \App\Models\Slider  $slider
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateDanhGiaRequest $request, DanhGia $danhGia)
+    public function update(UpdateSliderRequest $request, Slider $slider)
     {
         //
     }
@@ -76,10 +79,10 @@ class DanhGiaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\DanhGia  $danhGia
+     * @param  \App\Models\Slider  $slider
      * @return \Illuminate\Http\Response
      */
-    public function destroy(DanhGia $danhGia)
+    public function destroy(Slider $slider)
     {
         //
     }

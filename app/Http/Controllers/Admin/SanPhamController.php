@@ -205,8 +205,15 @@ class SanPhamController extends Controller
      * @param  \App\Models\SanPham  $sanPham
      * @return \Illuminate\Http\Response
      */
-    public function destroy(SanPham $sanPham)
+    public function destroy(SanPham $sanpham)
     {
-        //
+        $hinhAnh = HinhAnh::where('san_pham_id', $sanpham->id)->get();
+
+        foreach ($hinhAnh as $item) {
+            Storage::disk('public')->delete($item->hinhAnh);
+            $item->delete();
+        }
+
+        $sanpham->delete();
     }
 }

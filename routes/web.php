@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\Admin\DanhMucController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PhanQuyenController;
+use App\Http\Controllers\Admin\PhanQuyenController;
 use App\Http\Controllers\Admin\SanPhamController;
-use App\Http\Controllers\GioHangController;
-use App\Http\Controllers\DanhGiaController;
-use App\Http\Controllers\SliderController;
+use App\Http\Controllers\Admin\GioHangController;
+use App\Http\Controllers\Admin\DanhGiaController;
+use App\Http\Controllers\Admin\SliderController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -72,7 +72,10 @@ Route::prefix('admin')->group(function () {
     Route::resource('phanquyen', PhanQuyenController::class);
     Route::resource('sanpham', SanPhamController::class);
     Route::resource('danhgia', DanhGiaController::class);
-    Route::resource('SlideShow', SliderController::class);
+    Route::resource('slideshow', SliderController::class);
+    Route::resource('danhmuc', DanhMucController::class);
+
+
     Route::get('/login', function () {
         return view('admin.login');
     })->name('adminlogin');;

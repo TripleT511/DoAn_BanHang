@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Models\ChiTietPhieuKho;
-use App\Http\Requests\StoreChiTietPhieuKhoRequest;
-use App\Http\Requests\UpdateChiTietPhieuKhoRequest;
+use App\Http\Controllers\Controller;
 
-class ChiTietPhieuKhoController extends Controller
+use App\Models\ChiTietHoaDon;
+use App\Http\Requests\StoreChiTietHoaDonRequest;
+use App\Http\Requests\UpdateChiTietHoaDonRequest;
+
+class ChiTietHoaDonController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -31,10 +33,10 @@ class ChiTietPhieuKhoController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreChiTietPhieuKhoRequest  $request
+     * @param  \App\Http\Requests\StoreChiTietHoaDonRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreChiTietPhieuKhoRequest $request)
+    public function store(StoreChiTietHoaDonRequest $request)
     {
         //
     }
@@ -42,10 +44,10 @@ class ChiTietPhieuKhoController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\ChiTietPhieuKho  $chiTietPhieuKho
+     * @param  \App\Models\ChiTietHoaDon  $chiTietHoaDon
      * @return \Illuminate\Http\Response
      */
-    public function show(ChiTietPhieuKho $chiTietPhieuKho)
+    public function show(ChiTietHoaDon $chiTietHoaDon)
     {
         //
     }
@@ -53,10 +55,10 @@ class ChiTietPhieuKhoController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\ChiTietPhieuKho  $chiTietPhieuKho
+     * @param  \App\Models\ChiTietHoaDon  $chiTietHoaDon
      * @return \Illuminate\Http\Response
      */
-    public function edit(ChiTietPhieuKho $chiTietPhieuKho)
+    public function edit(ChiTietHoaDon $chiTietHoaDon)
     {
         //
     }
@@ -64,11 +66,11 @@ class ChiTietPhieuKhoController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateChiTietPhieuKhoRequest  $request
-     * @param  \App\Models\ChiTietPhieuKho  $chiTietPhieuKho
+     * @param  \App\Http\Requests\UpdateChiTietHoaDonRequest  $request
+     * @param  \App\Models\ChiTietHoaDon  $chiTietHoaDon
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateChiTietPhieuKhoRequest $request, ChiTietPhieuKho $chiTietPhieuKho)
+    public function update(UpdateChiTietHoaDonRequest $request, ChiTietHoaDon $chiTietHoaDon)
     {
         //
     }
@@ -76,10 +78,10 @@ class ChiTietPhieuKhoController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\ChiTietPhieuKho  $chiTietPhieuKho
+     * @param  \App\Models\ChiTietHoaDon  $chiTietHoaDon
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ChiTietPhieuKho $chiTietPhieuKho)
+    public function destroy(ChiTietHoaDon $chiTietHoaDon)
     {
         //
     }
