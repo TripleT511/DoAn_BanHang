@@ -24,6 +24,10 @@ Route::get('/', function () {
     return view('home');
 });
 
+Route::get('/user', function () {
+    return view('user');
+});
+
 Route::resource('giohang', GioHangController::class);
 
 Route::get('/contacts', function () {

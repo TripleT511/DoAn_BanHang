@@ -105,13 +105,12 @@
                 </div>
                 <div class="mb-3">
                     <div class="list-preview-image">
+                        @foreach ($lstHinhAnh as $item2)
                         <div class="preview-image-item">
-                            <img src="{{ asset('storage/'.$lstHinhAnh[0]->hinhAnh) }}" alt="imgPreview" id="imgPreview1">
-                        </div>
-                        <div class="preview-image-item">
-                            <img src="{{ asset('storage/'.$lstHinhAnh[1]->hinhAnh) }}" alt="imgPreview"
+                            <img src="{{ asset('storage/'.$item2->hinhAnh) }}" alt="imgPreview"
                             id="imgPreview2">
                         </div>
+                        @endforeach
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Cập nhật</button>

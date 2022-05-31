@@ -43,7 +43,10 @@
                       <tr>
                         <td>
                           <div class="img">
-                            <img src="{{ asset('storage/'.$item->hinhanhs[0]->hinhAnh) }}" class="image-product" alt="{{ $item->tenSanPham }}">
+                            @foreach ($item->hinhanhs as $key => $item2)
+                              @if($key == 1) break; @endif
+                                <img src="{{ asset('storage/'.$item2->hinhAnh) }}" class="image-product" alt="{{ $item->tenSanPham }}">
+                            @endforeach
                           </div>
                           
                         </td>
