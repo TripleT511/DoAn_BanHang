@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\SanPhamController;
 use App\Http\Controllers\Admin\GioHangController;
 use App\Http\Controllers\Admin\DanhGiaController;
 use App\Http\Controllers\Admin\SliderController;
+use App\Http\Controllers\Admin\NhaCungCapController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -76,8 +77,9 @@ Route::prefix('admin')->group(function () {
     Route::resource('phanquyen', PhanQuyenController::class);
     Route::resource('sanpham', SanPhamController::class);
     Route::resource('danhgia', DanhGiaController::class);
-    Route::resource('slideshow', SliderController::class);
+    Route::resource('slider', SliderController::class);
     Route::resource('danhmuc', DanhMucController::class);
+    Route::resource('nhacungcap', NhaCungCapController::class);
 
 
     Route::get('/login', function () {

@@ -19,38 +19,35 @@
                       <tr>
                         <th>sanpham_id</th>                    
                         <th>taikhoan_id</th>
-                        <th>Email</th>
-                        <th>Ho Ten</th>
                         <th>Noi dung</th>
                         <th>Xep Hang</th>
                         <th>Hành động</th>
                       </tr>
                     </thead>
                     <tbody class="table-border-bottom-0">
+                    @foreach ($lstDanhGia as $item)
                       <tr>
-                      <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>1</strong></td>
-                      <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>1</strong></td>
-                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>Angular Project</strong></td>
-                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>Angular Project</strong></td>
-                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>Angular Project</strong></td>
-                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>5</strong></td>
-                        <td>
-                          <div class="dropdown">
-                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                              <i class="bx bx-dots-vertical-rounded"></i>
-                            </button>
-                            <div class="dropdown-menu">
-                              <a class="dropdown-item" href="javascript:void(0);"
-                                ><i class="bx bx-edit-alt me-1"></i>Sửa</a
-                              >
-                              <a class="dropdown-item" href="javascript:void(0);"
-                                ><i class="bx bx-trash me-1"></i> Xoá</a
-                              >
-                            </div>
-                          </div>
+                      </td>
+                        <td><strong>{{ $item->san_pham_id }}</strong>
+                      </td>
+                      </td>
+                        <td><strong>{{ $item->user_id }}</strong>
+                      </td>
+                      </td>
+                        <td><strong>{{ $item->noiDung }}</strong>
+                      </td>
+                      </td>
+                        <td><strong>{{ $item->xepHang }}</strong>
+                      </td>
+                      <td>
+                          <form class="d-inline-block" method="post" action="{{ route('danhgia.destroy', ['danhgium' => $item]) }}">
+                            @csrf
+                            @method("DELETE")
+                            <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
+                          </form>
                         </td>
                       </tr>
-                     
+                      @endforeach
                     </tbody>
                   </table>
                 </div>

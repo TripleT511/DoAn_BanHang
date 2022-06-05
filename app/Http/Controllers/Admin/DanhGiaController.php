@@ -5,8 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 
 use App\Models\DanhGia;
+use App\Models\SanPham;
+use App\Models\TaiKhoan;
 use App\Http\Requests\StoreDanhGiaRequest;
 use App\Http\Requests\UpdateDanhGiaRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class DanhGiaController extends Controller
 {
@@ -17,7 +22,8 @@ class DanhGiaController extends Controller
      */
     public function index()
     {
-        return View('admin.danhgia.index-danhgia');
+        $lstDanhGia = DanhGia::with('sanphams')->with('taikhoan')->get();
+        return View('admin.danhgia.index-danhgia',['lstDanhGia'=> $lstDanhGia]);
     }
 
     /**
@@ -47,7 +53,7 @@ class DanhGiaController extends Controller
      * @param  \App\Models\DanhGia  $danhGia
      * @return \Illuminate\Http\Response
      */
-    public function show(DanhGia $danhGia)
+    public function show(DanhGia $danhgia)
     {
         //
     }
@@ -58,7 +64,7 @@ class DanhGiaController extends Controller
      * @param  \App\Models\DanhGia  $danhGia
      * @return \Illuminate\Http\Response
      */
-    public function edit(DanhGia $danhGia)
+    public function edit(DanhGia $danhgia)
     {
         return View('admin.danhgia.edit-danhgia');
     }
@@ -70,7 +76,7 @@ class DanhGiaController extends Controller
      * @param  \App\Models\DanhGia  $danhGia
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateDanhGiaRequest $request, DanhGia $danhGia)
+    public function update(UpdateDanhGiaRequest $request, DanhGia $danhgia)
     {
         //
     }
@@ -78,11 +84,12 @@ class DanhGiaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\DanhGia  $danhGia
+     * @param  \App\Models\DanhGia  $danhgia
      * @return \Illuminate\Http\Response
      */
-    public function destroy(DanhGia $danhGia)
+    public function destroy(DanhGia $danhgia)
     {
-        //
+        $danhgia-> delete();
+        return Redirect::route('danhgia.index');
     }
 }

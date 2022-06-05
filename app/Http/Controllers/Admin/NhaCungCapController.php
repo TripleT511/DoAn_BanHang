@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Models\NhaCungCap;
 use App\Http\Requests\StoreNhaCungCapRequest;
 use App\Http\Requests\UpdateNhaCungCapRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
+
 
 class NhaCungCapController extends Controller
 {
@@ -17,7 +20,9 @@ class NhaCungCapController extends Controller
      */
     public function index()
     {
-        //
+        $lstNCC = NhaCungCap::all();
+        return View('admin.nhacungcap.index-nhacungcap', ['lstNCC' => $lstNCC]);
+
     }
 
     /**
@@ -27,7 +32,8 @@ class NhaCungCapController extends Controller
      */
     public function create()
     {
-        //
+       
+        return view('admin.nhacungcap.create-nhacungcap');
     }
 
     /**
@@ -38,7 +44,28 @@ class NhaCungCapController extends Controller
      */
     public function store(StoreNhaCungCapRequest $request)
     {
-        //
+        $request->validate([
+            'tenNhaCungCap' => 'required|unique:nha_cung_caps',
+            'soDienThoai' => 'required',
+            'email' => 'required',
+            'diaChi' => 'required',
+        ], [
+            'tenNhaCungCap.required' => "Tên nhà cung cấp không được bỏ trống",
+            'tenNhacungcap.unique' => "Tên nhà cung cấp bị trùng",
+            'soDienThoai.required' => "số điện thoại không được bỏ trống",
+            'email.required' => "email không được bỏ trống",
+            'diaChi.required' => "địa chỉ không được bỏ trống",
+        ]);
+
+        $nhacungcap = new NhaCungCap();
+        $nhacungcap->fill([
+            'tenNhaCungCap'=> $request->input('tenNhaCungCap'),
+            'soDienThoai'=> $request->input('soDienThoai'),
+            'email'=> $request->input('email'),
+            'diaChi' => $request->input('diaChi'),
+        ]);
+        $nhacungcap->save();
+        return Redirect::route('nhacungcap.index');
     }
 
     /**
@@ -58,9 +85,10 @@ class NhaCungCapController extends Controller
      * @param  \App\Models\NhaCungCap  $nhaCungCap
      * @return \Illuminate\Http\Response
      */
-    public function edit(NhaCungCap $nhaCungCap)
+    public function edit(NhaCungCap $nhacungcap)
     {
-        //
+        return view('admin.nhacungcap.edit-nhacungcap', ['nhacungcap' => $nhacungcap]);
+
     }
 
     /**
@@ -70,9 +98,21 @@ class NhaCungCapController extends Controller
      * @param  \App\Models\NhaCungCap  $nhaCungCap
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateNhaCungCapRequest $request, NhaCungCap $nhaCungCap)
+    public function update(UpdateNhaCungCapRequest $request, NhaCungCap $nhacungcap)
     {
-        //
+        $request->validate([
+            'tenNhaCungCap' => 'required',  
+        ], [
+            'tenNhaCungCap.required' => "Tên nhà cung cấp không được bỏ trống",
+        ]);
+        $nhacungcap->fill([
+            'tenNhaCungCap'=> $request->input('tenNhaCungCap'),
+            'soDienThoai'=> $request->input('soDienThoai'),
+            'email'=> $request->input('email'),
+            'diaChi' => $request->input('diaChi'),
+        ]);
+        $nhacungcap->save();
+        return Redirect::route('nhacungcap.index');
     }
 
     /**
@@ -81,8 +121,9 @@ class NhaCungCapController extends Controller
      * @param  \App\Models\NhaCungCap  $nhaCungCap
      * @return \Illuminate\Http\Response
      */
-    public function destroy(NhaCungCap $nhaCungCap)
+    public function destroy(NhaCungCap $nhacungcap)
     {
-        //
+        $nhacungcap->delete();
+        return Redirect::route('nhacungcap.index',);
     }
 }

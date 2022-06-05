@@ -1,7 +1,20 @@
 @extends('layouts.admin')
 
 @section('title','Quản lý Danh Mục Sản Phẩm')
-
+@section('css')
+    <style>
+      .img {
+        width: 60px;
+        position: relative;
+      }
+      .image-product {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      
+    </style>
+@endsection
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
               <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tables /</span> Bảng Danh Mục Sản Phẩm</h4>
@@ -41,21 +54,16 @@ function dequyDanhMuc($danhmuc, $idDanhMucCha = 0, $char = '')
               <tr>
                  <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $char . $item->tenDanhMuc }}</strong></td>
                  <td><i class="fab fa-angular fa-lg text-danger me-3"></i> {{ $item->idDanhMucCha }}</td>
-                <td>
-                  <div class="dropdown">
-                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                      <i class="bx bx-dots-vertical-rounded"></i>
-                    </button>
-                    <div class="dropdown-menu">
-                      <a class="dropdown-item" href="javascript:void(0);"
-                        ><i class="bx bx-edit-alt me-1"></i>Sửa</a
-                      >
-                      <a class="dropdown-item" href="javascript:void(0);"
-                        ><i class="bx bx-trash me-1"></i> Xoá</a
-                      >
-                    </div>
-                  </div>
-                </td>
+                       <td>
+                          <a class="btn btn-success" href="{{ route('danhmuc.edit', ['danhmuc' => $item]) }}">
+                            <i class="bx bx-edit-alt me-1"></i>Sửa
+                          </a>
+                          <form class="d-inline-block" method="post" action="{{ route('danhmuc.destroy', ['danhmuc'=>$item]) }}">
+                            @csrf
+                            @method("DELETE")
+                            <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
+                          </form>
+                        </td>
               </tr>
               <?php
 

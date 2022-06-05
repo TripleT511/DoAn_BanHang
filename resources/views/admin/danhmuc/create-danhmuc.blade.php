@@ -38,7 +38,7 @@
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Thêm</button>
-                <button type="submit" class="btn btn-primary">Cancel</button>
+                <button type="button" class="btn btn-primary">Cancel</button>
                 </form>
             </div>
             </div>
