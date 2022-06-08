@@ -23,14 +23,6 @@
                     <input type="text" name="tenViTri" class="form-control" id="basic-default-fullname" placeholder="Nhập id Tài Khoản" />
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="basic-default-fullname">Email</label>
-                    <input type="text" name="tenViTri" class="form-control" id="basic-default-fullname" placeholder="Nhập Email" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label" for="basic-default-fullname">Ho Tên</label>
-                    <input type="text" name="tenViTri" class="form-control" id="basic-default-fullname" placeholder="Nhập Họ Tên" />
-                </div>
-                <div class="mb-3">
                     <label class="form-label" for="basic-default-fullname">Nội dung</label>
                     <input type="text" name="tenViTri" class="form-control" id="basic-default-fullname" placeholder="Nhập Nôi dung" />
                 </div>                
@@ -39,7 +31,7 @@
                     <input type="text" name="tenViTri" class="form-control" id="basic-default-fullname" placeholder="Nhập Xếp Hạng" />
                 </div>
                 <button type="submit" class="btn btn-primary">Thêm</button>
-                <button type="submit" class="btn btn-primary">Cancel</button>
+                <button type="button" class="btn btn-dark" onclick="history.back()">Thoát</button>
                 </form>
             </div>
             </div>

@@ -179,9 +179,15 @@
               </a>
             </li>
             <li class="menu-item ">
-              <a href="{{ route('slideshow.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bxs-bookmark-alt"></i>
+              <a href="{{ route('slider.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-book-bookmark"></i>
                 <div data-i18n="Layouts">Quản lý SlideShow</div>
+              </a>
+            </li>
+            <li class="menu-item ">
+              <a href="{{ route('nhacungcap.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-book-bookmark"></i>
+                <div data-i18n="Layouts">Quản lý Nhà cung cấp</div>
               </a>
             </li>
             <li class="menu-item">

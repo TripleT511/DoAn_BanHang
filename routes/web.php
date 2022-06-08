@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\PhanQuyenController;
 use App\Http\Controllers\Admin\SanPhamController;
 use App\Http\Controllers\Admin\GioHangController;
 use App\Http\Controllers\Admin\DanhGiaController;
+use App\Http\Controllers\Admin\NhaCungCapController;
 use App\Http\Controllers\Admin\PhieuKhoController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\TaiKhoanController;
@@ -81,10 +82,12 @@ Route::prefix('admin')->group(function () {
     Route::resource('phanquyen', PhanQuyenController::class);
     Route::resource('sanpham', SanPhamController::class);
     Route::resource('danhgia', DanhGiaController::class);
-    Route::resource('slideshow', SliderController::class);
+    Route::resource('slider', SliderController::class);
     Route::resource('danhmuc', DanhMucController::class);
     Route::resource('phieukho', PhieuKhoController::class);
     Route::resource('thuoctinh', ThuocTinhController::class);
+    Route::resource('nhacungcap', NhaCungCapController::class);
+
 
 
     // Search sản phẩm ( tạo phiếu kho )
