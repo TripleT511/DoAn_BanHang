@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\HinhAnh;
 use App\Models\DanhMuc;
+use App\Models\ChiTietPhieuKho;
 
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -34,5 +35,10 @@ class SanPham extends Model
     public function danhmuc()
     {
         return $this->belongsTo(DanhMuc::class, 'danh_muc_id', 'id');
+    }
+
+    public function chitietphieukhos()
+    {
+        return $this->hasMany(ChiTietPhieuKho::class, 'san_pham_id', 'id');
     }
 }

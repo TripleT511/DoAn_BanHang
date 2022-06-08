@@ -25,6 +25,11 @@
             height: 100%;
             object-fit: contain;
         }
+        .attr-item {
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 10px;
+        }
     </style>
 @endsection
 @section('content')
@@ -106,6 +111,26 @@
                         </div>
                     </div>
                 </div>
+                <div class="mb-3">
+                    <label for="lstThuocTinh" class="form-label">Các Thuộc tính</label>
+                    <input class="form-control" list="datalistOptions" id="lstThuocTinh" placeholder="Chọn thuộc tính" >
+                    <datalist id="datalistOptions">
+                       
+                    </datalist>
+                    <div class="list-attr">
+                        
+                    </div>
+                </div>
+                {{-- <div class="mb-3">
+                    <label for="lstThuocTinh" class="form-label">Các Biến thể</label>
+                    <input class="form-control" list="datalistOptions" id="lstThuocTinh" placeholder="Chọn thuộc tính" >
+                    <datalist id="datalistOptions">
+                       
+                    </datalist>
+                    <div class="list-attr">
+                        
+                    </div>
+                </div> --}}
                 <button type="submit" class="btn btn-primary">Thêm</button>
                 <button type="button" class="btn btn-dark" onclick="history.back()">Thoát</button>
                 </form>
@@ -119,7 +144,37 @@
 @section('js')
     <script src="https://cdn.tiny.cloud/1/c4yq515bjllc9t8mkucpjw8rmw5jnuktk654ihvvk2k4ve5f/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
+        $(function() {
+                
+            $.ajax({
+                type: "get",
+                url: "/admin/thuoctinhdata/lay-danh-sach-thuoc-tinh",
+                dataType: "json",
+                success: function (response) {
+                    $('#datalistOptions').html(response);
+                }
+            });
+        });
 
+        // === Attribute Option  === // 
+        let lstThuocTinh = document.querySelector("#lstThuocTinh");
+
+        lstThuocTinh.addEventListener('change', function(e) {
+            $.ajax({
+                type: "get",
+                url: "/admin/thuoctinhdata/them-thuoc-tinh",
+                dataType: "json",
+                data: {
+                    tenThuocTinh: e.target.value
+                },
+                success: function (response) {
+                    $('.list-attr').html(response);
+                }
+            });
+            
+            lstThuocTinh.value = '';
+
+        })
         // === Preview Image === // 
        
         $("#hinhAnh").on("change", function (e) {

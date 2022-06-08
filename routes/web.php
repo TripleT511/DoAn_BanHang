@@ -6,7 +6,11 @@ use App\Http\Controllers\Admin\PhanQuyenController;
 use App\Http\Controllers\Admin\SanPhamController;
 use App\Http\Controllers\Admin\GioHangController;
 use App\Http\Controllers\Admin\DanhGiaController;
+use App\Http\Controllers\Admin\PhieuKhoController;
 use App\Http\Controllers\Admin\SliderController;
+use App\Http\Controllers\Admin\TaiKhoanController;
+use App\Http\Controllers\Admin\ThuocTinhController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -73,11 +77,44 @@ Route::get('/chi-tiet-bai-viet', function () {
 Route::prefix('admin')->group(function () {
     Route::get('/', [DashboardController::class, 'index']);
 
+    Route::resource('taikhoan', TaiKhoanController::class);
     Route::resource('phanquyen', PhanQuyenController::class);
     Route::resource('sanpham', SanPhamController::class);
     Route::resource('danhgia', DanhGiaController::class);
     Route::resource('slideshow', SliderController::class);
     Route::resource('danhmuc', DanhMucController::class);
+    Route::resource('phieukho', PhieuKhoController::class);
+    Route::resource('thuoctinh', ThuocTinhController::class);
+
+
+    // Search sản phẩm ( tạo phiếu kho )
+    Route::get('/kho/timkiem', [PhieuKhoController::class, 'searchSanPham']);
+
+    // Thêm sản phẩm ( chi tiết phiếu kho )
+    Route::get('/kho/them-chi-tiet', [PhieuKhoController::class, 'themChiTietPhieuKho'])->name('themchitietpk');
+
+    // Render giao diện
+    Route::get('/kho/xem-chi-tiet', [PhieuKhoController::class, 'renderList'])->name('renderList');
+
+    // Xoá một chi tiết phiếu kho
+    Route::get('/kho/xoa-chi-tiet', [PhieuKhoController::class, 'xoaChiTietPhieuKho'])->name('xoaChiTietPhieuKho');
+
+    // Cập nhật chi tiết phiếu kho
+    Route::get('/kho/cap-nhat-chi-tiet', [PhieuKhoController::class, 'updateChiTietPhieuKho'])->name('updateChiTietPhieuKho');
+
+    // Xem phiếu kho
+    Route::get('/kho/xem-phieu-kho', [PhieuKhoController::class, 'xemPhieuKho'])->name('xemPhieuKho');
+
+
+    // === Thuộc Tính === //
+
+    // Get Thuộc Tính
+    Route::get('/thuoctinhdata/lay-danh-sach-thuoc-tinh', [ThuocTinhController::class, 'getAllThuocTinh']);
+
+    // Thêm Thuộc Tính
+    Route::get('/thuoctinhdata/them-thuoc-tinh', [ThuocTinhController::class, 'addThuocTinh']);
+
+    // === Thuộc Tính === //
 
 
     Route::get('/login', function () {

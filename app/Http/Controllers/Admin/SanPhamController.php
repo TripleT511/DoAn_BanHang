@@ -13,6 +13,8 @@ use App\Http\Requests\UpdateSanPhamRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Session;
+
 
 class SanPhamController extends Controller
 {
@@ -106,10 +108,12 @@ class SanPhamController extends Controller
                 ]);
 
                 $hinhAnh->save();
-                $hinhAnh->hinhAnh = $item->store('images/san-pham/', 'public');
+                $hinhAnh->hinhAnh = $item->store('images/san-pham', 'public');
                 $hinhAnh->save();
             }
         }
+
+        Session::flush("lstThuocTinh");
 
         $lstSanPham = SanPham::all();
 
@@ -191,7 +195,7 @@ class SanPhamController extends Controller
                 ]);
 
                 $hinhAnh->save();
-                $hinhAnh->hinhAnh = $item->store('images/san-pham/', 'public');
+                $hinhAnh->hinhAnh = $item->store('images/san-pham', 'public');
                 $hinhAnh->save();
             }
         }

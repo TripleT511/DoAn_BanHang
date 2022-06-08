@@ -17,10 +17,10 @@ class DanhMuc extends Model
         'idDanhMucCha',
     ];
 
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
-    }
+    // public function getRouteKeyName(): string
+    // {
+    //     return 'slug';
+    // }
 
 
     public function childs()

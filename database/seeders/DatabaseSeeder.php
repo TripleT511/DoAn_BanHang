@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\PhanQuyen;
 
 
 class DatabaseSeeder extends Seeder
@@ -20,7 +19,9 @@ class DatabaseSeeder extends Seeder
             PhanQuyenSeeder::class,
             DanhMucSeeder::class,
             NhaCungCapSeeder::class,
-            SanPhamSeeder::class
+            SanPhamSeeder::class,
+            ThuocTinhSeeder::class,
+            HinhAnhSeeder::class,
         ]);
         \App\Models\User::factory(10)->create();
     }

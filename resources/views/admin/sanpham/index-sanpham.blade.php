@@ -44,7 +44,7 @@
                         <td>
                           <div class="img">
                             @foreach ($item->hinhanhs as $key => $item2)
-                              @if($key == 1) break; @endif
+                              @if($key == 1) <?php break; ?> @endif
                                 <img src="{{ asset('storage/'.$item2->hinhAnh) }}" class="image-product" alt="{{ $item->tenSanPham }}">
                             @endforeach
                           </div>

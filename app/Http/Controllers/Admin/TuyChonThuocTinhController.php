@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\TuyChonThuocTinh;
+use Illuminate\Http\Request;
 
-use App\Models\GioHang;
-use App\Http\Requests\StoreGioHangRequest;
-use App\Http\Requests\UpdateGioHangRequest;
-
-class GioHangController extends Controller
+class TuyChonThuocTinhController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,9 +15,8 @@ class GioHangController extends Controller
      */
     public function index()
     {
-        return view('cart');
+        //
     }
-
 
     /**
      * Show the form for creating a new resource.
@@ -28,16 +25,16 @@ class GioHangController extends Controller
      */
     public function create()
     {
-        return view('checkout');
+        //
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreGioHangRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreGioHangRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -45,10 +42,10 @@ class GioHangController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\GioHang  $gioHang
+     * @param  \App\Models\TuyChonThuocTinh  $tuyChonThuocTinh
      * @return \Illuminate\Http\Response
      */
-    public function show(GioHang $gioHang)
+    public function show(TuyChonThuocTinh $tuyChonThuocTinh)
     {
         //
     }
@@ -56,10 +53,10 @@ class GioHangController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\GioHang  $gioHang
+     * @param  \App\Models\TuyChonThuocTinh  $tuyChonThuocTinh
      * @return \Illuminate\Http\Response
      */
-    public function edit(GioHang $gioHang)
+    public function edit(TuyChonThuocTinh $tuyChonThuocTinh)
     {
         //
     }
@@ -67,11 +64,11 @@ class GioHangController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateGioHangRequest  $request
-     * @param  \App\Models\GioHang  $gioHang
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\TuyChonThuocTinh  $tuyChonThuocTinh
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateGioHangRequest $request, GioHang $gioHang)
+    public function update(Request $request, TuyChonThuocTinh $tuyChonThuocTinh)
     {
         //
     }
@@ -79,10 +76,10 @@ class GioHangController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\GioHang  $gioHang
+     * @param  \App\Models\TuyChonThuocTinh  $tuyChonThuocTinh
      * @return \Illuminate\Http\Response
      */
-    public function destroy(GioHang $gioHang)
+    public function destroy(TuyChonThuocTinh $tuyChonThuocTinh)
     {
         //
     }

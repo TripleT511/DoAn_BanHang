@@ -18,20 +18,20 @@
                         <li class="card-description" style="color: #fc424a;">{{ $err }}</li>
                     @endforeach
                 @endif
-                <form method="post" action="{{ route('danhmuc.store') }}">
+                <form method="post" action="{{ route('phieukho.store') }}">
                     @csrf
                     <fieldset>
                 <legend>Phiếu kho</legend>
                 <div class="mb-3">
-                    <label for="defaultSelect" class="form-label">Loại Phiếu</label>
-                    <select id="defaultSelect" name="loaiPhieu" class="form-select">
+                    <label for="loaiPhieu" class="form-label">Loại Phiếu</label>
+                    <select id="loaiPhieu" name="loaiPhieu" class="form-select">
                         <option value="0">Phiếu nhập</option>
                         <option value="1">Phiếu xuất</option>
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="basic-default-fullname">Mã đơn hàng</label>
-                    <input type="text" name="maDonHang" class="form-control" id="basic-default-fullname" placeholder="Nhập Mã đơn hàng" />
+                    <label class="form-label" for="maDonHang">Mã đơn hàng</label>
+                    <input type="text" name="maDonHang" class="form-control" id="maDonHang" placeholder="Nhập Mã đơn hàng" />
                 </div>
                 <div class="mb-3">
                     <label for="defaultSelect" class="form-label">Nhà Cung Cấp</label>
@@ -56,6 +56,7 @@
                     <ul class="list-product-search">
                     </ul>
                 </div>
+                
                 <div class="mb-3">
                     <div class="table-responsive text-nowrap">
                   <table class="table text-left">
@@ -71,23 +72,12 @@
                       </tr>
                     </thead>
                     <tbody class="table-border-bottom-0 text-left table-product">
-                      <tr>
-                        <td class="name">Tên sản phẩm ghi ở đây</td>
-                        <td>Mã SKU</td>
-                        <td>Cái</td>
-                        <td><input type="text" name="soLuongSP" class="form-control" id="basic-default-fullname" placeholder="Nhập số lượng" /></td>
-                        <td><input type="text" name="soLuongSP" class="form-control" id="basic-default-fullname" placeholder="Nhập giá" /></td>
-                        <td>1.000.000đ</td>
-                        <td>
-                          <a class="btn btn-danger" href="javascript:void(0);"
-                                >Xoá</a
-                              >
-                        </td>
-                      </tr>
+                      
                     </tbody>
                   </table>
                 </div>
                 </div>
+                   
                 <input type="text" name="loaiPhieu" value="1" hidden/>
                 <button type="submit" class="btn btn-primary">Thêm</button>
                 <button type="submit" class="btn btn-primary">Cancel</button>
@@ -95,7 +85,15 @@
             </div>
             </div>
         </div>
-    
+        <div class="bs-toast toast toast-placement-ex m-2 fade bg-danger top-50 start-50 translate-middle " role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+            <div class="toast-header">
+                <i class="bx bx-bell me-2"></i>
+                <div class="me-auto fw-semibold">Thông báo</div>
+                <small>1 second ago</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">Lỗi</div>
+        </div>
     </div>
 </div>
 @endsection
@@ -137,15 +135,31 @@
             margin: 0;
             color: #fc424a;
         }
+        .product-search-img {
+            width: 50px;
+            height: 75px;
+            position: relative;
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        .product-search-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
     </style>
 @endsection
 @section('js')
 <script>
-    $(document).ready(function() {
-        let lstRemoveProduct = document.querySelectorAll(".table-product tr");
-       
+    $(function() {
+      let lstRemoveProduct = document.querySelectorAll(".table-product tr");
+        let lstSP = document.querySelectorAll(".product-search-item");
+        let lstBtnDelete = document.querySelectorAll(".btn-xoa");
+        let lstBtnUpdate = document.querySelectorAll(".btn-update");
 
-            // //Search DiaDanh
+            
+            //Search DiaDanh
             $('#searchSanPhamKho').on('keyup', function() {
                 var val = $('#searchSanPhamKho').val();
                 if(val != "") {
@@ -159,52 +173,102 @@
                     success: function (response) {
                         $(".list-product-search").css("display", "block");
                         $(".list-product-search").html(response);
+                        
+                        lstSP = document.querySelectorAll(".product-search-item");
 
-                        let lstItem = document.querySelectorAll(".product-search-item");
-                        lstItem.forEach(item => item.addEventListener('click', function() {
-                            $("#searchSanPhamKho").val('');
-
-                            const lstClassName = item.classList;
-                            const tableProduct = document.querySelector(".table-product");
-                            let lstRemoveProduct = document.querySelectorAll(".table-product tr");
-
-                            const nameProduct = item.querySelector(".product-name").innerText;
-                            const priceProduct = item.querySelector(".product-price span").innerText;
-                            const tdItem = document.createElement("tr");
-                            tdItem.classList.add(`${lstClassName[1]}`);
-                            const isProduct = document.querySelector(`.table-product tr.${lstClassName[1]}`);
-
-                            if(!(isProduct != undefined)) {
-                                tdItem.innerHTML = `<td>${nameProduct}</td>
-                                                    <td>1234</td>
-                                                    <td>Cái</td>
-                                                    <td><input type="text" name="soLuongSP" class="form-control" id="count-pd" placeholder="Nhập số lượng" value="1"/></td>
-                                                    <td><input type="text" name="soLuongSP" class="form-control" id="price-pd" placeholder="Nhập giá" value="${priceProduct}"/></td>
-                                                    <td id="total"><span>${priceProduct}</span> đ</td>
-                                                    <td>
-                                                    <a class="btn btn-danger" href="javascript:void(0);">
-                                                        Xoá
-                                                    </a>
-                                                </td>`;
-                                tableProduct.appendChild(tdItem);
-                            } else {
-                                let countPd = isProduct.querySelector("#count-pd");
-                                let pricePd = isProduct.querySelector("#price-pd");
-                                let total = isProduct.querySelector("#total span");
-                                
-                                countPd.value = parseInt(countPd.value) + 1;
-                                total.innerText = parseFloat(pricePd.value) * parseInt(countPd.value);
-                            }
+                        lstSP.forEach(item => item.addEventListener('click', function () {
                             
                             $(".list-product-search").css("display", "none");
-
+                                $.ajax({
+                                    type: "get",
+                                    url: "/admin/kho/them-chi-tiet",
+                                    dataType: "json",
+                                    data: {
+                                        sanpham: item.dataset.id
+                                    },
+                                    success: function (response) {
+                                        renderUI();
+                                    }
+                                });
                         }));
+                        
                     }
                 });
                 }
                 
             });
-        });
+
+           
+
+          
+
+            function renderUI() {
+                $("#searchSanPhamKho").val('');
+                $.ajax({
+                    type: "get",
+                    url: "/admin/kho/xem-chi-tiet",
+                    dataType: "json",
+                    success: function (response) {
+                        $(".table-product").html(response);
+                        lstBtnDelete = document.querySelectorAll(".btn-xoa");
+                        lstBtnUpdate = document.querySelectorAll(".btn-update");
+                        let lstSoLuong = document.querySelectorAll(".input-sl");
+                        let lstGia = document.querySelectorAll(".input-gia");
+
+                         // Xoá chi tiết phiếu kho
+                        lstBtnDelete.forEach(item => item.addEventListener('click', function () {
+                                $.ajax({
+                                    type: "get",
+                                    url: "/admin/kho/xoa-chi-tiet",
+                                    dataType: "json",
+                                    data: {
+                                        id: item.dataset.id
+                                    },
+                                    success: function (response) {
+                                       renderUI();
+                                    }
+                                });
+                        }));
+
+                        // Cập nhật chi tiết phiếu kho
+                        lstBtnUpdate.forEach((item, index) => item.addEventListener('click', function () {
+                            if(lstSoLuong[index].value <= 0 || isNaN(lstSoLuong[index].value) || isNaN(lstGia[index].value) || lstGia[index].value <= 0) {
+                                document.querySelector(".bs-toast").classList.add("bg-danger");
+                                document.querySelector(".bs-toast").classList.remove("bg-success");
+                                document.querySelector(".toast-body").innerText = "Lỗi";
+                                document.querySelector(".bs-toast").classList.add("show");
+                                setTimeout(() => {
+                                    document.querySelector(".bs-toast").classList.remove("show");
+                                }, 2000);
+                            } else {
+                                $.ajax({
+                                    type: "get",
+                                    url: "/admin/kho/cap-nhat-chi-tiet",
+                                    dataType: "json",
+                                    data: {
+                                        id: item.dataset.id,
+                                        soluong: lstSoLuong[index].value,
+                                        gia: lstGia[index].value
+                                    },
+                                    success: function (response) {
+                                        document.querySelector(".bs-toast").classList.remove("bg-danger");
+                                        document.querySelector(".bs-toast").classList.add("bg-success");
+                                        document.querySelector(".toast-body").innerText = "Cập nhật thành công";
+
+                                        document.querySelector(".bs-toast").classList.add("show");
+                                        setTimeout(() => {
+                                            document.querySelector(".bs-toast").classList.remove("show");
+                                        }, 2000);
+                                       renderUI();
+                                    }
+                                });
+                            }
+                                
+                        }))
+                    }
+                });
+            }  
+    });
 
 
 </script>

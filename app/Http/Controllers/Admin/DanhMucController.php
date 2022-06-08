@@ -7,7 +7,10 @@ use App\Http\Controllers\Controller;
 use App\Models\DanhMuc;
 use App\Http\Requests\StoreDanhMucRequest;
 use App\Http\Requests\UpdateDanhMucRequest;
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
+
 
 class DanhMucController extends Controller
 {
@@ -54,20 +57,24 @@ class DanhMucController extends Controller
     {
         $request->validate([
             'tenDanhMuc' => 'required|unique:danh_mucs',
-            'slug' => 'required|unique:danh_mucs',
         ], [
             'tenDanhMuc.required' => "Tên danh mục không được bỏ trống",
             'tenDanhMuc.unique' => 'Tên danh mục không được trùng',
-            'slug.required' => "Slug không được bỏ trống",
-            'slug.unique' => 'Slug không được trùng',
         ]);
 
         $danhmuc = new DanhMuc();
-        $idDanhMucCha = $request->input('idDanhMucCha') != 0 ? $request->input('idDanhMucCha') : 0;
+        $idDanhMucCha = $request->input('idDanhMucCha') != 0 ? $request->input('idDanhMucCha') : null;
+
+        $slug = '';
+        if ($request->filled('slug')) {
+            $slug = $request->input('slug');
+        } else {
+            $slug = Str::of($request->input('tenDanhMuc'))->slug('-');
+        }
 
         $danhmuc->fill([
             'tenDanhMuc' => $request->input('tenDanhMuc'),
-            'slug' => $request->input('slug'),
+            'slug' => $slug,
             'idDanhMucCha' => $idDanhMucCha,
         ]);
 
@@ -85,7 +92,7 @@ class DanhMucController extends Controller
      */
     public function show(DanhMuc $danhMuc)
     {
-        //
+        return $danhMuc;
     }
 
     /**
@@ -108,7 +115,6 @@ class DanhMucController extends Controller
      */
     public function update(UpdateDanhMucRequest $request, DanhMuc $danhMuc)
     {
-        //
     }
 
     /**

@@ -129,25 +129,42 @@
 
           <ul class="menu-inner py-1">
             <!-- Dashboard -->
-            <li class="menu-item active">
+            <li class="menu-item {{ (request()->is('admin/')) ? 'active' : '' }}">
               <a href="" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div data-i18n="Analytics">Dashboard</div>
               </a>
             </li>
-
-            <!-- Layouts -->
-            <li class="menu-item">
-              <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons bx bxs-user-circle"></i>
+            <li class="menu-item {{  request()->routeIs('phieukho.*') ? 'active' : '' }}">
+              <a href="{{ route('phieukho.index') }}" class="menu-link">
+                <i class='menu-icon tf-icons bx bxs-store-alt' ></i>
+                <div data-i18n="Layouts">Quản lý kho</div>
+              </a>
+            </li>
+            <li class="menu-item {{  request()->routeIs('taikhoan.*') ? 'active' : '' }}">
+              <a href="{{ route('taikhoan.index') }}" class="menu-link">
+                <i class='menu-icon tf-icons bx bxs-user-circle' ></i>
                 <div data-i18n="Layouts">Quản lý tài khoản</div>
               </a>
             </li>
-            <li class="menu-item">
-              <a href="{{ route('sanpham.index') }}" class="menu-link">
+            
+            <li class="menu-item {{  request()->routeIs('sanpham.*') || request()->routeIs('thuoctinh.*') ? 'active open' : '' }}" style="">
+              <a href="javascript:void(0);" class="menu-link menu-toggle ">
                 <i class="menu-icon tf-icons bx bxs-t-shirt"></i>
-                <div data-i18n="Layouts">Quản lý sản phẩm</div>
+                <div data-i18n="Layouts">Sản phẩm</div>
               </a>
+              <ul class="menu-sub">
+                <li class="menu-item {{  request()->routeIs('sanpham.*') ? 'active' : '' }}">
+                  <a href="{{ route('sanpham.index') }}" class="menu-link">
+                    <div data-i18n="Layouts">Sản phẩm</div>
+                  </a>
+                </li>
+                <li class="menu-item {{  request()->routeIs('thuoctinh.*') ? 'active' : '' }}">
+                  <a href="{{ route('thuoctinh.index') }}" class="menu-link">
+                    <div data-i18n="Layouts">Thuộc tính</div>
+                  </a>
+                </li>
+              </ul>
             </li>
             <li class="menu-item">
               <a href="{{ route('danhmuc.index') }}" class="menu-link">
@@ -163,7 +180,7 @@
             </li>
             <li class="menu-item ">
               <a href="{{ route('slideshow.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-book-bookmark"></i>
+                <i class="menu-icon tf-icons bx bxs-bookmark-alt"></i>
                 <div data-i18n="Layouts">Quản lý SlideShow</div>
               </a>
             </li>
@@ -322,6 +339,8 @@
 
       <!-- Overlay -->
       <div class="layout-overlay layout-menu-toggle"></div>
+
+      
     </div>
     <!-- / Layout wrapper -->
 
@@ -334,6 +353,8 @@
     <script src="{{ asset('ad/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
 
     <script src="{{ asset('ad/assets/vendor/js/menu.js') }}"></script>
+    <script src="{{ asset('ad/assets/js/ui-toasts.js') }}"></script>
+
     <!-- endbuild -->
     @yield('js')
     <!-- Vendors JS -->
