@@ -10,7 +10,7 @@
         }
         .preview-image-item {
             width: 100px;
-            height: 150px;
+            height: 100px;
             padding: 5px;
             position: relative;
             border-radius: 5px;
@@ -64,11 +64,12 @@
                     <input class="form-control" type="file" id="hinhAnh" name="hinhAnh">
                 </div>
                 <div class="mb-3">
-                    
+                    <div class="list-preview-image">
                         <div class="preview-image-item">
                             <img src="" alt="imgPreview" id="imgPreview">
                         </div>
-                    
+                    </div>
+                 
                 </div>
                 <button type="submit" class="btn btn-primary">Thêm</button>
                 <button type="button" class="btn btn-dark"onclick="history.back()">Cancel</button>
@@ -88,7 +89,7 @@
        
         $("#hinhAnh").on("change", function (e) {
                 var filePath = URL.createObjectURL(e.target.files[0]);
-                $(".preview-image-item").css('display', 'flex');
+                $(".list-preview-image").css('display', 'flex');
                 
                 $("#imgPreview").show().attr("src", filePath);
                

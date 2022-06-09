@@ -142,7 +142,7 @@
               </a>
             </li>
             <li class="menu-item {{  request()->routeIs('taikhoan.*') ? 'active' : '' }}">
-              <a href="{{ route('taikhoan.index') }}" class="menu-link">
+              <a href="{{ route('user.index') }}" class="menu-link">
                 <i class='menu-icon tf-icons bx bxs-user-circle' ></i>
                 <div data-i18n="Layouts">Quản lý tài khoản</div>
               </a>

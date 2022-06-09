@@ -23,10 +23,10 @@ class DanhGia extends Model
 
     public function sanphams()
     {
-        return $this->hasMany(DanhGia::class, 'san_pham_id', 'id');
+        return $this->belongsTo(SanPham::class, 'san_pham_id', 'id');
     }
     public function taikhoan()
     {
-        return $this->belongsTo(DanhGia::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

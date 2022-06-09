@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 
 use App\Models\DanhGia;
 use App\Models\SanPham;
-use App\Models\TaiKhoan;
+use App\Models\User;
 use App\Http\Requests\StoreDanhGiaRequest;
 use App\Http\Requests\UpdateDanhGiaRequest;
 use Illuminate\Support\Facades\Redirect;
@@ -24,6 +24,7 @@ class DanhGiaController extends Controller
     {
         $lstDanhGia = DanhGia::with('sanphams')->with('taikhoan')->get();
         return View('admin.danhgia.index-danhgia',['lstDanhGia'=> $lstDanhGia]);
+       
     }
 
     /**
