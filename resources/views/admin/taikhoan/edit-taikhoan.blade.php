@@ -4,6 +4,7 @@
 @section('css')
     <style>
         .list-preview-image {
+            display: flex;
             align-content: center;
             gap: 10px;
         }
@@ -118,10 +119,9 @@
 
         // === Preview Image === // 
        
-        $("#hinhAnh").on("change", function (e) {
+        $("#anhDaiDien").on("change", function (e) {
                 var filePath = URL.createObjectURL(e.target.files[0]);
                 $(".preview-image-item").css('display', 'flex');
-                
                 $("#imgPreview").show().attr("src", filePath);
                
             });

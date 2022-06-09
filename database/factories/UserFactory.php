@@ -20,7 +20,7 @@ class UserFactory extends Factory
         return [
             'hoTen' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
-            'anhDaiDien' => '',
+            'anhDaiDien' => null,
             'soDienThoai' => '0123456789',
             'phan_quyen_id' => 0,
             'email_verified_at' => now(),

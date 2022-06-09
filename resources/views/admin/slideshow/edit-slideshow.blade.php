@@ -9,7 +9,7 @@
             gap: 10px;
         }
         .preview-image-item {
-            width: 100px;
+            width: 150px;
             height: 100px;
             padding: 5px;
             position: relative;
@@ -47,16 +47,16 @@
                 @csrf
                     @method("PATCH")
                 <div class="mb-3">
-                    <label class="form-label" for="basic-default-fullname">Tiêu Đề</label>
-                    <input type="text" name="tieuDe" class="form-control" id="basic-default-fullname"value="{{ $slider->tieuDe }}" placeholder="Nhập Tiêu Đề SlideShow" />
+                    <label class="form-label" for="tieuDe">Tiêu Đề</label>
+                    <input type="text" name="tieuDe" class="form-control" id="tieuDe"value="{{ $slider->tieuDe }}" placeholder="Nhập Tiêu Đề SlideShow" />
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="basic-default-fullname">Nội Dung</label>
-                    <input type="text" name="noiDung" class="form-control" id="basic-default-fullname" value="{{ $slider->noiDung }}" placeholder="Nhập Nội dung SlideShow" />
+                    <label class="form-label" for="noiDung">Nội Dung</label>
+                    <input type="text" name="noiDung" class="form-control" id="noiDung" value="{{ $slider->noiDung }}" placeholder="Nhập Nội dung SlideShow" />
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="basic-default-fullname">Url</label>
-                    <input type="text" name="url" class="form-control" id="basic-default-fullname"value="{{ $slider->url }}" placeholder="Nhập Slug" />
+                    <label class="form-label" for="slug">Url</label>
+                    <input type="text" name="url" class="form-control" id="slug"value="{{ $slider->url }}" placeholder="Nhập Slug" />
                 </div>
                 <div class="mb-3">
                     <label for="hinhAnh" class="form-label">Hình Ảnh</label>
@@ -88,25 +88,14 @@
         // === Preview Image === // 
        
         $("#hinhAnh").on("change", function (e) {
-                var filePath = URL.createObjectURL(e.target.files);
-               
-                
-                $("#imgPreview1").show().attr("src", filePath);
+                var filePath = URL.createObjectURL(e.target.files[0]);
+                $("#imgPreview").show().attr("src", filePath);
                
             });
 
         // === Preview Image === // 
 
         // === wysiwyg Editor === // 
-        tinymce.init({
-            selector: '#tieuDe',
-            plugins: 'a11ychecker advcode casechange export formatpainter image editimage linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tableofcontents tinycomments tinymcespellchecker',
-            toolbar: 'a11ycheck addcomment showcomments casechange checklist code export formatpainter image editimage pageembed permanentpen table tableofcontents',
-            toolbar_mode: 'floating',
-            tinycomments_mode: 'embedded',
-            tinycomments_author: 'Author name',
-            language: 'vi'
-            });
         tinymce.init({
             selector: '#noiDung',
             plugins: 'a11ychecker advcode casechange export formatpainter image editimage linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tableofcontents tinycomments tinymcespellchecker',

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('hinhAnh');
             $table->string('tieuDe');
             $table->string('noiDung');
-            $table->string('url');
+            $table->string('slug');
             $table->timestamps();
             $table->softDeletes();
         });

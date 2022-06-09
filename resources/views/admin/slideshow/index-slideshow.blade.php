@@ -31,7 +31,6 @@
                     <thead>
                       <tr>
                         <th>Hình ảnh</th>
-                        <th>Nội dung</th>         
                         <th>Tiêu đề</th>       
                         <th>Url</th>    
                         <th>Hành động</th>
@@ -44,9 +43,6 @@
                           <div class="img">
                               <img src="{{ asset('storage/'.$item->hinhAnh) }}" class="image-product" alt="{{ $item->tieuDe }}">
                           </div>
-                        </td>
-                        <td>
-                          {{ $item->noiDung }}
                         </td>
                         <td>
                           {{ $item->tieuDe }}

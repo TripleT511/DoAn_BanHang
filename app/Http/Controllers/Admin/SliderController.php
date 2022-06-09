@@ -29,12 +29,11 @@ class SliderController extends Controller
     }
     public function index()
     {
-        $lstSlider= Slider::all();
-        foreach($lstSlider as $item)
-        {
+        $lstSlider = Slider::all();
+        foreach ($lstSlider as $item) {
             $this->fixImage($item);
         }
-        return View('admin.slideshow.index-slideshow',['lstSlider'=> $lstSlider]);
+        return View('admin.slideshow.index-slideshow', ['lstSlider' => $lstSlider]);
     }
 
     /**
@@ -66,25 +65,26 @@ class SliderController extends Controller
             'tieuDe.unique' => "Tiêu đề bị trùng",
         ]);
 
-        $url = '';
+        $slug = '';
         if ($request->filled('url')) {
             $slug = $request->input('url');
         } else {
             $slug = Str::of($request->input('tieuDe'))->slug('-');
         }
 
+
+
         $slider = new Slider();
         $slider->fill([
-            'hinhAnh'=> '',
-            'tieuDe'=> $request->input('tieuDe'),
-            'noiDung'=> $request->input('noiDung'),
-            'url'=> $url,
+            'hinhAnh' => '',
+            'tieuDe' => $request->input('tieuDe'),
+            'noiDung' => $request->input('noiDung'),
+            'url' => $slug,
         ]);
         $slider->save();
 
-        if ($request->hasFile('hinhAnh')) { 
-            $slider->hinhAnh = $request->file('hinhAnh')->store('images/slideshow/', 'public');
-               
+        if ($request->hasFile('hinhAnh')) {
+            $slider->hinhAnh = $request->file('hinhAnh')->store('images/slideshow', 'public');
         }
         $slider->save();
 
@@ -110,12 +110,11 @@ class SliderController extends Controller
      */
     public function edit(Slider $slider)
     {
-        $lstSlider= Slider::all();
-        foreach($lstSlider as $item)
-        {
+        $lstSlider = Slider::all();
+        foreach ($lstSlider as $item) {
             $this->fixImage($item);
         }
-        return View('admin.slideshow.edit-slideshow',['slider'=>$slider]);
+        return View('admin.slideshow.edit-slideshow', ['slider' => $slider]);
     }
 
     /**
@@ -135,7 +134,7 @@ class SliderController extends Controller
             'noiDung.required' => "Nội dung không được bỏ trống",
         ]);
 
-        $url = '';
+        $slug = '';
         if ($request->filled('url')) {
             $slug = $request->input('url');
         } else {
@@ -143,16 +142,16 @@ class SliderController extends Controller
         }
 
         $slider->fill([
-            'hinhAnh'=>'',
-            'tieuDe'=> $request->input('tieuDe'),
-            'noiDung'=> $request->input('noiDung'),
-            'url'=> $url,
+            'hinhAnh' => $slider->hinhAnh,
+            'tieuDe' => $request->input('tieuDe'),
+            'noiDung' => $request->input('noiDung'),
+            'url' => $slug,
         ]);
         $slider->save();
 
-        if ($request->hasFile('hinhAnh')) {        
-                Storage::disk('public')->delete($slider->hinhAnh);
-            $slider->hinhAnh = $request->file('hinhAnh')->store('images/slideshow', 'public'); 
+        if ($request->hasFile('hinhAnh')) {
+            Storage::disk('public')->delete($slider->hinhAnh);
+            $slider->hinhAnh = $request->file('hinhAnh')->store('images/slideshow', 'public');
         }
         $slider->save();
         return Redirect::route('slider.index');
@@ -166,10 +165,10 @@ class SliderController extends Controller
      */
     public function destroy(Slider $slider)
     {
-       
-            Storage::disk('public')->delete($slider->hinhAnh);
-            $slider->delete();
-    
+
+        Storage::disk('public')->delete($slider->hinhAnh);
+        $slider->delete();
+
         $slider->delete();
         return Redirect::route('slider.index');
     }
