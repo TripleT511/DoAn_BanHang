@@ -131,7 +131,7 @@
             <!-- Dashboard -->
             <li class="menu-item {{ (request()->is('admin/')) ? 'active' : '' }}">
               <a href="" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <i class="menu-icon tf-icons bx bxs-home"></i>
                 <div data-i18n="Analytics">Dashboard</div>
               </a>
             </li>
@@ -166,31 +166,37 @@
                 </li>
               </ul>
             </li>
-            <li class="menu-item">
-              <a href="{{ route('danhmuc.index') }}" class="menu-link">
+            <li class="menu-item {{  request()->routeIs('danhmuc.*') ? 'active' : '' }}">
+              <a href="{{ route('danhmuc.index') }}" class="menu-link ">
                 <i class="menu-icon tf-icons bx bxs-category"></i>
                 <div data-i18n="Layouts">Quản lý danh mục sản phẩm</div>
               </a>
             </li>
-            <li class="menu-item ">
-              <a href="{{ route('phanquyen.index') }}" class="menu-link">
+            <li class="menu-item {{  request()->routeIs('hoadon.*') ? 'active' : '' }}">
+              <a href="{{ route('hoadon.index') }}" class="menu-link ">
+                <i class="menu-icon tf-icons bx bxs-shopping-bag"></i>
+                <div data-i18n="Layouts">Quản lý đơn hàng</div>
+              </a>
+            </li>
+            <li class="menu-item {{  request()->routeIs('phanquyen.*') ? 'active' : '' }}">
+              <a href="{{ route('phanquyen.index') }}" class="menu-link ">
                 <i class="menu-icon tf-icons bx bxs-component"></i>
                 <div data-i18n="Layouts">Quản lý phân quyền</div>
               </a>
             </li>
-            <li class="menu-item ">
-              <a href="{{ route('slider.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-book-bookmark"></i>
+            <li class="menu-item {{  request()->routeIs('slider.*') ? 'active' : '' }}">
+              <a href="{{ route('slider.index') }}" class="menu-link ">
+                <i class="menu-icon tf-icons bx bxs-image"></i>
                 <div data-i18n="Layouts">Quản lý SlideShow</div>
               </a>
             </li>
-            <li class="menu-item ">
-              <a href="{{ route('nhacungcap.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-book-bookmark"></i>
+            <li class="menu-item {{  request()->routeIs('nhacungcap.*') ? 'active' : '' }}">
+              <a href="{{ route('nhacungcap.index') }}" class="menu-link ">
+                <i class="menu-icon tf-icons bx bxs-building-house"></i>
                 <div data-i18n="Layouts">Quản lý Nhà cung cấp</div>
               </a>
             </li>
-            <li class="menu-item">
+            <li class="menu-item {{  request()->routeIs('danhgia.*') ? 'active' : '' }}">
               <a href="{{ route('danhgia.index') }}" class="menu-link ">
                 <i class="menu-icon tf-icons bx bxs-star"></i>
                 <div data-i18n="Layouts">Quản lý Đánh giá</div>

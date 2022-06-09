@@ -111,7 +111,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="mb-3">
+                {{-- <div class="mb-3">
                     <label for="lstThuocTinh" class="form-label">Các Thuộc tính</label>
                     <input class="form-control" list="datalistOptions" id="lstThuocTinh" placeholder="Chọn thuộc tính" >
                     <datalist id="datalistOptions">
@@ -120,7 +120,7 @@
                     <div class="list-attr">
                         
                     </div>
-                </div>
+                </div> --}}
                 {{-- <div class="mb-3">
                     <label for="lstThuocTinh" class="form-label">Các Biến thể</label>
                     <input class="form-control" list="datalistOptions" id="lstThuocTinh" placeholder="Chọn thuộc tính" >

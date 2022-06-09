@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\PhieuKhoController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\TaiKhoanController;
 use App\Http\Controllers\Admin\ThuocTinhController;
+use App\Http\Controllers\Admin\HoaDonController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -87,6 +88,7 @@ Route::prefix('admin')->group(function () {
     Route::resource('phieukho', PhieuKhoController::class);
     Route::resource('thuoctinh', ThuocTinhController::class);
     Route::resource('nhacungcap', NhaCungCapController::class);
+    Route::resource('hoadon', HoaDonController::class);
 
 
 

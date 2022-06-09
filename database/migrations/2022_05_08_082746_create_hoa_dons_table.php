@@ -22,6 +22,7 @@ return new class extends Migration
             $table->dateTime('ngayXuatHD');
             $table->double('tongTien');
             $table->string('ghiChu');
+            $table->integer('trangThai');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\HoaDon;
-use App\Http\Requests\StoreHoaDonRequest;
-use App\Http\Requests\UpdateHoaDonRequest;
+use Illuminate\Http\Request;
 
 class HoaDonController extends Controller
 {
@@ -15,7 +15,8 @@ class HoaDonController extends Controller
      */
     public function index()
     {
-        //
+        $lstHoaDon = HoaDon::all();
+        return view('admin.hoadon.index-hoadon', ['lstHoaDon' => $lstHoaDon]);
     }
 
     /**
@@ -31,10 +32,10 @@ class HoaDonController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreHoaDonRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreHoaDonRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -64,11 +65,11 @@ class HoaDonController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateHoaDonRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\HoaDon  $hoaDon
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateHoaDonRequest $request, HoaDon $hoaDon)
+    public function update(Request $request, HoaDon $hoaDon)
     {
         //
     }
