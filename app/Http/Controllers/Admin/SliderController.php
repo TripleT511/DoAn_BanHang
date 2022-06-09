@@ -129,11 +129,9 @@ class SliderController extends Controller
     {
         $request->validate([
             'tieuDe' => 'required',
-            'hinhAnh' => 'required',
             'noiDung' => 'required',
         ], [
             'tieuDe.required' => "Tiêu đề không được bỏ trống",
-            'hinhAnh.required' => "Hình ảnh không được bỏ trống",
             'noiDung.required' => "Nội dung không được bỏ trống",
         ]);
 
@@ -154,7 +152,7 @@ class SliderController extends Controller
 
         if ($request->hasFile('hinhAnh')) {        
                 Storage::disk('public')->delete($slider->hinhAnh);
-            $slider->hinhAnh = $request->file('hinhAnh')->store('images/slideshow/', 'public'); 
+            $slider->hinhAnh = $request->file('hinhAnh')->store('images/slideshow', 'public'); 
         }
         $slider->save();
         return Redirect::route('slider.index');

@@ -78,7 +78,7 @@ Route::get('/chi-tiet-bai-viet', function () {
 Route::prefix('admin')->group(function () {
     Route::get('/', [DashboardController::class, 'index']);
 
-    Route::resource('taikhoan', TaiKhoanController::class);
+    Route::resource('user', TaiKhoanController::class);
     Route::resource('phanquyen', PhanQuyenController::class);
     Route::resource('sanpham', SanPhamController::class);
     Route::resource('danhgia', DanhGiaController::class);

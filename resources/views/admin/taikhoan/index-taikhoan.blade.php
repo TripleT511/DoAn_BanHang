@@ -18,15 +18,15 @@
 @endsection
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-              <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tables /</span> Basic Tables</h4>
+              <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tables /</span>Bảng Tài Khoản</h4>
             <ul class="nav nav-pills flex-column flex-md-row mb-3">
               <li class="nav-item">
-                  <a class="nav-link active" href="javascript:void(0);"><i class="bx bx-user me-1"></i> Thêm tài khoản</a>
+                  <a class="nav-link active" href="{{ route('user.create') }}"><i class="bx bx-user me-1"></i> Thêm tài khoản nhân viên</a>
               </li>
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">
-                <h5 class="card-header">Table Basic</h5>
+                <h5 class="card-header">Danh Sách Tài Khoản</h5>
                 <div class="table-responsive text-nowrap">
                   <table class="table">
                     <thead>
@@ -36,7 +36,7 @@
                         <th>Email</th>
                         <th>Số điện thoại</th>
                         <th>Quyền</th>
-                        <th>Actions</th>
+                        <th>Hành động</th>
                       </tr>
                     </thead>
                     <tbody class="table-border-bottom-0">
@@ -59,10 +59,10 @@
                             {{ $item->phanquyen->tenViTri }}
                           </td>
                           <td>
-                            <a class="btn btn-success" href="{{ route('taikhoan.edit', ['taikhoan' => $item]) }}">
+                            <a class="btn btn-success" href="{{ route('user.edit', ['user' => $item]) }}">
                               <i class="bx bx-edit-alt me-1"></i>Sửa
                             </a>
-                            <form class="d-inline-block" method="post" action="{{ route('taikhoan.destroy', ['taikhoan'=>$item]) }}">
+                            <form class="d-inline-block" method="post" action="{{ route('user.destroy', ['user'=>$item]) }}">
                               @csrf
                               @method("DELETE")
                               <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>

@@ -17,8 +17,8 @@
                   <table class="table">
                     <thead>
                       <tr>
-                        <th>sanpham_id</th>                    
-                        <th>taikhoan_id</th>
+                        <th>tên sản phẩm</th>                    
+                        <th>họ và tên</th>
                         <th>Noi dung</th>
                         <th>Xep Hang</th>
                         <th>Hành động</th>
@@ -28,10 +28,10 @@
                     @foreach ($lstDanhGia as $item)
                       <tr>
                       </td>
-                        <td><strong>{{ $item->san_pham_id }}</strong>
+                        <td><strong>{{ $item->sanphams->tenSanPham }}</strong>
                       </td>
                       </td>
-                        <td><strong>{{ $item->user_id }}</strong>
+                        <td><strong>{{ $item->taikhoan->hoTen }}</strong>
                       </td>
                       </td>
                         <td><strong>{{ $item->noiDung }}</strong>
