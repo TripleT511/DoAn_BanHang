@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateSliderRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class SliderController extends Controller
 {
@@ -36,6 +37,47 @@ class SliderController extends Controller
         return View('admin.slideshow.index-slideshow', ['lstSlider' => $lstSlider]);
     }
 
+    public function searchSlider(Request $request)
+    {
+        $output = "";
+
+        if ($request->input('txtSearch') != "") {
+            $lstSlider = Slider::where('tieuDe', 'LIKE', '%' . $request->input('txtSearch') . '%')->get();
+            foreach ($lstSlider as $key => $item) {
+                $this->fixImage($item);
+
+                $output .= '
+                    <tr> 
+                    <td>
+                    <div class="img">
+                        <img src="' . asset('storage/' . $item->hinhAnh) . '" class="image-product" alt="' . $item->tieuDe . '">
+                    </div>
+                    </td>
+                    <td>
+                    ' . $item->tieuDe  . '
+                    </td>
+                    <td>
+                    ' . $item->slug . '
+                    </td>
+                    <td>
+                    ' . $item->noiDung . '
+                    </td>
+                    <td>
+                    <a class="btn btn-success" href="' . route('slider.edit', ['slider' => $item]) . '">
+                        <i class="bx bx-edit-alt me-1"></i>Sửa
+                    </a>
+                    <form class="d-inline-block" method="post" action="' . route('slider.destroy', ['slider' => $item]) . '">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <input type="hidden" name="_token" value="' . csrf_token() . '">
+                        <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
+                    </form>
+                    </td>
+                </tr>
+                ';
+            }
+        }
+        return response()->json($output);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -45,6 +87,8 @@ class SliderController extends Controller
     {
         return View('admin.slideshow.create-slideshow');
     }
+
+
 
     /**
      * Store a newly created resource in storage.

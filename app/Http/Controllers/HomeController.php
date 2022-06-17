@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\DanhGia;
 use App\Models\SanPham;
 use App\Models\User;
+use App\Models\Slider;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -73,13 +75,14 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $lstSlider = Slider::all();
 
         $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->get();
 
         $lstSanPhamNoiBat = SanPham::with('hinhanhs')->with('danhmuc')->take(8)->get();
 
 
-        return view('home', ['lstSanPham' => $lstSanPham, 'lstSanPhamNoiBat' => $lstSanPhamNoiBat]);
+        return view('home', ['lstSanPham' => $lstSanPham, 'lstSanPhamNoiBat' => $lstSanPhamNoiBat, 'lstSlider' => $lstSlider]);
     }
 
     public function danhgia()
@@ -102,7 +105,7 @@ class HomeController extends Controller
     public function sanpham($slug)
     {
         $sanpham = SanPham::with('hinhanhs')->with('danhmuc')->where('slug', $slug)->first();
-        $lstDanhGia = DanhGia::with('sanphams')->with('taikhoan')->where('san_pham_id', $sanpham->id)->get();
+        $lstDanhGia = DanhGia::with('sanpham')->with('taikhoan')->where('san_pham_id', $sanpham->id)->get();
         return view('product-detail', ['sanpham' => $sanpham, 'lstDanhGia' => $lstDanhGia]);
     }
 

@@ -270,7 +270,7 @@
 											id="ratingStart"
 											>
 											<input type="hidden"  name="userId"
-											id="userId" value="{{ Auth()->user()->id }}"
+											id="userId" value="{{ Auth()->user() ? Auth()->user()->id : '' }}"
 											>
 											<input type="hidden" class="rating-input"  name="sanphamId"
 											id="sanphamId"

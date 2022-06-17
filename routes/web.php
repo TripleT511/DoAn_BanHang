@@ -101,6 +101,16 @@ Route::prefix('admin')->group(function () {
         Route::resource('hoadon', HoaDonController::class);
 
 
+        // *** Tìm kiếm *** //
+        Route::get('/slideshow/timkiem', [SliderController::class, 'searchSlider']);
+        Route::get('/ncungcap/timkiem', [NhaCungCapController::class, 'searchNCC']);
+        Route::get('/binhluan/timkiem', [DanhGiaController::class, 'searchBinhLuan']);
+        Route::get('/taikhoan/timkiem', [TaiKhoanController::class, 'searchTaiKhoan']);
+        Route::get('/taikhoan/mokhoa{user}', [TaiKhoanController::class, 'moKhoa'])->name('mokhoa');
+        Route::get('/dmuc/timkiem', [DanhMucController::class, 'searchDanhMuc']);
+
+        // *** Tìm kiếm *** //
+
         // Search sản phẩm ( tạo phiếu kho )
         Route::get('/kho/timkiem', [PhieuKhoController::class, 'searchSanPham']);
 

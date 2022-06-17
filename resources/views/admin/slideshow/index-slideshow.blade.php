@@ -36,9 +36,9 @@
                         <th>Hành động</th>
                       </tr>
                     </thead>
-                    <tbody class="table-border-bottom-0">
+                    <tbody class="table-border-bottom-0" id="lstSlideshow"> 
                     @foreach ($lstSlider as $item)
-                      <tr>
+                      <tr> 
                         <td>
                           <div class="img">
                               <img src="{{ asset('storage/'.$item->hinhAnh) }}" class="image-product" alt="{{ $item->tieuDe }}">
@@ -49,6 +49,12 @@
                         </td>
                         <td>
                           {{ $item->slug }}
+<<<<<<< HEAD
+=======
+                        </td>
+                        <td>
+                          {{ $item->noiDung }}
+>>>>>>> 2fb5dd01baaa141187f1e3be09d4d8e43eded1af
                         </td>
                         <td>
                           <a class="btn btn-success" href="{{ route('slider.edit', ['slider' => $item]) }}">
@@ -61,6 +67,7 @@
                           </form>
                         </td>
                       </tr>
+                     
                      @endforeach
                     </tbody>
                   </table>
@@ -71,4 +78,109 @@
               
               <!--/ Responsive Table -->
             </div>
+@endsection
+
+@section('js')
+<script>
+    $(function() {
+      let lstRemoveProduct = document.querySelectorAll(".table-product tr");
+        let lstSP = document.querySelectorAll(".product-search-item");
+        let lstBtnDelete = document.querySelectorAll(".btn-xoa");
+        let lstBtnUpdate = document.querySelectorAll(".btn-update");
+
+            
+            //Search DiaDanh
+            $('#searchInput').on('keyup', function() {
+                var val = $('#searchInput').val();
+                if(val != "") {
+                    $.ajax({
+                    type: "get",
+                    url: "/admin/slideshow/timkiem",
+                    data: {
+                        txtSearch: val
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                      $("#lstSlideshow").html(response);
+                    }
+                });
+                }
+                
+            });
+
+           
+
+          
+
+            // function renderUI() {
+            //     $("#searchSlider").val('');
+            //     $.ajax({
+            //         type: "get",
+            //         url: "/admin/slideshow/xem-chi-tiet",
+            //         dataType: "json",
+            //         success: function (response) {
+            //             $(".table-product").html(response);
+            //             lstBtnDelete = document.querySelectorAll(".btn-xoa");
+            //             lstBtnUpdate = document.querySelectorAll(".btn-update");
+            //             let lstSoLuong = document.querySelectorAll(".input-sl");
+            //             let lstGia = document.querySelectorAll(".input-gia");
+
+            //              // Xoá chi tiết phiếu kho
+            //             lstBtnDelete.forEach(item => item.addEventListener('click', function () {
+            //                     $.ajax({
+            //                         type: "get",
+            //                         url: "/admin/kho/xoa-chi-tiet",
+            //                         dataType: "json",
+            //                         data: {
+            //                             id: item.dataset.id
+            //                         },
+            //                         success: function (response) {
+            //                            renderUI();
+            //                         }
+            //                     });
+            //             }));
+
+            //             // Cập nhật chi tiết phiếu kho
+            //             lstBtnUpdate.forEach((item, index) => item.addEventListener('click', function () {
+            //                 if(lstSoLuong[index].value <= 0 || isNaN(lstSoLuong[index].value) || isNaN(lstGia[index].value) || lstGia[index].value <= 0) {
+            //                     document.querySelector(".bs-toast").classList.add("bg-danger");
+            //                     document.querySelector(".bs-toast").classList.remove("bg-success");
+            //                     document.querySelector(".toast-body").innerText = "Lỗi";
+            //                     document.querySelector(".bs-toast").classList.add("show");
+            //                     setTimeout(() => {
+            //                         document.querySelector(".bs-toast").classList.remove("show");
+            //                     }, 2000);
+            //                 } else {
+            //                     $.ajax({
+            //                         type: "get",
+            //                         url: "/admin/kho/cap-nhat-chi-tiet",
+            //                         dataType: "json",
+            //                         data: {
+            //                             id: item.dataset.id,
+            //                             soluong: lstSoLuong[index].value,
+            //                             gia: lstGia[index].value
+            //                         },
+            //                         success: function (response) {
+            //                             document.querySelector(".bs-toast").classList.remove("bg-danger");
+            //                             document.querySelector(".bs-toast").classList.add("bg-success");
+            //                             document.querySelector(".toast-body").innerText = "Cập nhật thành công";
+
+            //                             document.querySelector(".bs-toast").classList.add("show");
+            //                             setTimeout(() => {
+            //                                 document.querySelector(".bs-toast").classList.remove("show");
+            //                             }, 2000);
+            //                            renderUI();
+            //                         }
+            //                     });
+            //                 }
+                                
+            //             }))
+            //         }
+            //     });
+            // }  
+    });
+
+
+</script>
+
 @endsection

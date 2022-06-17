@@ -55,7 +55,11 @@
                     <input type="text" name="noiDung" class="form-control" id="noiDung" value="{{ $slider->noiDung }}" placeholder="Nhập Nội dung SlideShow" />
                 </div>
                 <div class="mb-3">
+<<<<<<< HEAD
                     <label class="form-label" for="slug">Slug</label>
+=======
+                    <label class="form-label" for="slug">Url</label>
+>>>>>>> 2fb5dd01baaa141187f1e3be09d4d8e43eded1af
                     <input type="text" name="slug" class="form-control" id="slug"value="{{ $slider->slug }}" placeholder="Nhập Slug" />
                 </div>
                 <div class="mb-3">

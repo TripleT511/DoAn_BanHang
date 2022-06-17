@@ -46,18 +46,23 @@
                 <form method="post" action="{{ route('slider.store') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
-                    <label class="form-label" for="basic-default-fullname">Tiêu Đề</label>
+                    <label class="form-label" for="tieuDe">Tiêu Đề</label>
                     <input type="text" name="tieuDe" class="form-control" id="basic-default-fullname" placeholder="Nhập Tiêu Đề SlideShow" />
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="basic-default-fullname">Nội Dung</label>
+                    <label class="form-label" for="noiDung">Nội Dung</label>
                     <textarea name="noiDung" id="noiDung" class="form-control noidung">
                     </textarea>
                 </div>
                 
                 <div class="mb-3">
+<<<<<<< HEAD
                     <label class="form-label" for="basic-default-fullname">Slug</label>
                     <input type="text" name="slug" class="form-control" id="basic-default-fullname" placeholder="Nhập Slug" />
+=======
+                    <label class="form-label" for="slug">slug</label>
+                    <input type="text" name="slug" class="form-control" id="slug" placeholder="Nhập slug..." />
+>>>>>>> 2fb5dd01baaa141187f1e3be09d4d8e43eded1af
                 </div>
                 <div class="mb-3">
                     <label for="hinhAnh" class="form-label">Hình Ảnh</label>
