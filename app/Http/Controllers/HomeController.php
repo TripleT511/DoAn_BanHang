@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Slider;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -62,9 +64,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-
-        $lstTaiKhoan = User::all();
-        return view('admin.taikhoan.index-taikhoan', ['lstTaiKhoan' => $lstTaiKhoan]);
+        $lstSlider = slider::all();
+        return view('home', ['lstSlider' => $lstSlider]);
     }
 
     /**

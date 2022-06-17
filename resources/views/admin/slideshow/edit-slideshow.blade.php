@@ -56,7 +56,7 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="slug">Url</label>
-                    <input type="text" name="url" class="form-control" id="slug"value="{{ $slider->url }}" placeholder="Nhập Slug" />
+                    <input type="text" name="slug" class="form-control" id="slug"value="{{ $slider->slug }}" placeholder="Nhập Slug" />
                 </div>
                 <div class="mb-3">
                     <label for="hinhAnh" class="form-label">Hình Ảnh</label>

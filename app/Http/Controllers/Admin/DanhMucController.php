@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DanhMuc;
 use App\Http\Requests\StoreDanhMucRequest;
 use App\Http\Requests\UpdateDanhMucRequest;
-use GuzzleHttp\Psr7\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 
@@ -36,6 +36,33 @@ class DanhMucController extends Controller
         return $lstDanhMucNew;
     }
 
+    public function searchDanhMuc(Request $request)
+    {
+        $output = "";
+
+        if ($request->input('txtSearch') != "") {
+            $lstDanhMuc = DanhMuc::where('tenDanhMuc', 'LIKE', '%' . $request->input('txtSearch') . '%')->get();
+            foreach ($lstDanhMuc as $key => $item) {             
+                $output .= '
+                <tr>
+                 <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>'. $char . $item->tenDanhMuc .'</strong></td>
+                 <td><i class="fab fa-angular fa-lg text-danger me-3"></i> '. $item->idDanhMucCha .'</td>
+                       <td>
+                          <a class="btn btn-success" href="'. route('danhmuc.edit', ['danhmuc' => $item]) .'">
+                            <i class="bx bx-edit-alt me-1"></i>Sửa
+                          </a>
+                          <form class="d-inline-block" method="post" action="'. route('danhmuc.destroy', ['danhmuc'=>$item]) .'">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="hidden" name="_token" value="'.csrf_token().'">
+                            <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
+                          </form>
+                        </td>
+              </tr>
+                ';
+            }
+        }
+        return response()->json($output);
+    }
     /**
      * Show the form for creating a new resource.
      *

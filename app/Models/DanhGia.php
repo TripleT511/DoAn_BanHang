@@ -21,7 +21,7 @@ class DanhGia extends Model
         'xepHang',
     ];
 
-    public function sanphams()
+    public function sanpham()
     {
         return $this->belongsTo(SanPham::class, 'san_pham_id', 'id');
     }

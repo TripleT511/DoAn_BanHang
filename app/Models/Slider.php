@@ -14,6 +14,6 @@ class Slider extends Model
         'hinhAnh',
         'tieuDe',
         'noiDung',
-        'url',
+        'slug',
     ];
 }
