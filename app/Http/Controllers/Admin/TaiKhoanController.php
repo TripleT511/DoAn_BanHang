@@ -31,10 +31,12 @@ class TaiKhoanController extends Controller
             $user->anhDaiDien = 'images/no-image-available.jpg';
         }
     }
-    public function index()
+    public function index(Request $request)
     {
         $lstTaiKhoan = User::with('phanquyen')->get();
-
+        if($request->block) {
+            $lstTaiKhoan =  User::with('phanquyen')->onlyTrashed()->get();
+        }
 
         foreach ($lstTaiKhoan as $item) {
             $this->fixImage($item);
@@ -43,6 +45,53 @@ class TaiKhoanController extends Controller
         return View('admin.taikhoan.index-taikhoan', ['lstTaiKhoan' => $lstTaiKhoan]);
     }
 
+    public function searchTaiKhoan(Request $request)
+    {
+        $output = "";
+
+        if ($request->input('txtSearch') != "") {
+            $lstTaiKhoan = User::withCount('phanquyen')->where('hoTen', 'LIKE', '%' . $request->input('txtSearch') . '%')->orWhere('email', 'LIKE', '%' . $request->input('txtSearch') . '%')->orWhere('soDienThoai', '=',$request->input('txtSearch'))->get();
+            foreach ($lstTaiKhoan as $key => $item) {             
+                $this->fixImage($item);                   
+
+                $output .= '
+                <tr>
+                <td>
+                  <div class="img">
+                      <img src="'.asset('storage/'.$item->anhDaiDien) .'" class="image-user " alt="'. $item->hoTen.'">
+                  </div>
+                </td>
+                <td>'. $item->hoTen .'</td>
+                <td>'. $item->email .' </td>
+                <td>'. $item->soDienThoai .'</td>
+                <td>'. $item->phanquyen->tenViTri.'</td>
+                <td>
+                 @if($item->deleted_at == null) <span class="badge bg-label-primary">hoạt động</span>
+                 @elseif($item->deleted_at != null) <span class="badge bg-label-info">bị khoá</span>
+                 @endif
+               </td>
+               <td>
+                  @if($item->deleted_at == null)
+                  <a class="btn btn-success" href="'. route('user.edit', ['user' => $item]) .'>
+                    <i class="bx bx-edit-alt me-1"></i>Sửa
+                  </a>
+                  <form class="d-inline-block"  method="post" action="'. route('user.destroy',['user'=>$item]) .'">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <input type="hidden" name="_token" value="'.csrf_token().'">
+                    <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Khoá</button>
+                  </form>
+                   @elseif($item->deleted_at != null) 
+                  <a class="btn btn-success" href="'. route('mokhoa',['user'=>$item]) .'">
+                     <i class="bx bx-edit-alt me-1"></i>mở khoá
+                  </a>
+                 @endif
+                </td>
+              </tr>
+                ';
+            }
+        }
+        return response()->json($output);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -163,6 +212,14 @@ class TaiKhoanController extends Controller
      */
     public function destroy(User $user)
     {
-       //
+        if ($user->phan_quyen_id == 0) return redirect()->route('user.index')->withError('Bạn không thể xoá tài khoán này');
+        elseif($user->phan_quyen_id != 0) $user->delete();
+        return Redirect::route('user.index');
+    }
+
+    public function moKhoa($user)
+    {
+       $user = User::withTrashed()->find($user)->restore();
+       return Redirect::route('user.index');
     }
 }
