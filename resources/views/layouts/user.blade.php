@@ -22,13 +22,109 @@
     <!-- BASE CSS -->
     <link href="{{ asset('css/bootstrap.custom.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+	@yield('css')
 
 	<!-- SPECIFIC CSS -->
     <link href="{{ asset('css/home_1.css') }}" rel="stylesheet">
-	@yield('css')
     <!-- YOUR CUSTOM CSS -->
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
 
+	<style>
+		.toast {
+				position: fixed;
+				width: 350px;
+				max-width: 100%;
+				font-size: 0.9375rem;
+				pointer-events: auto;
+				background-color: #fff;
+				background-clip: padding-box;
+				border: 0 solid rgba(67, 89, 113, 0.1);
+				box-shadow: 0 0.25rem 1rem rgba(161, 172, 184, 0.45);
+				border-radius: 0.5rem;
+				z-index: 10000;
+				right: 15px;
+				transition: transform 0.3s ease-out, opacity 0.3s ease-out !important;
+				-webkit-transition: transform 0.3s ease-out, opacity 0.3s ease-out !important;
+				transform: translateX(calc(100% + 15px));
+			}
+
+			.toast.show {
+				transform: translateX(0);
+			}
+
+			.toast.toast-success,
+			.toast.toast-success .close-toast{
+				background-color: #65c438;
+			}
+
+			.toast.toast-danger,
+			.toast.toast-danger .close-toast {
+				background-color: #de3c22;
+			}
+
+			.fade {
+				transition: opacity 0.15s linear;
+			}
+		
+			.toast-header {
+				position: relative;
+				display: flex;
+				align-items: center;
+				padding: 1.25rem 1.25rem;
+					padding-bottom: 1.25rem;
+				color: #fff;
+				background-color: transparent;
+				background-clip: padding-box;
+				border-bottom: 0 solid transparent;
+				border-top-left-radius: 0.5rem;
+				border-top-right-radius: 0.5rem;
+			}
+
+			.close-toast {
+				position: absolute;
+				content: "";
+				width: 30px;
+				height: 30px;
+				top: -15px;
+				right: -15px;
+				border-radius: 0.5rem;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+			}
+
+			.toast-header svg {
+				width: 23px;
+				height: 23px;
+				fill: #fff;
+				margin-right: 10px;
+			}
+
+			.close-toast svg {
+				width: 18px;
+				height: 18px;
+				fill: #fff;
+				margin-right: 0;
+			}
+
+			.toast-body {
+				padding: 1.25rem;
+				padding-top: 1.25rem;
+				word-wrap: break-word;
+				color: #fff;
+				padding-top: 0;
+			}
+
+			
+
+			.me-auto {
+				margin-right: auto !important;
+			}
+			.fw-semibold {
+				font-weight: 600 !important;
+			}
+	</style>
 </head>
 
 <body>
@@ -229,27 +325,14 @@
 						<ul class="top_tools">
 							<li>
 								<div class="dropdown dropdown-cart">
-									<a href="cart.html" class="cart_bt"><strong>2</strong></a>
-									<div class="dropdown-menu">
-										<ul>
-											<li>
-												<a href="product-detail-1.html">
-													<figure><img src="img/products/product_placeholder_square_small.jpg" data-src="img/products/shoes/thumb/1.jpg" alt="" width="50" height="50" class="lazy"></figure>
-													<strong><span>1x Armor Air x Fear</span>$90.00</strong>
-												</a>
-												<a href="#0" class="action"><i class="ti-trash"></i></a>
-											</li>
-											<li>
-												<a href="product-detail-1.html">
-													<figure><img src="img/products/product_placeholder_square_small.jpg" data-src="img/products/shoes/thumb/2.jpg" alt="" width="50" height="50" class="lazy"></figure>
-													<strong><span>1x Armor Okwahn II</span>$110.00</strong>
-												</a>
-												<a href="0" class="action"><i class="ti-trash"></i></a>
-											</li>
+									<a href="{{ route('gio-hang') }}" class="cart_bt"><strong>0</strong></a>
+									<div class="dropdown-menu" >
+										<ul id="lstItemCart">
+											
 										</ul>
 										<div class="total_drop">
-											<div class="clearfix"><strong>Total</strong><span>$200.00</span></div>
-											<a href="cart.html" class="btn_1 outline">View Cart</a><a href="checkout.html" class="btn_1">Checkout</a>
+											<div class="clearfix"><strong>Tổng cộng: </strong><span></span></div>
+											<a href="{{ route('gio-hang') }}" class="btn_1 outline">View Cart</a><a href="checkout.html" class="btn_1">Checkout</a>
 										</div>
 									</div>
 								</div>
@@ -420,6 +503,7 @@
 		</div>
 	</div> --}}
 	<!-- COMMON SCRIPTS -->
+	
     <script src="{{ asset('js/common_scripts.min.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
 	@yield('js')

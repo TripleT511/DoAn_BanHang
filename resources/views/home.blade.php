@@ -98,216 +98,43 @@
 		
 		<div class="container margin_60_35">
 			<div class="main_title">
-				<h2>Top Selling</h2>
+				<h2>Top Sản phẩm bán chạy</h2>
 				<span>Products</span>
-				<p>Cum doctus civibus efficiantur in imperdiet deterruisset</p>
+				<p>Những sản phẩm bán chạy nhất</p>
 			</div>
 			<div class="row small-gutters">
+				@foreach ($lstSanPhamNoiBat as $key => $item)
 				<div class="col-6 col-md-4 col-xl-3">
 					<div class="grid_item">
 						<figure>
 							<span class="ribbon off">-30%</span>
-							<a href="product-detail-1.html">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/so-mi-tay-dai-on-gian-m26-0020672/d0693fde-48cb-8500-b82b-0018fa33a0a6.jpg" alt="">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/so-mi-tay-dai-on-gian-m26-0020672/453a2d9e-9fd8-8600-1c82-0018fa33a18a.jpg" alt="">
+							<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
+							@foreach ($item->hinhanhs as $key => $item2)
+								<img class="img-fluid lazy" src="{{ asset('storage/'.$item2->hinhAnh) }}" data-src="{{ asset('storage/'.$item2->hinhAnh) }}" alt="{{ $item->tenSanPham }}">
+                            @endforeach
+								
+								
 							</a>
 							<div data-countdown="2019/05/15" class="countdown"></div>
 						</figure>
 						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
-						<a href="product-detail-1.html">
-							<h3>Armor Air x Fear</h3>
+						<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
+							<h3>{{ $item->tenSanPham }}</h3>
 						</a>
 						<div class="price_box">
-							<span class="new_price">$48.00</span>
-							<span class="old_price">$60.00</span>
+							<span class="new_price">{{ $item->gia }} đ</span>
+							@if($item->giaKhuyenMai != 0)
+								<span class="old_price">{{ $item->giaKhuyenMai }} đ</span>
+							@endif
 						</div>
 						<ul>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to compare"><i class="ti-control-shuffle"></i><span>Add to compare</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to cart"><i class="ti-shopping-cart"></i><span>Add to cart</span></a></li>
+							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Thêm vào giỏ hàng"><i class="ti-shopping-cart"></i><span>Thêm vào giỏ hàng</span></a></li>
 						</ul>
 					</div>
 					<!-- /grid_item -->
 				</div>
-				<!-- /col -->
-				<div class="col-6 col-md-4 col-xl-3">
-					<div class="grid_item">
-						<span class="ribbon off">-30%</span>
-						<figure>
-							<a href="product-detail-1.html">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/so-mi-tay-ngan-than-co-ai-horus-ver2-0020566/8e7d6e96-2911-0100-73f1-0018b7818792.jpg" alt="">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/so-mi-tay-ngan-than-co-ai-horus-ver2-0020566/0d16f9ad-23a1-0200-9623-0018b78188bb.jpg" alt="">
-							</a>
-							<div data-countdown="2019/05/10" class="countdown"></div>
-						</figure>
-						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
-						<a href="product-detail-1.html">
-							<h3>Armor Okwahn II</h3>
-						</a>
-						<div class="price_box">
-							<span class="new_price">$90.00</span>
-							<span class="old_price">$170.00</span>
-						</div>
-						<ul>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to compare"><i class="ti-control-shuffle"></i><span>Add to compare</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to cart"><i class="ti-shopping-cart"></i><span>Add to cart</span></a></li>
-						</ul>
-					</div>
-					<!-- /grid_item -->
-				</div>
-				<!-- /col -->
-				<div class="col-6 col-md-4 col-xl-3">
-					<div class="grid_item">
-						<span class="ribbon off">-50%</span>
-						<figure>
-							<a href="product-detail-1.html">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/quan-dai-sweatpants-linh-vat-olygre-ver2-0020653/7af71e16-f0ec-4000-3cdf-0018fa3020d3.jpg" alt="">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/quan-dai-sweatpants-linh-vat-olygre-ver2-0020653/0addb4f8-2b7e-4100-1041-0018fa302182.jpg" alt="">
-							</a>
-							<div data-countdown="2019/05/21" class="countdown"></div>
-						</figure>
-						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
-						<a href="product-detail-1.html">
-							<h3>Armor Air Wildwood ACG</h3>
-						</a>
-						<div class="price_box">
-							<span class="new_price">$75.00</span>
-							<span class="old_price">$155.00</span>
-						</div>
-						<ul>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to compare"><i class="ti-control-shuffle"></i><span>Add to compare</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to cart"><i class="ti-shopping-cart"></i><span>Add to cart</span></a></li>
-						</ul>
-					</div>
-					<!-- /grid_item -->
-				</div>
-				<!-- /col -->
-				<div class="col-6 col-md-4 col-xl-3">
-					<div class="grid_item">
-						<span class="ribbon new">New</span>
-						<figure>
-							<a href="product-detail-1.html">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/ao-khoac-hoodie-ngan-ha-space-ver5-0020570/17e12901-31e0-0100-9459-0018d2e7ba77.jpg" alt="">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/ao-khoac-hoodie-ngan-ha-space-ver5-0020570/76bdbc13-005f-0200-51ee-0018d2e7ba89.jpg" alt="">
-							</a>
-						</figure>
-						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
-						<a href="product-detail-1.html">
-							<h3>Armor ACG React Terra</h3>
-						</a>
-						<div class="price_box">
-							<span class="new_price">$110.00</span>
-						</div>
-						<ul>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to compare"><i class="ti-control-shuffle"></i><span>Add to compare</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to cart"><i class="ti-shopping-cart"></i><span>Add to cart</span></a></li>
-						</ul>
-					</div>
-					<!-- /grid_item -->
-				</div>
-				<!-- /col -->
-				<div class="col-6 col-md-4 col-xl-3">
-					<div class="grid_item">
-						<span class="ribbon new">New</span>
-						<figure>
-							<a href="product-detail-1.html">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/quan-dai-sweatpants-linh-vat-bbuff-ver7-0020563/8601c09e-633b-4f00-afaf-0018b78353f4.jpg" alt="">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/quan-dai-sweatpants-linh-vat-bbuff-ver7-0020563/b28f41cc-485f-5000-0ac2-0018b7835459.jpg" alt="">
-							</a>
-						</figure>
-						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
-						<a href="product-detail-1.html">
-							<h3>Armor Air Zoom Alpha</h3>
-						</a>
-						<div class="price_box">
-							<span class="new_price">$140.00</span>
-						</div>
-						<ul>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to compare"><i class="ti-control-shuffle"></i><span>Add to compare</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to cart"><i class="ti-shopping-cart"></i><span>Add to cart</span></a></li>
-						</ul>
-					</div>
-					<!-- /grid_item -->
-				</div>
-				<!-- /col -->
-				<div class="col-6 col-md-4 col-xl-3">
-					<div class="grid_item">
-						<span class="ribbon new">New</span>
-						<figure>
-							<a href="product-detail-1.html">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/ao-khoac-classic-the-thao-12vahdt-ky-lau-van-inh-ver3-0020665/b30f6c38-bdfc-5100-59a9-0018fa315295.jpg" alt="">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/ao-khoac-classic-the-thao-12vahdt-ky-lau-van-inh-ver3-0020665/16c50e55-1580-5200-f5ce-0018fa3152b9.jpg" alt="">
-							</a>
-						</figure>
-						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
-						<a href="product-detail-1.html">
-							<h3>Armor Air Alpha</h3>
-						</a>
-						<div class="price_box">
-							<span class="new_price">$130.00</span>
-						</div>
-						<ul>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to compare"><i class="ti-control-shuffle"></i><span>Add to compare</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to cart"><i class="ti-shopping-cart"></i><span>Add to cart</span></a></li>
-						</ul>
-					</div>
-					<!-- /grid_item -->
-				</div>
-				<!-- /col -->
-				<div class="col-6 col-md-4 col-xl-3">
-					<div class="grid_item">
-						<span class="ribbon hot">Hot</span>
-						<figure>
-							<a href="product-detail-1.html">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/quan-tay-y2010-hg11-0019800/51abd442-18f4-3600-7c34-0018b9fbbe0c.jpg" alt="">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/quan-tay-y2010-hg11-0019800/7bd5b09d-962d-3700-0544-0018b9fbbef1.jpg" alt="">
-							</a>
-						</figure>
-						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
-						<a href="product-detail-1.html">
-							<h3>Armor Air Max 98</h3>
-						</a>
-						<div class="price_box">
-							<span class="new_price">$115.00</span>
-						</div>
-						<ul>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to compare"><i class="ti-control-shuffle"></i><span>Add to compare</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to cart"><i class="ti-shopping-cart"></i><span>Add to cart</span></a></li>
-						</ul>
-					</div>
-					<!-- /grid_item -->
-				</div>
-				<!-- /col -->
-				<div class="col-6 col-md-4 col-xl-3">
-					<div class="grid_item">
-						<span class="ribbon hot">Hot</span>
-						<figure>
-							<a href="product-detail-1.html">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/quan-short-on-gian-y-original-ver5-0020275/a25bd980-bc95-1d00-3a95-0018680c0e2a.jpg" alt="">
-								<img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="https://cdn2.yame.vn/pimg/quan-short-on-gian-y-original-ver5-0020275/6da7a33f-4b21-1e00-504e-0018680c10ae.jpg" alt="">
-							</a>
-						</figure>
-						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
-						<a href="product-detail-1.html">
-							<h3>Armor Air Max 720</h3>
-						</a>
-						<div class="price_box">
-							<span class="new_price">$120.00</span>
-						</div>
-						<ul>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to compare"><i class="ti-control-shuffle"></i><span>Add to compare</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to cart"><i class="ti-shopping-cart"></i><span>Add to cart</span></a></li>
-						</ul>
-					</div>
-					<!-- /grid_item -->
-				</div>
+				
+				@endforeach
 				<!-- /col -->
 			</div>
 			<!-- /row -->
@@ -342,128 +169,40 @@
 				<p>Cum doctus civibus efficiantur in imperdiet deterruisset</p>
 			</div>
 			<div class="owl-carousel owl-theme products_carousel">
+				@foreach ($lstSanPham as $key=>$item)
 				<div class="item">
 					<div class="grid_item">
+						@if($item->dacTrung == 1)
 						<span class="ribbon new">New</span>
-						<figure>
-							<a href="product-detail-1.html">
-								<img class="owl-lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="img/products/shoes/7.jpg" alt="">
-							</a>
-						</figure>
-						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
-						<a href="product-detail-1.html">
-							<h3>ACG React Terra</h3>
-						</a>
-						<div class="price_box">
-							<span class="new_price">$110.00</span>
-						</div>
-						<ul>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to compare"><i class="ti-control-shuffle"></i><span>Add to compare</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to cart"><i class="ti-shopping-cart"></i><span>Add to cart</span></a></li>
-						</ul>
-					</div>
-					<!-- /grid_item -->
-				</div>
-				<!-- /item -->
-				<div class="item">
-					<div class="grid_item">
-						<span class="ribbon new">New</span>
-						<figure>
-							<a href="product-detail-1.html">
-								<img class="owl-lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="img/products/shoes/8.jpg" alt="">
-							</a>
-						</figure>
-						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
-						<a href="product-detail-1.html">
-							<h3>Air Zoom Alpha</h3>
-						</a>
-						<div class="price_box">
-							<span class="new_price">$140.00</span>
-						</div>
-						<ul>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to compare"><i class="ti-control-shuffle"></i><span>Add to compare</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to cart"><i class="ti-shopping-cart"></i><span>Add to cart</span></a></li>
-						</ul>
-					</div>
-					<!-- /grid_item -->
-				</div>
-				<!-- /item -->
-				<div class="item">
-					<div class="grid_item">
+						@elseif($item->dacTrung == 2)
 						<span class="ribbon hot">Hot</span>
+						@endif
+						
 						<figure>
-							<a href="product-detail-1.html">
-								<img class="owl-lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="img/products/shoes/8.jpg" alt="">
+							<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
+							@foreach ($item->hinhanhs as $key => $item2)
+                              @if($key == 1) <?php break; ?> @endif
+                                <img src="{{ asset('storage/'.$item2->hinhAnh) }}" class="image-product" alt="{{ $item->tenSanPham }}">
+								<img class="owl-lazy" src="{{ asset('storage/'.$item2->hinhAnh) }}" data-src="{{ asset('storage/'.$item2->hinhAnh) }}" alt="{{ $item->tenSanPham }}">
+                            @endforeach
 							</a>
 						</figure>
 						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
-						<a href="product-detail-1.html">
-							<h3>Air Color 720</h3>
+						<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
+							<h3>{{ $item->tenSanPham }}</h3>
 						</a>
 						<div class="price_box">
-							<span class="new_price">$120.00</span>
+							<span class="new_price">${{ $item->gia }}</span>
 						</div>
 						<ul>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to compare"><i class="ti-control-shuffle"></i><span>Add to compare</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to cart"><i class="ti-shopping-cart"></i><span>Add to cart</span></a></li>
+							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Thêm vào giỏ hàng"><i class="ti-shopping-cart"></i><span>Thêm vào giỏ hàng</span></a></li>
 						</ul>
 					</div>
 					<!-- /grid_item -->
 				</div>
 				<!-- /item -->
-				<div class="item">
-					<div class="grid_item">
-						<span class="ribbon off">-30%</span>
-						<figure>
-							<a href="product-detail-1.html">
-								<img class="owl-lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="img/products/shoes/6.jpg" alt="">
-							</a>
-						</figure>
-						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
-						<a href="product-detail-1.html">
-							<h3>Okwahn II</h3>
-						</a>
-						<div class="price_box">
-							<span class="new_price">$90.00</span>
-							<span class="old_price">$170.00</span>
-						</div>
-						<ul>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to compare"><i class="ti-control-shuffle"></i><span>Add to compare</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to cart"><i class="ti-shopping-cart"></i><span>Add to cart</span></a></li>
-						</ul>
-					</div>
-					<!-- /grid_item -->
-				</div>
-				<!-- /item -->
-				<div class="item">
-					<div class="grid_item">
-						<span class="ribbon off">-50%</span>
-						<figure>
-							<a href="product-detail-1.html">
-								<img class="owl-lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="img/products/shoes/7.jpg" alt="">
-							</a>
-						</figure>
-						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
-						<a href="product-detail-1.html">
-							<h3>Air Wildwood ACG</h3>
-						</a>
-						<div class="price_box">
-							<span class="new_price">$75.00</span>
-							<span class="old_price">$155.00</span>
-						</div>
-						<ul>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to compare"><i class="ti-control-shuffle"></i><span>Add to compare</span></a></li>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to cart"><i class="ti-shopping-cart"></i><span>Add to cart</span></a></li>
-						</ul>
-					</div>
-					<!-- /grid_item -->
-				</div>
-				<!-- /item -->
+				@endforeach
+				
 			</div>
 			<!-- /products_carousel -->
 		</div>
@@ -567,4 +306,21 @@
 		</div>
 		<!-- /container -->
 	</main>
+@endsection
+@section('js')
+	<script>
+		$(document).ready(function(){
+			$.ajax({
+				type: "GET",
+				url: "/render-cart",
+				dataType: "json",
+				success: function (response) {
+					$("#lstItemCart").html(response.newCart);
+					document.querySelector(".total_drop div span").innerHTML = response.total;
+					document.querySelector(".dropdown-cart a strong").innerHTML = response.numberCart;
+				}
+			});
+		});
+		
+	</script>
 @endsection

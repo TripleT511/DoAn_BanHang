@@ -6,14 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Slider extends Model
+class GioHang extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
     protected $fillable = [
-        'hinhAnh',
-        'tieuDe',
-        'noiDung',
-        'slug',
+        'san_pham_id',
+        'user_id',
+        'soLuong',
     ];
 }

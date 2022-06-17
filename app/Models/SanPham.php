@@ -24,6 +24,7 @@ class SanPham extends Model
         'dacTrung',
         'gia',
         'giaKhuyenMai',
+        'giaNhap',
         'slug',
     ];
 

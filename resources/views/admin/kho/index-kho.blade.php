@@ -2,6 +2,7 @@
 
 @section('title','Quản lý kho')
 
+
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
             <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tables /</span> Bảng phiếu kho</h4>
@@ -57,11 +58,13 @@
                           <a class="btn btn-primary btn-show-phieu-kho" data-bs-toggle="modal" data-bs-target="#modalCenter" data-id="{{ $item->id }}" href="#">
                             <i class='bx bxs-show'></i> Xem
                           </a>
-                          <form class="d-inline-block" method="post" action="{{ route('phieukho.update', ['phieukho' => $item, 'trangThai' => $item->trangThai ]) }}">
-                            @csrf
-                            @method("PATCH")
-                            <button style="outline: none; border: none" class="btn btn-info" type="submit"><i class='bx bxs-check-circle'></i> Duyệt</button>
-                          </form>
+                          @if($item->trangThai != 1)
+                            <form class="d-inline-block" method="post" action="{{ route('phieukho.update', ['phieukho' => $item, 'trangThai' => $item->trangThai ]) }}">
+                              @csrf
+                              @method("PATCH")
+                              <button style="outline: none; border: none" class="btn btn-info" type="submit"><i class='bx bxs-check-circle'></i> Duyệt</button>
+                            </form>
+                          @endif
                           <form class="d-inline-block" method="post" action="{{ route('phieukho.destroy', ['phieukho'=>$item]) }}">
                             @csrf
                             @method("DELETE")

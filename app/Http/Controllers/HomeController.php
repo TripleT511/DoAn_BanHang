@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DanhGia;
+use App\Models\SanPham;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 
 class HomeController extends Controller
 {
@@ -13,6 +16,10 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    protected function renderCart()
+    {
+    }
     public function login(Request $request)
     {
         $request->validate([
@@ -31,7 +38,11 @@ class HomeController extends Controller
 
             $request->session()->regenerate();
 
-            return redirect()->intended('/dashboard');
+            if (Auth()->user()->phan_quyen_id == 2) {
+                return redirect()->route('home');
+            }
+
+            return redirect()->intended('/admin');
         }
 
 
@@ -63,8 +74,23 @@ class HomeController extends Controller
     public function index()
     {
 
-        $lstTaiKhoan = User::all();
-        return view('admin.taikhoan.index-taikhoan', ['lstTaiKhoan' => $lstTaiKhoan]);
+        $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->get();
+
+        $lstSanPhamNoiBat = SanPham::with('hinhanhs')->with('danhmuc')->take(8)->get();
+
+
+        return view('home', ['lstSanPham' => $lstSanPham, 'lstSanPhamNoiBat' => $lstSanPhamNoiBat]);
+    }
+
+    public function danhgia()
+    {
+
+        $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->get();
+
+        $lstSanPhamNoiBat = SanPham::with('hinhanhs')->with('danhmuc')->take(8)->get();
+
+
+        return view('review', ['lstSanPham' => $lstSanPham, 'lstSanPhamNoiBat' => $lstSanPhamNoiBat]);
     }
 
     /**
@@ -72,6 +98,23 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function sanpham($slug)
+    {
+        $sanpham = SanPham::with('hinhanhs')->with('danhmuc')->where('slug', $slug)->first();
+        $lstDanhGia = DanhGia::with('sanphams')->with('taikhoan')->where('san_pham_id', $sanpham->id)->get();
+        return view('product-detail', ['sanpham' => $sanpham, 'lstDanhGia' => $lstDanhGia]);
+    }
+
+
+
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
     public function create()
     {
         //

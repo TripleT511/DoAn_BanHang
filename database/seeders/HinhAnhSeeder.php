@@ -17,10 +17,52 @@ class HinhAnhSeeder extends Seeder
     {
         DB::table('hinh_anhs')->insert([
             [
-                'san_pham_id' => 1, 'hinhAnh' => 'images/san-pham/ScUAesEiYs8HHM0e1yRsf1lyoNzlwWG1T2GTiP0E.jpg',
+                'san_pham_id' => 1, 'hinhAnh' => 'images/san-pham/01.png',
             ],
             [
-                'san_pham_id' => 1, 'hinhAnh' => 'images/san-pham/s0rZbQcZZBg7Kdudz14N1RAuTDOf43aNeDNWEr04.jpg',
+                'san_pham_id' => 1, 'hinhAnh' => 'images/san-pham/02.png',
+            ],
+            [
+                'san_pham_id' => 2, 'hinhAnh' => 'images/san-pham/03.jpg',
+            ],
+            [
+                'san_pham_id' => 2, 'hinhAnh' => 'images/san-pham/04.jpg',
+            ],
+            [
+                'san_pham_id' => 3, 'hinhAnh' => 'images/san-pham/05.jpg',
+            ],
+            [
+                'san_pham_id' => 3, 'hinhAnh' => 'images/san-pham/06.jpg',
+            ],
+            [
+                'san_pham_id' => 4, 'hinhAnh' => 'images/san-pham/07.jpg',
+            ],
+            [
+                'san_pham_id' => 4, 'hinhAnh' => 'images/san-pham/08.jpg',
+            ],
+            [
+                'san_pham_id' => 5, 'hinhAnh' => 'images/san-pham/09.jpg',
+            ],
+            [
+                'san_pham_id' => 5, 'hinhAnh' => 'images/san-pham/10.jpg',
+            ],
+            [
+                'san_pham_id' => 6, 'hinhAnh' => 'images/san-pham/11.jpg',
+            ],
+            [
+                'san_pham_id' => 6, 'hinhAnh' => 'images/san-pham/12.jpg',
+            ],
+            [
+                'san_pham_id' => 7, 'hinhAnh' => 'images/san-pham/13.png',
+            ],
+            [
+                'san_pham_id' => 7, 'hinhAnh' => 'images/san-pham/14.png',
+            ],
+            [
+                'san_pham_id' => 8, 'hinhAnh' => 'images/san-pham/15.jpg',
+            ],
+            [
+                'san_pham_id' => 8, 'hinhAnh' => 'images/san-pham/16.jpg',
             ]
         ]);
     }

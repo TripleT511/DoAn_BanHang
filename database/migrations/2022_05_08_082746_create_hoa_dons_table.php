@@ -15,6 +15,10 @@ return new class extends Migration
     {
         Schema::create('hoa_dons', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('nhan_vien_id');
+            $table->foreign('nhan_vien_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade')->nullable();
+            $table->unsignedBigInteger('khach_hang_id');
+            $table->foreign('khach_hang_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->string('hoTen');
             $table->string('diaChi');
             $table->string('email');

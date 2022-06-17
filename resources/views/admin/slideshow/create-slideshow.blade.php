@@ -56,8 +56,8 @@
                 </div>
                 
                 <div class="mb-3">
-                    <label class="form-label" for="basic-default-fullname">url</label>
-                    <input type="text" name="url" class="form-control" id="basic-default-fullname" placeholder="Nhập Url" />
+                    <label class="form-label" for="basic-default-fullname">Slug</label>
+                    <input type="text" name="slug" class="form-control" id="basic-default-fullname" placeholder="Nhập Slug" />
                 </div>
                 <div class="mb-3">
                     <label for="hinhAnh" class="form-label">Hình Ảnh</label>

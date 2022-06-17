@@ -66,8 +66,8 @@ class SliderController extends Controller
         ]);
 
         $slug = '';
-        if ($request->filled('url')) {
-            $slug = $request->input('url');
+        if ($request->filled('slug')) {
+            $slug = $request->input('slug');
         } else {
             $slug = Str::of($request->input('tieuDe'))->slug('-');
         }
@@ -79,7 +79,7 @@ class SliderController extends Controller
             'hinhAnh' => '',
             'tieuDe' => $request->input('tieuDe'),
             'noiDung' => $request->input('noiDung'),
-            'url' => $slug,
+            'slug' => $slug,
         ]);
         $slider->save();
 
@@ -135,8 +135,8 @@ class SliderController extends Controller
         ]);
 
         $slug = '';
-        if ($request->filled('url')) {
-            $slug = $request->input('url');
+        if ($request->filled('slug')) {
+            $slug = $request->input('slug');
         } else {
             $slug = Str::of($request->input('tieuDe'))->slug('-');
         }
@@ -145,7 +145,7 @@ class SliderController extends Controller
             'hinhAnh' => $slider->hinhAnh,
             'tieuDe' => $request->input('tieuDe'),
             'noiDung' => $request->input('noiDung'),
-            'url' => $slug,
+            'slug' => $slug,
         ]);
         $slider->save();
 

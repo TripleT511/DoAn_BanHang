@@ -5,7 +5,17 @@
 @section('css')
 
 <link href="{{ asset('css/cart.css') }}" rel="stylesheet">
-
+<style>
+	.table.cart-list th:nth-child(1) {
+		width: 50%;
+	}
+	.table.cart-list th:nth-child(3) {
+    	width: 15%;
+	}
+	.table.cart-list th:nth-child(4) {
+		width: 15%;
+	}
+</style>
 @endsection
 @section('content')
 
@@ -14,28 +24,27 @@
 		<div class="page_header">
 			<div class="breadcrumbs">
 				<ul>
-					<li><a href="#">Home</a></li>
-					<li><a href="#">Category</a></li>
-					<li>Page active</li>
+					<li><a href="#">Trang chủ</a></li>
+					<li>Giỏ hàng</li>
 				</ul>
 			</div>
-			<h1>Cart page</h1>
+			<h1>Giỏ hàng</h1>
 		</div>
 		<!-- /page_header -->
 		<table class="table table-striped cart-list">
 							<thead>
 								<tr>
 									<th>
-										Product
+										Sản phẩm
 									</th>
 									<th>
-										Price
+										Giá
 									</th>
 									<th>
-										Quantity
+										Số lượng
 									</th>
 									<th>
-										Subtotal
+										Tổng
 									</th>
 									<th>
 										
@@ -43,79 +52,36 @@
 								</tr>
 							</thead>
 							<tbody>
+								@foreach($Cart as $item) 
 								<tr>
 									<td>
 										<div class="thumb_cart">
-											<img src="img/products/product_placeholder_square_small.jpg" data-src="img/products/shoes/1.jpg" class="lazy" alt="Image">
+											<img src="{{ asset('storage/' . $item['hinhAnh']) }}" data-src="{{ asset('storage/' . $item['hinhAnh']) }}" class="lazy" alt="Image">
 										</div>
-										<span class="item_cart">Armor Air x Fear</span>
+										<span class="item_cart">{{ $item['tenSanPham'] }}</span>
 									</td>
 									<td>
-										<strong>$140.00</strong>
+										<strong>{{ number_format($item['gia'], 0, '', ',') }} ₫</strong>
 									</td>
 									<td>
 										<div class="numbers-row">
-											<input type="text" value="1" id="quantity_1" class="qty2" name="quantity_1">
+											<input type="text" value=" {{ $item['soluong']}} " id="quantity_1" class="qty2" name="quantity_1">
 										<div class="inc button_inc">+</div><div class="dec button_inc">-</div></div>
 									</td>
 									<td>
-										<strong>$140.00</strong>
+										<strong>{{ number_format($item['tongTien'], 0, '', ',')}}  ₫</strong>
 									</td>
 									<td class="options">
 										<a href="#"><i class="ti-trash"></i></a>
 									</td>
 								</tr>
-								<tr>
-									<td>
-										<div class="thumb_cart">
-											<img src="img/products/product_placeholder_square_small.jpg" data-src="img/products/shoes/2.jpg" class="lazy" alt="Image">
-										</div>
-										<span class="item_cart">Armor Okwahn II</span>
-									</td>
-									<td>
-										<strong>$110.00</strong>
-									</td>
-									<td>
-										<div class="numbers-row">
-											<input type="text" value="1" id="quantity_2" class="qty2" name="quantity_2">
-										<div class="inc button_inc">+</div><div class="dec button_inc">-</div></div>
-									</td>
-									<td>
-										<strong>$110.00</strong>
-									</td>
-									<td class="options">
-										<a href="#"><i class="ti-trash"></i></a>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<div class="thumb_cart">
-											<img src="img/products/product_placeholder_square_small.jpg" data-src="img/products/shoes/3.jpg" class="lazy" alt="Image">
-										</div>
-										<span class="item_cart">Armor Air Wildwood ACG</span>
-									</td>
-									<td>
-										<strong>$90.00</strong>
-									</td>
-									
-									<td>
-										<div class="numbers-row">
-											<input type="text" value="1" id="quantity_3" class="qty2" name="quantity_3">
-										<div class="inc button_inc">+</div><div class="dec button_inc">-</div></div>
-									</td>
-									<td>
-										<strong>$90.00</strong>
-									</td>
-									<td class="options">
-										<a href="#"><i class="ti-trash"></i></a>
-									</td>
-								</tr>
+								@endforeach
 							</tbody>
 						</table>
 
 						<div class="row add_top_30 flex-sm-row-reverse cart_actions">
 						<div class="col-sm-4 text-right">
-							<button type="button" class="btn_1 gray">Update Cart</button>
+							<button type="button" class="btn_1 gray">Cập nhật</button>
 						</div>
 							<div class="col-sm-8">
 							<div class="apply-coupon">
@@ -145,7 +111,7 @@
 					<span>Total</span> $247.00
 				</li>
 			</ul>
-			<a href="{{  route('giohang.create') }}" class="btn_1 full-width cart">Proceed to Checkout</a>
+			<a href="#" class="btn_1 full-width cart">Proceed to Checkout</a>
 					</div>
 				</div>
 			</div>
@@ -154,4 +120,21 @@
 		
 	</main>
 
+@endsection
+@section('js')
+<script>
+	// Render Cart khi vừa vô trang 
+	$(document).ready(function(){
+		$.ajax({
+			type: "GET",
+			url: "/render-cart",
+			dataType: "json",
+			success: function (response) {
+				$("#lstItemCart").html(response.newCart);
+				document.querySelector(".total_drop div span").innerHTML = `${response.total} ₫`;
+				document.querySelector(".dropdown-cart a strong").innerHTML = response.numberCart;
+			}
+		});
+	});
+</script>
 @endsection

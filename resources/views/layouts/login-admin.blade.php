@@ -57,10 +57,20 @@
       </div>
     </div>
   </div>
-
+  <div class="bs-toast toast toast-placement-ex m-2 fade bg-danger top-50 start-50 translate-middle " role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+        <div class="toast-header">
+            <i class="bx bx-bell me-2"></i>
+            <div class="me-auto fw-semibold">Thông báo</div>
+            <small>1 second ago</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">{{ session('error') }}</div>
+    </div>
   <!-- / Content -->
+      
 
   <!-- Core JS -->
+  <script src="{{ asset('ad/assets/js/ui-toasts.js') }}"></script>
   <script src="{{ asset('ad/assets/vendor/libs/jquery/jquery.js') }}"></script>
   <script src="{{ asset('ad/assets/vendor/libs/popper/popper.js') }}"></script>
   <script src="{{ asset('ad/assets/vendor/js/bootstrap.js') }}"></script>
@@ -73,6 +83,8 @@
 
   <!-- Main JS -->
   <script src="{{ asset('ad/assets/js/main.js') }}"></script>
+
+  
 
   <!-- Page JS -->
 

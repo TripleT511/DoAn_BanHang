@@ -50,6 +50,11 @@
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('ad/assets/js/config.js') }}"></script>
+    <style>
+        .text-right {
+          text-align: right !important;
+        }
+    </style>
     @yield('css')
   </head>
 
@@ -323,25 +328,6 @@
                     <div>
                       <a href="https://themeselection.com/demo/sneat-bootstrap-html-admin-template/landing/" target="_blank" class="footer-text fw-bolder">Sneat</a>
                       ©
-                    </div>
-                    <div>
-                      <div class="form-check form-control-sm footer-link me-3">
-                        <input class="form-check-input" type="checkbox" value="" id="customCheck2" checked="">
-                        <label class="form-check-label" for="customCheck2"> Show </label>
-                      </div>
-                      <div class="dropdown dropup footer-link me-3">
-                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Currency
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end" style="">
-                          <a class="dropdown-item" href="javascript:void(0);"><i class="bx bx-dollar"></i> USD</a>
-                          <a class="dropdown-item" href="javascript:void(0);"><i class="bx bx-euro"></i> Euro</a>
-                          <a class="dropdown-item" href="javascript:void(0);"><i class="bx bx-pound"></i> Pound</a>
-                          <div class="dropdown-divider"></div>
-                          <a class="dropdown-item" href="javascript:void(0);"><i class="bx bx-bitcoin"></i> Bitcoin</a>
-                        </div>
-                      </div>
-                      <a href="javascript:void(0)" class="btn btn-sm btn-outline-danger"><i class="bx bx-log-out-circle"></i> Logout</a>
                     </div>
                   </div>
                 </footer>

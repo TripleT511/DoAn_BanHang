@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\NhaCungCap;
 use App\Models\User;
+use App\Models\ChiTietPhieuKho;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,6 +28,8 @@ class PhieuKho extends Model
     {
         return $this->belongsTo(NhaCungCap::class, 'nha_cung_cap_id', 'id');
     }
+
+
 
     public function user()
     {

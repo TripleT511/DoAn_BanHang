@@ -48,7 +48,7 @@
                           {{ $item->tieuDe }}
                         </td>
                         <td>
-                          {{ $item->url }}
+                          {{ $item->slug }}
                         </td>
                         <td>
                           <a class="btn btn-success" href="{{ route('slider.edit', ['slider' => $item]) }}">
