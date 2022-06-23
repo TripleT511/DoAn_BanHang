@@ -46,6 +46,9 @@
                 <form method="post" action="{{ route('slider.update', ['slider' => $slider]) }}" enctype="multipart/form-data">
                 @csrf
                     @method("PATCH")
+                    @if($slider->trangThai == 1) <input class="form-check-input" type="checkbox" name="trangThai" value="" id="defaultCheck1" checked><span>  hiển thị slideshow</span>
+                   @else  <input class="form-check-input" type="checkbox" name="trangThai" value="" id="defaultCheck1"><span>  hiển thị slideshow</span>
+                    @endif
                 <div class="mb-3">
                     <label class="form-label" for="tieuDe">Tiêu Đề</label>
                     <input type="text" name="tieuDe" class="form-control" id="tieuDe"value="{{ $slider->tieuDe }}" placeholder="Nhập Tiêu Đề SlideShow" />
@@ -55,11 +58,7 @@
                     <input type="text" name="noiDung" class="form-control" id="noiDung" value="{{ $slider->noiDung }}" placeholder="Nhập Nội dung SlideShow" />
                 </div>
                 <div class="mb-3">
-<<<<<<< HEAD
                     <label class="form-label" for="slug">Slug</label>
-=======
-                    <label class="form-label" for="slug">Url</label>
->>>>>>> 2fb5dd01baaa141187f1e3be09d4d8e43eded1af
                     <input type="text" name="slug" class="form-control" id="slug"value="{{ $slider->slug }}" placeholder="Nhập Slug" />
                 </div>
                 <div class="mb-3">
@@ -74,7 +73,6 @@
                     </div>
                 </div>
                    
-               
                 <button type="submit" class="btn btn-primary">Cập nhật</button>
                 <button type="button" class="btn btn-dark" onclick="history.back()">Thoát</button>
                 </form>

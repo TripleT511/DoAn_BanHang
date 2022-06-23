@@ -15,7 +15,7 @@ class HoaDonController extends Controller
      */
     public function index()
     {
-        $lstHoaDon = HoaDon::all();
+        $lstHoaDon = HoaDon::paginate(5)->withQueryString();
         return view('admin.hoadon.index-hoadon', ['lstHoaDon' => $lstHoaDon]);
     }
 

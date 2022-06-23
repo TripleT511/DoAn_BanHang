@@ -31,8 +31,10 @@
                     <thead>
                       <tr>
                         <th>Hình ảnh</th>
-                        <th>Tiêu đề</th>       
-                        <th>Url</th>    
+                        <th>Tiêu đề</th>  
+                        <th>Nội dung</th>     
+                        <th>Slug</th>   
+                        <th>Trạng thái</th>
                         <th>Hành động</th>
                       </tr>
                     </thead>
@@ -44,18 +46,11 @@
                               <img src="{{ asset('storage/'.$item->hinhAnh) }}" class="image-product" alt="{{ $item->tieuDe }}">
                           </div>
                         </td>
-                        <td>
-                          {{ $item->tieuDe }}
-                        </td>
-                        <td>
-                          {{ $item->slug }}
-<<<<<<< HEAD
-=======
-                        </td>
-                        <td>
-                          {{ $item->noiDung }}
->>>>>>> 2fb5dd01baaa141187f1e3be09d4d8e43eded1af
-                        </td>
+                        <td> {{ $item->tieuDe }}</td>
+                        <td> {{ $item->noiDung }}</td>  
+                        <td> {{ $item->slug }} </td>
+                        <td>@if($item->trangThai == 1) <span class="badge bg-label-primary">hiển thị</span>
+                           @else <span class="badge bg-label-danger">không hiển thị</span> @endif </td>
                         <td>
                           <a class="btn btn-success" href="{{ route('slider.edit', ['slider' => $item]) }}">
                             <i class="bx bx-edit-alt me-1"></i>Sửa
@@ -72,6 +67,11 @@
                     </tbody>
                   </table>
                 </div>
+              </div>
+              <div class="pagination__wrapper">
+                <ul class="pagination">
+                  {!!$lstSlider->withQueryString()->links() !!}
+                </ul>
               </div>
               <!--/ Basic Bootstrap Table -->
 

@@ -21,7 +21,7 @@ class NhaCungCapController extends Controller
      */
     public function index()
     {
-        $lstNCC = NhaCungCap::all();
+        $lstNCC = NhaCungCap::paginate(2)->withQueryString();
         return View('admin.nhacungcap.index-nhacungcap', ['lstNCC' => $lstNCC]);
 
     }
@@ -74,7 +74,7 @@ class NhaCungCapController extends Controller
     public function store(StoreNhaCungCapRequest $request)
     {
         $request->validate([
-            'tenNhaCungCap' => 'required|unique:nha_cung_caps',
+            'tenNhaCungCap' => 'required|unique:nha_cung_caps|string|min=10',
             'soDienThoai' => 'required',
             'email' => 'required',
             'diaChi' => 'required',

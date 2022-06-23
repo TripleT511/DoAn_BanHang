@@ -56,13 +56,8 @@
                 </div>
                 
                 <div class="mb-3">
-<<<<<<< HEAD
-                    <label class="form-label" for="basic-default-fullname">Slug</label>
-                    <input type="text" name="slug" class="form-control" id="basic-default-fullname" placeholder="Nhập Slug" />
-=======
                     <label class="form-label" for="slug">slug</label>
                     <input type="text" name="slug" class="form-control" id="slug" placeholder="Nhập slug..." />
->>>>>>> 2fb5dd01baaa141187f1e3be09d4d8e43eded1af
                 </div>
                 <div class="mb-3">
                     <label for="hinhAnh" class="form-label">Hình Ảnh</label>

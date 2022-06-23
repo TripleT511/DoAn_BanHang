@@ -9,6 +9,12 @@ use App\Models\Slider;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
+
 
 
 class HomeController extends Controller
@@ -18,7 +24,14 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
+    protected function fixImage(HinhAnh $hinhAnh)
+    {
+        if (Storage::disk('public')->exists($hinhAnh->hinhAnh)) {
+            $hinhAnh->hinhAnh = $hinhAnh->hinhAnh;
+        } else {
+            $hinhAnh->hinhAnh = 'images/no-image-available.jpg';
+        }
+    }
     protected function renderCart()
     {
     }
@@ -109,9 +122,19 @@ class HomeController extends Controller
         return view('product-detail', ['sanpham' => $sanpham, 'lstDanhGia' => $lstDanhGia]);
     }
 
+    public function lstSanPham()
+    {
+        $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->paginate(5);
+        return view('san-pham', ['lstSanPham' => $lstSanPham]);
+    }
 
 
-
+    public function searchSP(Request $request)
+    {
+        $lstSanPham = SanPham::where('tenSanPham', 'LIKE', '%' . $request->keyword . '%')->with('hinhanhs')->with('danhmuc')->paginate(4);
+        $soluong = Count(SanPham::where('tenSanPham', 'LIKE', '%' . $request->keyword . '%')->with('hinhanhs')->with('danhmuc')->get());
+        return view('search', ['lstSanPham' => $lstSanPham, 'keyword' => $request->keyword,'soluong'=>$soluong]);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -131,7 +154,32 @@ class HomeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6',
+            'soDienThoai' => 'required|string|max:10|min:10',
+        ], [
+            'email.required' => 'Email không được bỏ trống',
+            'email.unique' => 'Email đã tồn tại',
+            'password.required' => 'Mật khẩu không được bỏ trống',
+            'soDienThoai.required' => 'Số điện thoại không được bỏ trống',
+        ]);
+        $user= new User();
+        $user-> fill([
+            'hoTen' =>$request->input('hoTen'),
+            'email' =>$request->input('email'),
+            'password' =>Hash::make($request->password),
+            'soDienThoai' =>$request->input('soDienThoai'),
+            'phan_quyen_id'=>'2',
+            'anhDaiDien' =>''
+        ]);
+        $user->save();
+        
+        if ($request->hasFile('anhDaiDien')) {        
+        $user->anhDaiDien = $request->file('anhDaiDien')->store('images/tai-khoan/', 'public'); 
+    }
+    $user->save();
+    return Redirect::route('home');
     }
 
     /**

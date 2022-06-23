@@ -24,7 +24,7 @@ class DanhGiaController extends Controller
      */
     public function index()
     {
-        $lstDanhGia = DanhGia::with('sanphams')->with('taikhoan')->get();
+        $lstDanhGia = DanhGia::with('sanpham')->with('taikhoan')->paginate(5);
         return View('admin.danhgia.index-danhgia', ['lstDanhGia' => $lstDanhGia]);
     }
     public function searchBinhLuan(Request $request)
@@ -127,7 +127,7 @@ class DanhGiaController extends Controller
 
         $output = "";
 
-        $lstDanhGia = DanhGia::with('sanphams')->with('taikhoan')->where('san_pham_id', $request->sanphamId)->get();
+        $lstDanhGia = DanhGia::with('sanpham')->with('taikhoan')->where('san_pham_id', $request->sanphamId)->get();
 
         foreach ($lstDanhGia as $key => $item) {
             $output .= '

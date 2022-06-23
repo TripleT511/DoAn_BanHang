@@ -12,32 +12,32 @@
 	
 			<div class="container margin_60">
 				<div class="main_title">
-					<h2>Contact Allaia</h2>
+					<h2>Liên hệ với Allaia</h2>
 					<p>Euismod phasellus ac lectus fusce parturient cubilia a nisi blandit sem cras nec tempor adipiscing rcu ullamcorper ligula.</p>
 				</div>
 				<div class="row justify-content-center">
 					<div class="col-lg-4">
 						<div class="box_contacts">
 							<i class="ti-support"></i>
-							<h2>Allaia Help Center</h2>
-							<a href="#0">+94 423-23-221</a> - <a href="#0">help@allaia.com</a>
-							<small>MON to FRI 9am-6pm SAT 9am-2pm</small>
+							<h2>Trung tâm trợ giúp Allaia</h2>
+							<a href="#0">+84 42-4423-221</a> - <a href="#0">help@allaia.com</a>
+							<small>thứ 2- thứ 6: 9am-6pm, thứ 7: 9am-2pm</small>
 						</div>
 					</div>
 					<div class="col-lg-4">
 						<div class="box_contacts">
 							<i class="ti-map-alt"></i>
-							<h2>Allaia Showroom</h2>
-							<div>6th Forrest Ray, London - 10001 UK</div>
-							<small>MON to FRI 9am-6pm SAT 9am-2pm</small>
+							<h2>Phòng trưng bày Allaia</h2>
+							<div>65 Huỳnh Thúc Kháng, P.Bến Nghé, Q.1, Tp.HCM</div>
+							<small>thứ 2- thứ 6: 9am-6pm, thứ 7: 9am-2pm</small>
 						</div>
 					</div>
 					<div class="col-lg-4">
 						<div class="box_contacts">
 							<i class="ti-package"></i>
-							<h2>Allaia Orders</h2>
-							<a href="#0">+94 423-23-221</a> - <a href="#0">order@allaia.com</a>
-							<small>MON to FRI 9am-6pm SAT 9am-2pm</small>
+							<h2>Đơn đặt hàng của Allaia</h2>
+							<a href="#0">+84 42-4423-221</a> - <a href="#0">order@allaia.com</a>
+							<small>thứ 2- thứ 6: 9am-6pm, thứ 7: 9am-2pm</small>
 						</div>
 					</div>
 				</div>
@@ -46,7 +46,7 @@
 			<!-- /container -->
 		<div class="bg_white">
 			<div class="container margin_60_35">
-				<h4 class="pb-3">Drop Us a Line</h4>
+				<h4 class="pb-3">Gửi cho chúng tôi nếu có thắc mắc</h4>
 				<div class="row">
 					<div class="col-lg-4 col-md-6 add_bottom_25">
 						<div class="form-group">

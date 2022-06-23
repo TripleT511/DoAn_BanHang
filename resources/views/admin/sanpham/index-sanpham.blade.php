@@ -78,7 +78,11 @@
               </div>
               <!--/ Basic Bootstrap Table -->
 
-              
+              <div class="pagination__wrapper">
+                <ul class="pagination">
+                  {!!$lstSanPham->withQueryString()->links() !!}
+                </ul>
+              </div>
               <!--/ Responsive Table -->
             </div>
 @endsection

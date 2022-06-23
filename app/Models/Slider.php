@@ -15,5 +15,6 @@ class Slider extends Model
         'tieuDe',
         'noiDung',
         'slug',
+        'trangThai'
     ];
 }

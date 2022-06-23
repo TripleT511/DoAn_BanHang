@@ -7,6 +7,7 @@
 		<div id="carousel-home">
 			<div class="owl-carousel owl-theme">
 			 @foreach ($lstSlider as $item)
+			 @if($item->trangThai == 1)
 				<div class="owl-slide cover" style="background-image: url({{ asset('storage/'.$item->hinhAnh) }});">
 					<div class="opacity-mask d-flex align-items-center" data-opacity-mask="rgba(0, 0, 0, 0.5)">
 						<div class="container">
@@ -24,6 +25,7 @@
 						</div>
 					</div>
 				</div>
+			@endif
 				<!--/owl-slide-->
 			 @endforeach
 			</div>
@@ -130,8 +132,8 @@
 
 		<div class="container margin_60_35">
 			<div class="main_title">
-				<h2>Featured</h2>
-				<span>Products</span>
+				<h2>Đánh giá Cao</h2>
+				<span>Đánh giá Cao</span>
 				<p>Cum doctus civibus efficiantur in imperdiet deterruisset</p>
 			</div>
 			<div class="owl-carousel owl-theme products_carousel">
@@ -202,7 +204,7 @@
 
 		<div class="container margin_60_35">
 			<div class="main_title">
-				<h2>Latest News</h2>
+				<h2>Tin Mới Nhất</h2>
 				<span>Blog</span>
 				<p>Cum doctus civibus efficiantur in imperdiet deterruisset</p>
 			</div>
@@ -214,11 +216,11 @@
 							<figcaption><strong>28</strong>Dec</figcaption>
 						</figure>
 						<ul>
-							<li>by Mark Twain</li>
+							<li>Bởi Mark Twain</li>
 							<li>20.11.2017</li>
 						</ul>
-						<h4>Pri oportere scribentur eu</h4>
-						<p>Cu eum alia elit, usu in eius appareat, deleniti sapientem honestatis eos ex. In ius esse ullum vidisse....</p>
+						<h4>UNIQLO giới thiệu dự án PEACE FOR ALL với mục đích thiện nguyện</h4>
+						<p>Dự án PEACE FOR ALL như một cầu nối để mỗi cá nhân thể hiện thông điệp và thế giới quan độc đáo của riêng mình. Được thực hiện dựa trên mối quan hệ hợp tác giữa UNIQLO với các tên tuổi hàng đầu thế giới trong các lĩnh vực bao gồm:...</p>
 					</a>
 				</div>
 				<!-- /box_news -->
@@ -229,11 +231,11 @@
 							<figcaption><strong>28</strong>Dec</figcaption>
 						</figure>
 						<ul>
-							<li>By Jhon Doe</li>
+							<li>Bởi Jhon Doe</li>
 							<li>20.11.2017</li>
 						</ul>
-						<h4>Duo eius postea suscipit ad</h4>
-						<p>Cu eum alia elit, usu in eius appareat, deleniti sapientem honestatis eos ex. In ius esse ullum vidisse....</p>
+						<h4>UNIQLO giới thiệu dự án PEACE FOR ALL với mục đích thiện nguyện</h4>
+						<p>Dự án PEACE FOR ALL như một cầu nối để mỗi cá nhân thể hiện thông điệp và thế giới quan độc đáo của riêng mình. Được thực hiện dựa trên mối quan hệ hợp tác giữa UNIQLO với các tên tuổi hàng đầu thế giới trong các lĩnh vực bao gồm:...</p>
 					</a>
 				</div>
 				<!-- /box_news -->
@@ -244,11 +246,11 @@
 							<figcaption><strong>28</strong>Dec</figcaption>
 						</figure>
 						<ul>
-							<li>By Luca Robinson</li>
+							<li>Bởi Luca Robinson</li>
 							<li>20.11.2017</li>
 						</ul>
-						<h4>Elitr mandamus cu has</h4>
-						<p>Cu eum alia elit, usu in eius appareat, deleniti sapientem honestatis eos ex. In ius esse ullum vidisse....</p>
+						<h4>UNIQLO giới thiệu dự án PEACE FOR ALL với mục đích thiện nguyện</h4>
+						<p>Dự án PEACE FOR ALL như một cầu nối để mỗi cá nhân thể hiện thông điệp và thế giới quan độc đáo của riêng mình. Được thực hiện dựa trên mối quan hệ hợp tác giữa UNIQLO với các tên tuổi hàng đầu thế giới trong các lĩnh vực bao gồm:...</p>
 					</a>
 				</div>
 				<!-- /box_news -->
@@ -259,11 +261,11 @@
 							<figcaption><strong>28</strong>Dec</figcaption>
 						</figure>
 						<ul>
-							<li>By Paula Rodrigez</li>
+							<li>Bởi Luca Robinson</li>
 							<li>20.11.2017</li>
 						</ul>
-						<h4>Id est adhuc ignota delenit</h4>
-						<p>Cu eum alia elit, usu in eius appareat, deleniti sapientem honestatis eos ex. In ius esse ullum vidisse....</p>
+						<h4>UNIQLO giới thiệu dự án PEACE FOR ALL với mục đích thiện nguyện</h4>
+						<p>Dự án PEACE FOR ALL như một cầu nối để mỗi cá nhân thể hiện thông điệp và thế giới quan độc đáo của riêng mình. Được thực hiện dựa trên mối quan hệ hợp tác giữa UNIQLO với các tên tuổi hàng đầu thế giới trong các lĩnh vực bao gồm:...</p>
 					</a>
 				</div>
 				<!-- /box_news -->

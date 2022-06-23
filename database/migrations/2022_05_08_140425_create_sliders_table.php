@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('tieuDe');
             $table->string('noiDung');
             $table->string('slug');
+            $table->tinyInteger('trangThai')->default(1);
             $table->timestamps();
             $table->softDeletes();
         });

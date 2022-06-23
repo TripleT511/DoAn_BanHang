@@ -102,16 +102,16 @@
 				<div class="col-xl-4 col-lg-4 col-md-6">
 			<ul>
 				<li>
-					<span>Subtotal</span> $240.00
+					<span>Tổng tiềm</span> $240.00
 				</li>
 				<li>
-					<span>Shipping</span> $7.00
+					<span>Phí giao hàng</span> $7.00
 				</li>
 				<li>
-					<span>Total</span> $247.00
+					<span>Tổng</span> $247.00
 				</li>
 			</ul>
-			<a href="#" class="btn_1 full-width cart">Proceed to Checkout</a>
+			<a href="#" class="btn_1 full-width cart">Thanh Toán</a>
 					</div>
 				</div>
 			</div>

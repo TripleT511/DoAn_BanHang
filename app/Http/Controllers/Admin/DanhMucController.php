@@ -21,7 +21,7 @@ class DanhMucController extends Controller
      */
     public function index()
     {
-        $listDanhMuc = DanhMuc::with('childs')->get();
+        $listDanhMuc = DanhMuc::with('childs')->paginate(3);
 
         return view('admin.danhmuc.index-danhmuc', ['lstDanhMuc' => $listDanhMuc]);
     }

@@ -138,7 +138,7 @@
 				<div class="row small-gutters">
 					<div class="col-xl-3 col-lg-3 d-lg-flex align-items-center">
 						<div id="logo">
-							<a href="index.html"><img src="img/logo.svg" alt="" width="100" height="35"></a>
+							<a href="{{route('home')}}"><img src="img/logo.svg" alt="" width="100" height="35"></a>
 						</div>
 					</div>
 					<nav class="col-xl-6 col-lg-7">
@@ -152,12 +152,12 @@
 						<!-- Mobile menu button -->
 						<div class="main-menu">
 							<div id="header_menu">
-								<a href="index.html"><img src="img/logo_black.svg" alt="" width="100" height="35"></a>
+								<a href="{{route('home')}}"><img src="img/logo_black.svg" alt="" width="100" height="35"></a>
 								<a href="#" class="open_close" id="close_in"><i class="ti-close"></i></a>
 							</div>
 							<ul>
 								<li >
-									<a href="javascript:void(0);" >Trang chủ</a>
+									<a href="{{route('home')}}" >Trang chủ</a>
 								</li>
 								<li >
 									<a href="javascript:void(0);" >Giới thiệu</a>
@@ -210,7 +210,7 @@
 									<!-- /menu-wrapper -->
 								</li>
 								<li class="submenu">
-									<a href="javascript:void(0);" class="show-submenu">Extra Pages</a>
+									<a href="javascript:void(0);" class="show-submenu">quần áo giam giá</a>
 									<ul>
 										<li><a href="header-2.html">Header Style 2</a></li>
 										<li><a href="header-3.html">Header Style 3</a></li>
@@ -233,7 +233,7 @@
 						<!--/main-menu -->
 					</nav>
 					<div class="col-xl-3 col-lg-2 d-lg-flex align-items-center justify-content-end text-right">
-						<a class="phone_top" href="tel://9438843343"><strong><span>Need Help?</span>+94 423-23-221</strong></a>
+						<a class="phone_top" href="tel://9438843343"><strong><span>Cần trợ giúp?</span>+84 12-3456-789</strong></a>
 					</div>
 				</div>
 				<!-- /row -->
@@ -254,38 +254,41 @@
 													<span class="hamburger-inner"></span>
 												</span>
 											</span>
-											Categories
+											Danh mục
 										</a>
 									</span>
 									<div id="menu">
 										<ul>
-											<li><span><a href="#0">Collections</a></span>
+											<li><span><a href="#0">Bộ sưu tập</a></span>
 												<ul>
-													<li><a href="listing-grid-1-full.html">Trending</a></li>
-													<li><a href="listing-grid-2-full.html">Life style</a></li>
-													<li><a href="listing-grid-3.html">Running</a></li>
-													<li><a href="listing-grid-4-sidebar-left.html">Training</a></li>
-													<li><a href="listing-grid-5-sidebar-right.html">View all Collections</a></li>
+													<li><a href="listing-grid-1-full.html">xu hướng</a></li>
+													<li><a href="listing-grid-2-full.html">phong cách</a></li>
+													<li><a href="listing-grid-3.html">bán chạy</a></li>
+													<li><a href="listing-grid-5-sidebar-right.html">tất cả bộ sưu tập</a></li>
 												</ul>
 											</li>
-											<li><span><a href="#">Men</a></span>
+											<li><span><a href="#">nam</a></span>
 												<ul>
-													<li><a href="listing-grid-6-sidebar-left.html">Offers</a></li>
-													<li><a href="listing-grid-7-sidebar-right.html">Shoes</a></li>
-													<li><a href="listing-row-1-sidebar-left.html">Clothing</a></li>
-													<li><a href="listing-row-3-sidebar-left.html">Accessories</a></li>
-													<li><a href="listing-row-4-sidebar-extended.html">Equipment</a></li>
+													<li><a href="listing-grid-6-sidebar-left.html">giảm giá</a></li>
+													<li><a href="listing-grid-7-sidebar-right.html">giày</a></li>
+													<li><a href="listing-row-1-sidebar-left.html"> áo</a></li>
+													<li><a href="listing-row-1-sidebar-left.html"> quần</a></li>
+													<li><a href="listing-row-3-sidebar-left.html">phụ kiện</a></li>
+													<li><a href="listing-row-4-sidebar-extended.html">mua nhiều</a></li>
 												</ul>
 											</li>
-											<li><span><a href="#">Women</a></span>
+											<li><span><a href="#">nữ</a></span>
 												<ul>
-													<li><a href="listing-grid-1-full.html">Best Sellers</a></li>
-													<li><a href="listing-grid-2-full.html">Clothing</a></li>
-													<li><a href="listing-grid-3.html">Accessories</a></li>
-													<li><a href="listing-grid-4-sidebar-left.html">Shoes</a></li>
+													<li><a href="listing-grid-1-full.html">giảm giá</a></li>
+													<li><a href="listing-row-1-sidebar-left.html">áo</a></li>
+													<li><a href="listing-row-1-sidebar-left.html">quần</a></li>
+													<li><a href="listing-grid-4-sidebar-left.html">đầm</a></li>
+													<li><a href="listing-grid-4-sidebar-left.html">váy</a></li>
+													<li><a href="listing-grid-4-sidebar-left.html">giầy</a></li>
+													<li><a href="listing-grid-3.html">phụ kiện</a></li>
 												</ul>
 											</li>
-											<li><span><a href="#">Boys</a></span>
+											<li><span><a href="#">con trai</a></span>
 												<ul>
 													<li><a href="listing-grid-6-sidebar-left.html">Easy On Shoes</a></li>
 													<li><a href="listing-grid-7-sidebar-right.html">Clothing</a></li>
@@ -293,7 +296,7 @@
 													<li><a href="listing-row-4-sidebar-extended.html">All Boys</a></li>
 												</ul>
 											</li>
-											<li><span><a href="#">Girls</a></span>
+											<li><span><a href="#">con gái</a></span>
 												<ul>
 													<li><a href="listing-grid-1-full.html">New Releases</a></li>
 													<li><a href="listing-grid-2-full.html">Clothing</a></li>
@@ -317,8 +320,10 @@
 					</div>
 					<div class="col-xl-6 col-lg-7 col-md-6 d-none d-md-block">
 						<div class="custom-search-input">
-							<input type="text" placeholder="Nhập sản phẩm bạn muốn tìm kiếm...">
-							<button type="submit"><i class="header-icon_search_custom"></i></button>
+							<form action="{{ route('searchSanPham') }}" method="GET">
+								<input type="text" name="keyword"  placeholder="Nhập sản phẩm bạn muốn tìm kiếm...">
+								<button type="submit"><i class="header-icon_search_custom"></i></button>
+							</form>
 						</div>
 					</div>
 					<div class="col-xl-3 col-lg-2 col-md-3">
@@ -332,7 +337,7 @@
 										</ul>
 										<div class="total_drop">
 											<div class="clearfix"><strong>Tổng cộng: </strong><span></span></div>
-											<a href="{{ route('gio-hang') }}" class="btn_1 outline">View Cart</a><a href="checkout.html" class="btn_1">Checkout</a>
+											<a href="{{ route('gio-hang') }}" class="btn_1 outline">Xem giỏ hàng</a><a href="checkout.html" class="btn_1">thanh toán</a>
 										</div>
 									</div>
 								</div>
@@ -345,19 +350,19 @@
 								<div class="dropdown dropdown-access">
 									<a href="account.html" class="access_link"><span>Account</span></a>
 									<div class="dropdown-menu">
-										<a href="account.html" class="btn_1">Sign In or Sign Up</a>
+										<a href="account.html" class="btn_1">Đăng nhập</a>
 										<ul>
 											<li>
-												<a href="track-order.html"><i class="ti-truck"></i>Track your Order</a>
+												<a href="track-order.html"><i class="ti-truck"></i>theo dõi đơn hàng</a>
 											</li>
 											<li>
-												<a href="account.html"><i class="ti-package"></i>My Orders</a>
+												<a href="account.html"><i class="ti-package"></i>đơn hàng của tôi</a>
 											</li>
 											<li>
-												<a href="account.html"><i class="ti-user"></i>My Profile</a>
+												<a href="account.html"><i class="ti-user"></i>thông tin cá nhân</a>
 											</li>
 											<li>
-												<a href="help.html"><i class="ti-help-alt"></i>Help and Faq</a>
+												<a href="help.html"><i class="ti-help-alt"></i>trợ giúp và câu hỏi</a>
 											</li>
 										</ul>
 									</div>
@@ -398,7 +403,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-3 col-md-6">
-					<h3 data-target="#collapse_1">Quick Links</h3>
+					<h3 data-target="#collapse_1">đường dẫn nhanh</h3>
 					<div class="collapse dont-collapse-sm links" id="collapse_1">
 						<ul>
 							<li><a href="about.html">About us</a></li>
@@ -411,24 +416,22 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-6">
-					<h3 data-target="#collapse_2">Categories</h3>
+					<h3 data-target="#collapse_2">Danh mục</h3>
 					<div class="collapse dont-collapse-sm links" id="collapse_2">
 						<ul>
-							<li><a href="listing-grid-1-full.html">Clothes</a></li>
-							<li><a href="listing-grid-2-full.html">Electronics</a></li>
-							<li><a href="listing-grid-1-full.html">Furniture</a></li>
-							<li><a href="listing-grid-3.html">Glasses</a></li>
-							<li><a href="listing-grid-1-full.html">Shoes</a></li>
-							<li><a href="listing-grid-1-full.html">Watches</a></li>
+							<li><a href="listing-grid-1-full.html">quần áo</a></li>
+							<li><a href="listing-grid-2-full.html">giày</a></li>
+							<li><a href="listing-grid-1-full.html">phụ kiện</a></li>
+							<li><a href="listing-grid-3.html">kính mắt</a></li>
 						</ul>
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-6">
-						<h3 data-target="#collapse_3">Contacts</h3>
+						<h3 data-target="#collapse_3">Liên lạc</h3>
 					<div class="collapse dont-collapse-sm contacts" id="collapse_3">
 						<ul>
-							<li><i class="ti-home"></i>97845 Baker st. 567<br>Los Angeles - US</li>
-							<li><i class="ti-headphone-alt"></i>+94 423-23-221</li>
+							<li><i class="ti-home"></i>65 Huỳnh Thúc Kháng, P.Bến Nghé, Q.1, Tp.HCM</li>
+							<li><i class="ti-headphone-alt"></i>+84 12-3456-789</li>
 							<li><i class="ti-email"></i><a href="#0">info@allaia.com</a></li>
 						</ul>
 					</div>
@@ -443,7 +446,7 @@
 						    </div>
 						</div>
 						<div class="follow_us">
-							<h5>Follow Us</h5>
+							<h5>Theo dõi</h5>
 							<ul>
 								<li><a href="#0"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="img/twitter_icon.svg" alt="" class="lazy"></a></li>
 								<li><a href="#0"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="img/facebook_icon.svg" alt="" class="lazy"></a></li>
@@ -462,9 +465,9 @@
 						<li>
 							<div class="styled-select lang-selector">
 								<select>
-									<option value="English" selected>English</option>
+									<option value="Tiếng Việt" selected>Tiếng Việt</option>
 									<option value="French">French</option>
-									<option value="Spanish">Spanish</option>
+									<option value="English">English</option>
 									<option value="Russian">Russian</option>
 								</select>
 							</div>
@@ -472,8 +475,8 @@
 						<li>
 							<div class="styled-select currency-selector">
 								<select>
-									<option value="US Dollars" selected>US Dollars</option>
-									<option value="Euro">Euro</option>
+									<option value="VNĐ" selected>VNĐ</option>
+									<option value="US Dollars">US Dollars</option>
 								</select>
 							</div>
 						</li>

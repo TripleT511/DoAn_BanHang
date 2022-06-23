@@ -41,17 +41,18 @@ Route::get('/login', function () {
 Route::get('/register', function () {
     return view('user.register');
 });
-
+Route::post('/dangky', [HomeController::class, 'store'])->name('dangky');
 
 
 Route::get('/checkout', function () {
     return view('checkout');
 });
-
-Route::get('/san-pham', function () {
-    return view('san-pham');
+Route::get('/c', function () {
+    return view('user');
 });
 
+Route::get('/san-pham', [HomeController::class,'lstSanPham'])->name('san-pham');
+Route::get('/search', [HomeController::class,'searchSP'])->name('searchSanPham');
 
 // Route::get('/confirm', function () {
 //     return view('confirm-checkout');

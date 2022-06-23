@@ -97,6 +97,11 @@
                   </table>
                 </div>
               </div>
+              <div class="pagination__wrapper">
+                <ul class="pagination">
+                  {!!$lstTaiKhoan->withQueryString()->links() !!}
+                </ul>
+              </div>
               <!--/ Basic Bootstrap Table -->
 
               
