@@ -42,6 +42,11 @@
                   </table>
                 </div>
               </div>
+              <div class="pagination__wrapper">
+                <ul class="pagination">
+                  {!!$lstDanhMuc->withQueryString()->links() !!}
+                </ul>
+              </div>
               <!--/ Basic Bootstrap Table -->
 <?php
 function dequyDanhMuc($danhmuc, $idDanhMucCha = 0, $char = '')

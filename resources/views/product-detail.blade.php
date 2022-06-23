@@ -90,8 +90,8 @@
 	            <div class="col-md-6">
 	                <div class="breadcrumbs">
 	                    <ul>
-	                        <li><a href="#">Home</a></li>
-	                        <li><a href="#">Sản phẩm</a></li>
+	                        <li><a href="{{route('home')}}">Trang chủ</a></li>
+	                        <li><a href="{{route('san-pham')}}">Sản phẩm</a></li>
 	                        <li>{{ $sanpham->tenSanPham }}</li>
 	                    </ul>
 	                </div>
@@ -102,7 +102,7 @@
 	                    <p><small>SKU: {{ $sanpham->sku }}</small><br>{!! $sanpham->moTa !!}</p>
 	                    <div class="prod_options">
 	                        <div class="row">
-	                            <label class="col-xl-5 col-lg-5  col-md-6 col-6 pt-0"><strong>Color</strong></label>
+	                            <label class="col-xl-5 col-lg-5  col-md-6 col-6 pt-0"><strong>Màu</strong></label>
 	                            <div class="col-xl-4 col-lg-5 col-md-6 col-6 colors">
 	                                <ul>
 	                                    <li><a href="#0" class="color color_1 active"></a></li>
@@ -113,7 +113,7 @@
 	                            </div>
 	                        </div>
 	                        <div class="row">
-	                            <label class="col-xl-5 col-lg-5 col-md-6 col-6"><strong>Size</strong> - Size Guide <a href="#0" data-toggle="modal" data-target="#size-modal"><i class="ti-help-alt"></i></a></label>
+	                            <label class="col-xl-5 col-lg-5 col-md-6 col-6"><strong>Kích thước</strong> - Size Guide <a href="#0" data-toggle="modal" data-target="#size-modal"><i class="ti-help-alt"></i></a></label>
 	                            <div class="col-xl-4 col-lg-5 col-md-6 col-6">
 	                                <div class="custom-select-form">
 	                                    <select class="wide">
@@ -197,24 +197,24 @@
 	                                   {!! $sanpham->noiDung !!}
 	                                </div>
 	                                <div class="col-lg-5">
-	                                    <h3>Specifications</h3>
+	                                    <h3>Thông số</h3>
 	                                    <div class="table-responsive">
 	                                        <table class="table table-sm table-striped">
 	                                            <tbody>
 	                                                <tr>
-	                                                    <td><strong>Color</strong></td>
-	                                                    <td>Blue, Purple</td>
+	                                                    <td><strong>Màu</strong></td>
+	                                                    <td>xanh dương, tím</td>
 	                                                </tr>
 	                                                <tr>
-	                                                    <td><strong>Size</strong></td>
+	                                                    <td><strong>Kích thước</strong></td>
 	                                                    <td>150x100x100</td>
 	                                                </tr>
 	                                                <tr>
-	                                                    <td><strong>Weight</strong></td>
+	                                                    <td><strong>cân nặng</strong></td>
 	                                                    <td>0.6kg</td>
 	                                                </tr>
 	                                                <tr>
-	                                                    <td><strong>Manifacturer</strong></td>
+	                                                    <td><strong>nhà sản xuất</strong></td>
 	                                                    <td>Manifacturer</td>
 	                                                </tr>
 	                                            </tbody>
@@ -326,9 +326,9 @@
 
 	    <div class="container margin_60_35">
 	        <div class="main_title">
-	            <h2>Related</h2>
-	            <span>Products</span>
-	            <p>Cum doctus civibus efficiantur in imperdiet deterruisset.</p>
+	            <h2>Sản Phẩm Liên Quan</h2>
+	            <span>Sản Phẩm Liên Quan</span>
+	           
 	        </div>
 	        <div class="owl-carousel owl-theme products_carousel">
 	            <div class="item">
@@ -368,8 +368,8 @@
 						<div class="box">
 							<i class="ti-gift"></i>
 							<div class="justify-content-center">
-								<h3>Free Shipping</h3>
-								<p>For all oders over $99</p>
+								<h3>Miễn Phí Giao Hàng</h3>
+								<p>khi thanh toán hoá đơn trên 1 triệu đồng</p>
 							</div>
 						</div>
 					</li>
@@ -377,8 +377,8 @@
 						<div class="box">
 							<i class="ti-wallet"></i>
 							<div class="justify-content-center">
-								<h3>Secure Payment</h3>
-								<p>100% secure payment</p>
+								<h3>Thanh toán an toàn</h3>
+								<p>100% an toàn khi thanh toán</p>
 							</div>
 						</div>
 					</li>
@@ -386,8 +386,8 @@
 						<div class="box">
 							<i class="ti-headphone-alt"></i>
 							<div class="justify-content-center">
-								<h3>24/7 Support</h3>
-								<p>Online top support</p>
+								<h3> Hổ trợ 24/7 </h3>
+								<p>Hỗ trợ trực tuyến hàng đầu</p>
 							</div>
 						</div>
 					</li>

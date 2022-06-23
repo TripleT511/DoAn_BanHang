@@ -59,7 +59,7 @@ class ThuocTinhController extends Controller
     }
     public function index()
     {
-        $lstThuocTinh = ThuocTinh::all();
+        $lstThuocTinh = ThuocTinh::paginate(1)->withQueryString();
 
         return View('admin.thuoctinh.index-thuoctinh', ['lstThuocTinh' => $lstThuocTinh]);
     }

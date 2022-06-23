@@ -77,7 +77,13 @@
                   </table>
                 </div>
               </div>
+              <div class="pagination__wrapper">
+                <ul class="pagination">
+                  {!!$lstPhieuKho->withQueryString()->links() !!}
+                </ul>
+              </div>
             </div>
+           
             {{-- Model --}}
             <div class="modal fade" id="modalCenter" tabindex="-1"  aria-modal="true" role="dialog">
               <div class="modal-dialog modal-dialog-centered" role="document">

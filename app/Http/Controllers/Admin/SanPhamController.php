@@ -33,7 +33,7 @@ class SanPhamController extends Controller
     }
     public function index()
     {
-        $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->get();
+        $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->paginate(5);
         foreach ($lstSanPham as $key => $item) {
             foreach ($item->hinhanhs as $item2) {
                 $this->fixImage($item2);

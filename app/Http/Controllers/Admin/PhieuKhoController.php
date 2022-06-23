@@ -42,7 +42,7 @@ class PhieuKhoController extends Controller
     }
     public function index()
     {
-        $lstPhieuKho = PhieuKho::with('nhacungcap')->with('user')->get();
+        $lstPhieuKho = PhieuKho::with('nhacungcap')->with('user')->paginate(7);
 
         return View('admin.kho.index-kho')->with('lstPhieuKho', $lstPhieuKho);
     }

@@ -33,9 +33,9 @@ class TaiKhoanController extends Controller
     }
     public function index(Request $request)
     {
-        $lstTaiKhoan = User::with('phanquyen')->get();
+        $lstTaiKhoan = User::with('phanquyen')->paginate(3);
         if($request->block) {
-            $lstTaiKhoan =  User::with('phanquyen')->onlyTrashed()->get();
+            $lstTaiKhoan =  User::with('phanquyen')->onlyTrashed()->paginate(3);
         }
 
         foreach ($lstTaiKhoan as $item) {
@@ -50,10 +50,25 @@ class TaiKhoanController extends Controller
         $output = "";
 
         if ($request->input('txtSearch') != "") {
-            $lstTaiKhoan = User::withCount('phanquyen')->where('hoTen', 'LIKE', '%' . $request->input('txtSearch') . '%')->orWhere('email', 'LIKE', '%' . $request->input('txtSearch') . '%')->orWhere('soDienThoai', '=',$request->input('txtSearch'))->get();
+            
+            $lstTaiKhoan = User::withCount('phanquyen')->where('hoTen', 'LIKE', '%' . $request->input('txtSearch') . '%')->orWhere('email', 'LIKE', '%' . $request->input('txtSearch') . '%')->orWhere('soDienThoai', '=',$request->input('txtSearch'))->withTrashed()->get();
             foreach ($lstTaiKhoan as $key => $item) {             
                 $this->fixImage($item);                   
-
+                $output2=''.($item->deleted_at == null) ? '<span class="badge bg-label-primary">Hoạt động</span>' : '<span class="badge bg-label-info">Bị khoá</span>'.'';
+                $output3=''.($item->deleted_at == null) ? '
+                <a class="btn btn-success" href="'. route('user.edit', ['user' => $item]) .'>
+                 <i class="bx bx-edit-alt me-1"></i>Sửa
+                </a>
+                <form class="d-inline-block"  method="post" action="'. route('user.destroy',['user'=>$item]) .'">
+                  <input type="hidden" name="_method" value="DELETE">
+                  <input type="hidden" name="_token" value="'.csrf_token().'">
+                     <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Khoá</button>
+                </form>
+                ' : '
+                <a class="btn btn-success" href="'. route('mokhoa',['user'=>$item]) .'">
+                <i class="bx bx-edit-alt me-1"></i>mở khoá
+                </a>'
+                .'';
                 $output .= '
                 <tr>
                 <td>
@@ -65,27 +80,8 @@ class TaiKhoanController extends Controller
                 <td>'. $item->email .' </td>
                 <td>'. $item->soDienThoai .'</td>
                 <td>'. $item->phanquyen->tenViTri.'</td>
-                <td>
-                 @if($item->deleted_at == null) <span class="badge bg-label-primary">hoạt động</span>
-                 @elseif($item->deleted_at != null) <span class="badge bg-label-info">bị khoá</span>
-                 @endif
-               </td>
-               <td>
-                  @if($item->deleted_at == null)
-                  <a class="btn btn-success" href="'. route('user.edit', ['user' => $item]) .'>
-                    <i class="bx bx-edit-alt me-1"></i>Sửa
-                  </a>
-                  <form class="d-inline-block"  method="post" action="'. route('user.destroy',['user'=>$item]) .'">
-                    <input type="hidden" name="_method" value="DELETE">
-                    <input type="hidden" name="_token" value="'.csrf_token().'">
-                    <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Khoá</button>
-                  </form>
-                   @elseif($item->deleted_at != null) 
-                  <a class="btn btn-success" href="'. route('mokhoa',['user'=>$item]) .'">
-                     <i class="bx bx-edit-alt me-1"></i>mở khoá
-                  </a>
-                 @endif
-                </td>
+                <td>'.$output2.'</td>
+               <td>'.$output3.'</td>
               </tr>
                 ';
             }
@@ -182,8 +178,10 @@ class TaiKhoanController extends Controller
         $request->validate([
             'hoTen' => 'required|string|max:255',
             'soDienThoai' => 'required|string',
+            'email' => 'required|string|max:255',
             
         ], [
+            'email.required' => 'Email không được bỏ trống',
             'hoTen.required' => 'Họ Tên không được bỏ trống',
             'soDienThoai.required' => 'Số điện thoại không được bỏ trống',
         ]);

@@ -52,6 +52,11 @@
                   </table>
                 </div>
               </div>
+              <div class="pagination__wrapper">
+                <ul class="pagination">
+                  {!!$lstDanhGia->withQueryString()->links() !!}
+                </ul>
+              </div>
               <!--/ Basic Bootstrap Table -->
 
               

@@ -53,6 +53,11 @@
                   </table>
                 </div>
               </div>
+              <div class="pagination__wrapper">
+                <ul class="pagination">
+                  {!!$lstNCC->withQueryString()->links() !!}
+                </ul>
+              </div>
               <!--/ Basic Bootstrap Table -->
 
               

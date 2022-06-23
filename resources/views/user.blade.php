@@ -128,7 +128,7 @@
                         <img src="{{ asset('storage/images/user-default.jpg') }}" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar">
                         <div class="button-wrapper form-group">
                           <label for="upload" class="btn btn_1 me-2 mb-4" tabindex="0">
-                            <span class="d-none d-sm-block">Upload new photo</span>
+                            <span class="d-none d-sm-block">Đăng ảnh đại diện mới</span>
                             <i class="bx bx-upload d-block d-sm-none"></i>
                             <input type="file" id="upload" class="account-file-input" hidden="" accept="image/png, image/jpeg">
                           </label>
@@ -146,7 +146,7 @@
                           </div>
                           <div class="mb-3 col-md-6">
                             <label for="lastName" class="form-label">Email</label>
-                            <input class="form-control" type="text" name="email" id="lastName" value="Doe">
+                            <input class="form-control" type="text" name="email" id="lastName" value="............@gmail.com">
                           </div>
                           <div class="mb-3 col-md-6">
                             <label class="form-label" for="phoneNumber">Số điện thoại</label>
@@ -162,7 +162,7 @@
                         </div>
                         <div class="mt-2 form-group">
                           <button type="submit" class="btn btn_1 me-2">Lưu thay đổi</button>
-                          <button type="reset" class="btn btn_1 btn-outline-secondary">Cancel</button>
+                          <button type="reset" class="btn btn_1 btn-outline-secondary">Thoát</button>
                         </div>
                       </form>
                     </div>

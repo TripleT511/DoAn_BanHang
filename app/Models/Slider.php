@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Slider extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
-    protected $fillable = [
-        'hinhAnh',
-        'tieuDe',
-        'noiDung',
-        'slug',
-        'trangThai',
-    ];
+        use HasFactory;
+        use SoftDeletes;
+        protected $fillable = [
+                'hinhAnh',
+                'tieuDe',
+                'noiDung',
+                'slug',
+                'trangThai',
+        ];
 }

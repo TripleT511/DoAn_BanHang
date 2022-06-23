@@ -24,7 +24,7 @@ class DanhGiaController extends Controller
      */
     public function index()
     {
-        $lstDanhGia = DanhGia::with('sanphams')->with('taikhoan')->orderBy('created_at', 'desc')->get();
+        $lstDanhGia = DanhGia::with('sanpham')->with('taikhoan')->orderBy('created_at', 'desc')->paginate(5);
         return View('admin.danhgia.index-danhgia', ['lstDanhGia' => $lstDanhGia]);
     }
     public function searchBinhLuan(Request $request)
