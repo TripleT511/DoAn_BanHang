@@ -11,6 +11,8 @@ class HoaDon extends Model
     use HasFactory;
     use SoftDeletes;
     protected $fillable = [
+        'nhan_vien_id',
+        'khach_hang_id',
         'hoTen',
         'diaChi',
         'email',

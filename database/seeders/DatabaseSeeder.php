@@ -24,5 +24,10 @@ class DatabaseSeeder extends Seeder
             HinhAnhSeeder::class,
         ]);
         \App\Models\User::factory(10)->create();
+        $this->call([
+
+            PhieuKhoSeeder::class,
+            ChiTietHoaDonSeeder::class
+        ]);
     }
 }

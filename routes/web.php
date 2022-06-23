@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\ThuocTinhController;
 use App\Http\Controllers\Admin\HoaDonController;
 use App\Http\Controllers\GioHangController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MailController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,37 +29,37 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+Route::get('/mail', function () {
+    return view('mail.order');
+});
+
 Route::get('/gio-hang', [GioHangController::class, 'index'])->name('gio-hang');
 
 Route::get('/render-cart', [GioHangController::class, 'renderCart']);
 
 Route::post('/add-to-cart', [GioHangController::class, 'themgiohang'])->name('add-to-cart');
 
+Route::post('/update-cart', [GioHangController::class, 'capNhatGioHang'])->name('update-cart');
+
+Route::post('/remove-cart', [GioHangController::class, 'xoaGioHang'])->name('remove-cart');
+
 Route::get('/login', function () {
     return view('user.login');
-});
+})->name('user.login');
 
 Route::get('/register', function () {
     return view('user.register');
-});
+})->name('user.register');
 
-
-
-Route::get('/checkout', function () {
-    return view('checkout');
-});
 
 Route::get('/san-pham', function () {
     return view('san-pham');
 });
 
 
-// Route::get('/confirm', function () {
-//     return view('confirm-checkout');
-// });
-
-
-
+Route::get('/thanh-toan-thanh-cong', function () {
+    return view('confirm-checkout');
+})->name('confirm-checkout');
 
 
 // Route::get('/search', function () {
@@ -73,6 +74,19 @@ Route::get('/san-pham', function () {
 //     return view('blog-detail');
 // });
 
+Route::get('/thanh-toan', [GioHangController::class, 'viewCheckOut'])->name('checkout');
+
+Route::post('/login', [
+    HomeController::class,
+    'login'
+])->name('login');
+
+Route::get('/logout', [
+    HomeController::class,
+    'logout'
+])->name('logout');
+
+Route::get('/send-mail', [MailController::class, 'sendMail'])->name('sendMail');
 
 Route::middleware(['isGuest'])->group(function () {
     Route::get('/user', function () {
@@ -80,11 +94,15 @@ Route::middleware(['isGuest'])->group(function () {
     });
 
     Route::post('/review', [DanhGiaController::class, 'store']);
+
+    Route::post('/thanh-toan', [GioHangController::class, 'checkout']);
 });
 
 
 Route::prefix('admin')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('isAdmin');
+
+    Route::get('/thong-ke', [DashboardController::class, 'thongKeDoanhThu']);
 
     Route::middleware(['isAdmin'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -148,15 +166,7 @@ Route::prefix('admin')->group(function () {
         return view('admin.login');
     })->name('adminlogin');
 
-    Route::post('/login', [
-        HomeController::class,
-        'login'
-    ])->name('login');
 
-    Route::get('/logout', [
-        HomeController::class,
-        'logout'
-    ])->name('logout');
 
     Route::get('/forgot', function () {
         return view('admin.forgot');

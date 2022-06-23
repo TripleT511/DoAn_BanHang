@@ -26,15 +26,6 @@ class DanhMucController extends Controller
         return view('admin.danhmuc.index-danhmuc', ['lstDanhMuc' => $listDanhMuc]);
     }
 
-    public function getDanhMucSanPham()
-    {
-        $lstdanhMuc =
-            DanhMuc::orderBy('slug', 'desc')->get();
-
-        $lstDanhMucNew = [];
-        DanhMuc::dequyDanhMuc($lstdanhMuc, $idDanhMucCha = 0, $level = 1, $lstDanhMucNew);
-        return $lstDanhMucNew;
-    }
 
     public function searchDanhMuc(Request $request)
     {
@@ -42,18 +33,18 @@ class DanhMucController extends Controller
 
         if ($request->input('txtSearch') != "") {
             $lstDanhMuc = DanhMuc::where('tenDanhMuc', 'LIKE', '%' . $request->input('txtSearch') . '%')->get();
-            foreach ($lstDanhMuc as $key => $item) {             
+            foreach ($lstDanhMuc as $key => $item) {
                 $output .= '
                 <tr>
-                 <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>'. $char . $item->tenDanhMuc .'</strong></td>
-                 <td><i class="fab fa-angular fa-lg text-danger me-3"></i> '. $item->idDanhMucCha .'</td>
+                 <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>' . $item->tenDanhMuc . '</strong></td>
+                 <td><i class="fab fa-angular fa-lg text-danger me-3"></i> ' . $item->idDanhMucCha . '</td>
                        <td>
-                          <a class="btn btn-success" href="'. route('danhmuc.edit', ['danhmuc' => $item]) .'">
+                          <a class="btn btn-success" href="' . route('danhmuc.edit', ['danhmuc' => $item]) . '">
                             <i class="bx bx-edit-alt me-1"></i>Sửa
                           </a>
-                          <form class="d-inline-block" method="post" action="'. route('danhmuc.destroy', ['danhmuc'=>$item]) .'">
+                          <form class="d-inline-block" method="post" action="' . route('danhmuc.destroy', ['danhmuc' => $item]) . '">
                             <input type="hidden" name="_method" value="DELETE">
-                            <input type="hidden" name="_token" value="'.csrf_token().'">
+                            <input type="hidden" name="_token" value="' . csrf_token() . '">
                             <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
                           </form>
                         </td>
@@ -99,10 +90,17 @@ class DanhMucController extends Controller
             $slug = Str::of($request->input('tenDanhMuc'))->slug('-');
         }
 
+        // Xác định cấp danh mục
+        $level = 1;
+        if ($idDanhMucCha != null) {
+            $level = DanhMuc::find($idDanhMucCha)->level + 1;
+        }
+
         $danhmuc->fill([
             'tenDanhMuc' => $request->input('tenDanhMuc'),
             'slug' => $slug,
             'idDanhMucCha' => $idDanhMucCha,
+            'level' => $level,
         ]);
 
         $danhmuc->save();
@@ -131,6 +129,13 @@ class DanhMucController extends Controller
     public function edit(DanhMuc $danhmuc)
     {
         $listDanhMucCha = DanhMuc::orderBy('id', 'desc')->get();
+        foreach ($listDanhMucCha as $key => $item) {
+            if ($item->id == $danhmuc->id) {
+                // Loại bỏ danh mục trùng với danh mục đang sửa
+                $listDanhMucCha->forget($key);
+            }
+        }
+
         return view('admin.danhmuc.edit-danhmuc', ['danhmuc' => $danhmuc, 'danhMucCha' => $listDanhMucCha]);
     }
 
@@ -151,11 +156,19 @@ class DanhMucController extends Controller
             'tenSanPham.required' => "Tên sản phẩm không được bỏ trống",
             'slug.required' => "Slug không được bỏ trống"
         ]);
-        $idDanhMucCha = $request->input('idDanhMucCha') != null ? $request->input('idDanhMucCha') : 0;
+        $idDanhMucCha = $request->input('idDanhMucCha') != null && $request->input('idDanhMucCha') != $danhmuc->id ? $request->input('idDanhMucCha') : null;
+
+        // Xác định cấp danh mục
+        $level = $danhmuc->level;
+        if ($idDanhMucCha != null) {
+            $level = DanhMuc::find($idDanhMucCha)->level + 1;
+        }
+
         $danhmuc->fill([
             'tenDanhMuc' => $request->input('tenDanhMuc'),
             'slug' => $request->input('slug'),
             'idDanhMucCha' => $idDanhMucCha,
+            'level' => $level,
         ]);
 
         $danhmuc->save();

@@ -16,11 +16,11 @@ class DanhMucSeeder extends Seeder
     public function run()
     {
         DB::table('danh_mucs')->insert([
-            ['tenDanhMuc' => 'Danh mục 1', 'slug' => 'danh-muc-1'],
-            ['tenDanhMuc' => 'Danh mục 2', 'slug' => 'danh-muc-2'],
-            ['tenDanhMuc' => 'Danh mục 3', 'slug' => 'danh-muc-3'],
-            ['tenDanhMuc' => 'Danh mục 4', 'slug' => 'danh-muc-4'],
-            ['tenDanhMuc' => 'Danh mục 5', 'slug' => 'danh-muc-5'],
+            ['tenDanhMuc' => 'Đồ Nam', 'slug' => 'do-nam'],
+            ['tenDanhMuc' => 'Áo thun', 'slug' => 'ao-thun'],
+            ['tenDanhMuc' => 'Áo khoác', 'slug' => 'ao-khoac'],
+            ['tenDanhMuc' => 'Áo sơ mi', 'slug' => 'ao-so-mi'],
+            ['tenDanhMuc' => 'Quần dài', 'slug' => 'quan-dai'],
 
         ]);
     }

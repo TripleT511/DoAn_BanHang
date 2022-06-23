@@ -24,7 +24,7 @@ class DanhGiaController extends Controller
      */
     public function index()
     {
-        $lstDanhGia = DanhGia::with('sanphams')->with('taikhoan')->get();
+        $lstDanhGia = DanhGia::with('sanphams')->with('taikhoan')->orderBy('created_at', 'desc')->get();
         return View('admin.danhgia.index-danhgia', ['lstDanhGia' => $lstDanhGia]);
     }
     public function searchBinhLuan(Request $request)
@@ -91,14 +91,13 @@ class DanhGiaController extends Controller
             $request->all(),
             [
                 'sanphamId' => 'required',
-                'user_id' => 'required|unique:danh_gias,user_id',
+                'user_id' => 'required',
                 'noiDung' => 'required',
                 'xepHang' => 'required|min:1|max:5',
             ],
             [
                 'sanphamId.required' => "Không tìm thấy sản phẩm",
                 'user_id.required' => "Vui lòng đăng nhập để thực hiện chức năng này",
-                'user_id.unique' => "Bạn đã đánh giá sản phẩm này rồi",
                 'noiDung.required' => "Nội dung không được bỏ trống",
                 'xepHang.required' => "Cần chọn sao đánh giá",
             ]
@@ -127,7 +126,7 @@ class DanhGiaController extends Controller
 
         $output = "";
 
-        $lstDanhGia = DanhGia::with('sanphams')->with('taikhoan')->where('san_pham_id', $request->sanphamId)->get();
+        $lstDanhGia = DanhGia::with('sanpham')->with('taikhoan')->where('san_pham_id', $request->sanphamId)->orderBy('created_at', 'desc')->get();
 
         foreach ($lstDanhGia as $key => $item) {
             $output .= '

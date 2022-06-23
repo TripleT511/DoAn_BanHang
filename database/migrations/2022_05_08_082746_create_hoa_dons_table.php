@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('hoa_dons', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('nhan_vien_id');
-            $table->foreign('nhan_vien_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade')->nullable();
+            $table->unsignedBigInteger('nhan_vien_id')->nullable();
+            $table->foreign('nhan_vien_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->unsignedBigInteger('khach_hang_id');
             $table->foreign('khach_hang_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->string('hoTen');
@@ -25,8 +25,8 @@ return new class extends Migration
             $table->string('soDienThoai');
             $table->dateTime('ngayXuatHD');
             $table->double('tongTien');
-            $table->string('ghiChu');
-            $table->integer('trangThai');
+            $table->string('ghiChu')->nullable();
+            $table->integer('trangThai')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

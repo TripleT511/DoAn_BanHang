@@ -136,24 +136,24 @@
             <!-- Dashboard -->
             <li class="menu-item {{ (request()->is('admin/')) ? 'active' : '' }}">
               <a href="" class="menu-link">
-                <i class="menu-icon tf-icons bx bxs-home"></i>
+                <i class="menu-icon tf-icons bx bxs-dashboard"></i>
                 <div data-i18n="Analytics">Dashboard</div>
               </a>
             </li>
             <li class="menu-item {{  request()->routeIs('phieukho.*') ? 'active' : '' }}">
               <a href="{{ route('phieukho.index') }}" class="menu-link">
                 <i class='menu-icon tf-icons bx bxs-store-alt' ></i>
-                <div data-i18n="Layouts">Quản lý kho</div>
+                <div data-i18n="Layouts">Kho hàng</div>
               </a>
             </li>
             <li class="menu-item {{  request()->routeIs('taikhoan.*') ? 'active' : '' }}">
               <a href="{{ route('user.index') }}" class="menu-link">
                 <i class='menu-icon tf-icons bx bxs-user-circle' ></i>
-                <div data-i18n="Layouts">Quản lý tài khoản</div>
+                <div data-i18n="Layouts">Tài khoản</div>
               </a>
             </li>
             
-            <li class="menu-item {{  request()->routeIs('sanpham.*') || request()->routeIs('thuoctinh.*') ? 'active open' : '' }}" style="">
+            <li class="menu-item {{  request()->routeIs('sanpham.*') || request()->routeIs('thuoctinh.*') || request()->routeIs('danhmuc.*') ? 'active open' : '' }}" style="">
               <a href="javascript:void(0);" class="menu-link menu-toggle ">
                 <i class="menu-icon tf-icons bx bxs-t-shirt"></i>
                 <div data-i18n="Layouts">Sản phẩm</div>
@@ -164,6 +164,11 @@
                     <div data-i18n="Layouts">Sản phẩm</div>
                   </a>
                 </li>
+                <li class="menu-item {{  request()->routeIs('danhmuc.*') ? 'active' : '' }}">
+                  <a href="{{ route('danhmuc.index') }}" class="menu-link">
+                    <div data-i18n="Layouts">Danh mục</div>
+                  </a>
+                </li>
                 <li class="menu-item {{  request()->routeIs('thuoctinh.*') ? 'active' : '' }}">
                   <a href="{{ route('thuoctinh.index') }}" class="menu-link">
                     <div data-i18n="Layouts">Thuộc tính</div>
@@ -171,40 +176,34 @@
                 </li>
               </ul>
             </li>
-            <li class="menu-item {{  request()->routeIs('danhmuc.*') ? 'active' : '' }}">
-              <a href="{{ route('danhmuc.index') }}" class="menu-link ">
-                <i class="menu-icon tf-icons bx bxs-category"></i>
-                <div data-i18n="Layouts">Quản lý danh mục sản phẩm</div>
-              </a>
-            </li>
             <li class="menu-item {{  request()->routeIs('hoadon.*') ? 'active' : '' }}">
               <a href="{{ route('hoadon.index') }}" class="menu-link ">
                 <i class="menu-icon tf-icons bx bxs-shopping-bag"></i>
-                <div data-i18n="Layouts">Quản lý đơn hàng</div>
+                <div data-i18n="Layouts">Đơn hàng</div>
               </a>
             </li>
             <li class="menu-item {{  request()->routeIs('phanquyen.*') ? 'active' : '' }}">
               <a href="{{ route('phanquyen.index') }}" class="menu-link ">
                 <i class="menu-icon tf-icons bx bxs-component"></i>
-                <div data-i18n="Layouts">Quản lý phân quyền</div>
+                <div data-i18n="Layouts">Phân quyền</div>
               </a>
             </li>
             <li class="menu-item {{  request()->routeIs('slider.*') ? 'active' : '' }}">
               <a href="{{ route('slider.index') }}" class="menu-link ">
                 <i class="menu-icon tf-icons bx bxs-image"></i>
-                <div data-i18n="Layouts">Quản lý SlideShow</div>
+                <div data-i18n="Layouts">Slider</div>
               </a>
             </li>
             <li class="menu-item {{  request()->routeIs('nhacungcap.*') ? 'active' : '' }}">
               <a href="{{ route('nhacungcap.index') }}" class="menu-link ">
                 <i class="menu-icon tf-icons bx bxs-building-house"></i>
-                <div data-i18n="Layouts">Quản lý Nhà cung cấp</div>
+                <div data-i18n="Layouts">Nhà cung cấp</div>
               </a>
             </li>
             <li class="menu-item {{  request()->routeIs('danhgia.*') ? 'active' : '' }}">
               <a href="{{ route('danhgia.index') }}" class="menu-link ">
                 <i class="menu-icon tf-icons bx bxs-star"></i>
-                <div data-i18n="Layouts">Quản lý Đánh giá</div>
+                <div data-i18n="Layouts">Đánh giá</div>
               </a>
             </li>
           </ul>
@@ -346,6 +345,7 @@
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js') }} -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ asset('ad/assets/vendor/libs/jquery/jquery.js') }}"></script>
     <script src="{{ asset('ad/assets/vendor/libs/popper/popper.js') }}"></script>
     <script src="{{ asset('ad/assets/vendor/js/bootstrap.js') }}"></script>

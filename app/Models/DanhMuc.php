@@ -15,12 +15,8 @@ class DanhMuc extends Model
         'tenDanhMuc',
         'slug',
         'idDanhMucCha',
+        'level'
     ];
-
-    // public function getRouteKeyName(): string
-    // {
-    //     return 'slug';
-    // }
 
 
     public function childs()

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HoaDon;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -12,13 +14,22 @@ class DashboardController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function __construct()
-    {
-    }
+
 
     public function index()
     {
         return view('admin.dashboard');
+    }
+
+    public function thongKeDoanhThu(Request $request)
+    {
+        $doanhThu = [];
+        $month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        foreach ($month as $value) {
+            $hoadon = HoaDon::whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', $value)->sum('tongTien');
+            array_push($doanhThu, $hoadon);
+        }
+        return response()->json($doanhThu);
     }
 
     /**

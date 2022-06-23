@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->unsignedBigInteger('idDanhMucCha')->nullable();
             $table->foreign('idDanhMucCha')->references('id')->on('danh_mucs')->onUpdate('cascade')->onDelete('cascade');
+            $table->tinyInteger('level')->default(1);
             $table->timestamps();
             $table->softDeletes();
         });

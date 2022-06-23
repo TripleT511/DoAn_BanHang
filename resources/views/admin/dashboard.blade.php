@@ -109,55 +109,10 @@
                 <div class="col-12 col-lg-8 order-2 order-md-3 order-lg-2 mb-4">
                   <div class="card">
                     <div class="row row-bordered g-0">
-                      <div class="col-md-8">
-                        <h5 class="card-header m-0 me-2 pb-3">Total Revenue</h5>
-                        <div id="totalRevenueChart" class="px-2"></div>
-                      </div>
-                      <div class="col-md-4">
-                        <div class="card-body">
-                          <div class="text-center">
-                            <div class="dropdown">
-                              <button
-                                class="btn btn-sm btn-outline-primary dropdown-toggle"
-                                type="button"
-                                id="growthReportId"
-                                data-bs-toggle="dropdown"
-                                aria-haspopup="true"
-                                aria-expanded="false"
-                              >
-                                2022
-                              </button>
-                              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="growthReportId">
-                                <a class="dropdown-item" href="javascript:void(0);">2021</a>
-                                <a class="dropdown-item" href="javascript:void(0);">2020</a>
-                                <a class="dropdown-item" href="javascript:void(0);">2019</a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div id="growthChart"></div>
-                        <div class="text-center fw-semibold pt-3 mb-2">62% Company Growth</div>
-
-                        <div class="d-flex px-xxl-4 px-lg-2 p-4 gap-xxl-3 gap-lg-1 gap-3 justify-content-between">
-                          <div class="d-flex">
-                            <div class="me-2">
-                              <span class="badge bg-label-primary p-2"><i class="bx bx-dollar text-primary"></i></span>
-                            </div>
-                            <div class="d-flex flex-column">
-                              <small>2022</small>
-                              <h6 class="mb-0">$32.5k</h6>
-                            </div>
-                          </div>
-                          <div class="d-flex">
-                            <div class="me-2">
-                              <span class="badge bg-label-info p-2"><i class="bx bx-wallet text-info"></i></span>
-                            </div>
-                            <div class="d-flex flex-column">
-                              <small>2021</small>
-                              <h6 class="mb-0">$41.2k</h6>
-                            </div>
-                          </div>
-                        </div>
+                      <div class="col-md-12">
+                        <h5 class="card-header m-0 me-2 pb-3">Thống kê doanh thu</h5>
+                        <canvas id="myChart"></canvas>
+                       
                       </div>
                     </div>
                   </div>
@@ -536,4 +491,68 @@
                 <!--/ Transactions -->
               </div>
             </div>
+@endsection
+@section('js')
+  <script>
+    $(document).ready(function(){
+		$.ajax({
+			type: "GET",
+			url: "/admin/thong-ke",
+			dataType: "json",
+			success: function (response) {
+        const ctx2 = document.getElementById('myChart').getContext('2d');
+  const myChart2 = new Chart(ctx2, {
+      type: 'bar',
+      data: {
+          labels: [
+              'Tháng 1',
+              'Tháng 2',
+              'Tháng 3',
+              'Tháng 4',
+              'Tháng 5',
+              'Tháng 6',
+              'Tháng 7',
+              'Tháng 8',
+              'Tháng 9',
+              'Tháng 10',
+              'Tháng 11',
+              'Tháng 12',
+          ],
+          datasets: [{
+              label: 'Thống kê doanh thu theo Tháng',
+              data: response,
+              backgroundColor: [
+                  'rgba(255, 99, 132, 0.2)',
+                  'rgba(255, 159, 64, 0.2)',
+                  'rgba(255, 205, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(54, 162, 235, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(201, 203, 207, 0.2)'
+              ],
+              borderColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(255, 159, 64)',
+                  'rgb(255, 205, 86)',
+                  'rgb(75, 192, 192)',
+                  'rgb(54, 162, 235)',
+                  'rgb(153, 102, 255)',
+                  'rgb(201, 203, 207)'
+              ],
+              borderWidth: 1,
+          }]
+      },
+      options: {
+          scales: {
+              y: {
+                  beginAtZero: true
+              }
+          }
+      }
+  });
+			}
+		});
+	})
+  
+</script>
 @endsection

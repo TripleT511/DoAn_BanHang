@@ -44,7 +44,7 @@ class HomeController extends Controller
                 return redirect()->route('home');
             }
 
-            return redirect()->intended('/admin');
+            return redirect()->intended('/');
         }
 
 

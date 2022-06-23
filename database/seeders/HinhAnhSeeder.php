@@ -17,10 +17,10 @@ class HinhAnhSeeder extends Seeder
     {
         DB::table('hinh_anhs')->insert([
             [
-                'san_pham_id' => 1, 'hinhAnh' => 'images/san-pham/01.png',
+                'san_pham_id' => 1, 'hinhAnh' => 'images/san-pham/01.jpg',
             ],
             [
-                'san_pham_id' => 1, 'hinhAnh' => 'images/san-pham/02.png',
+                'san_pham_id' => 1, 'hinhAnh' => 'images/san-pham/02.jpg',
             ],
             [
                 'san_pham_id' => 2, 'hinhAnh' => 'images/san-pham/03.jpg',
@@ -53,10 +53,10 @@ class HinhAnhSeeder extends Seeder
                 'san_pham_id' => 6, 'hinhAnh' => 'images/san-pham/12.jpg',
             ],
             [
-                'san_pham_id' => 7, 'hinhAnh' => 'images/san-pham/13.png',
+                'san_pham_id' => 7, 'hinhAnh' => 'images/san-pham/13.jpg',
             ],
             [
-                'san_pham_id' => 7, 'hinhAnh' => 'images/san-pham/14.png',
+                'san_pham_id' => 7, 'hinhAnh' => 'images/san-pham/14.jpg',
             ],
             [
                 'san_pham_id' => 8, 'hinhAnh' => 'images/san-pham/15.jpg',

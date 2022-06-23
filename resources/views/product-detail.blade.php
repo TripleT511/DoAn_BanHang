@@ -136,10 +136,10 @@
 	                    </div>
 	                    <div class="row">
 	                        <div class="col-lg-5 col-md-6">
-	                            <div class="price_main"><span class="new_price">{{ $sanpham->gia }} đ</span>
+	                            <div class="price_main"><span class="new_price">{{ number_format($sanpham->gia, 0, '', ',') }} đ</span>
 								
 									@if($sanpham->giaKhuyenMai != 0)<span class="percentage">-20% </span>@endif <span class="old_price">@if($sanpham->giaKhuyenMai != 0)
-										{{ $sanpham->giaKhuyenMai }} đ
+										{{ number_format($sanpham->giaKhuyenMai, 0, '', ',') }} đ
 									@endif</span></div>
 								
 	                        </div>
@@ -407,6 +407,8 @@
 	let closeToast = document.querySelector(".close-toast");
 	let btnReview = document.querySelector("#review_btn");
 	let lstBtnRatingStart = document.querySelectorAll(".rating-input");
+	let toast = document.querySelector(".toast");
+
 	lstBtnRatingStart.forEach(item => item.addEventListener('click', function() {
 		$("#ratingStart").val(item
 			.value);
@@ -420,7 +422,7 @@
 			dataType: "json",
 			success: function (response) {
 				$("#lstItemCart").html(response.newCart);
-				document.querySelector(".total_drop div span").innerHTML = response.total;
+				document.querySelector(".total_drop div span").innerHTML = `${response.total} ₫`;
 				document.querySelector(".dropdown-cart a strong").innerHTML = response.numberCart;
 			}
 		});
@@ -486,8 +488,18 @@
 						noiDung: $("#review-content").val(),
 						xepHang: $("#ratingStart").val() != '' ? $("#ratingStart").val() : null,
 					},
+					error: function(response) {
+						if(response.status == 302) {
+							toast.querySelector(".toast-body").innerHTML = "Vui lòng đăng nhập để thực hiện chức năng này";
+							toast.classList.remove("toast-success");
+								toast.classList.add("toast-danger", "show");
+							setTimeout(() => {
+								toast.classList.remove("show");
+                                }, 2000);
+						}
+					},
                     success: function (response) {
-						let toast = document.querySelector(".toast");
+					
                         if(response.error) {
 							toast.querySelector(".toast-body").innerHTML = response.error;
 							toast.classList.remove("toast-success");
@@ -509,7 +521,6 @@
 	});
 
 	closeToast.addEventListener('click', function() {
-		let toast = document.querySelector(".toast");
 		toast.classList.remove("show");
 	})
  </script>

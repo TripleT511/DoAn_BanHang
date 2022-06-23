@@ -21,8 +21,8 @@
 								</g>
 							</svg>
 						</div>
-					<h2>Order completed!</h2>
-					<p>You will receive a confirmation email soon!</p>
+					<h2>Đặt hàng thành công!</h2>
+					<p>Chúng tôi sẽ gửi cho bạn email xác nhận trong thời gian sớm nhất</p>
 					</div>
 				</div>
 			</div>

@@ -124,6 +124,27 @@
 			.fw-semibold {
 				font-weight: 600 !important;
 			}
+
+			#lstItemCart {
+				max-height: 300px;
+				overflow-y: auto;
+				overflow-x: hidden;
+				scroll-snap-type: y mandatory;
+			}
+
+			#lstItemCart li {
+				scroll-snap-align: start;
+			}
+
+			body::-webkit-scrollbar {
+				width: 5px;
+			}
+				
+			body::-webkit-scrollbar-thumb {
+				background-color: #d7d7d7;
+				outline: 1px solid #d7d7d7;
+				border-radius: 20px;
+			}
 	</style>
 </head>
 
@@ -138,7 +159,7 @@
 				<div class="row small-gutters">
 					<div class="col-xl-3 col-lg-3 d-lg-flex align-items-center">
 						<div id="logo">
-							<a href="index.html"><img src="img/logo.svg" alt="" width="100" height="35"></a>
+							<a href="{{ route('home') }}"><img src="{{ asset('img/logo.svg') }}" alt="" width="100" height="35"></a>
 						</div>
 					</div>
 					<nav class="col-xl-6 col-lg-7">
@@ -152,12 +173,12 @@
 						<!-- Mobile menu button -->
 						<div class="main-menu">
 							<div id="header_menu">
-								<a href="index.html"><img src="img/logo_black.svg" alt="" width="100" height="35"></a>
+								<a href="{{ route('home') }}"><img src="img/logo_black.svg" alt="" width="100" height="35"></a>
 								<a href="#" class="open_close" id="close_in"><i class="ti-close"></i></a>
 							</div>
 							<ul>
 								<li >
-									<a href="javascript:void(0);" >Trang chủ</a>
+									<a href="{{ route('home') }}" >Trang chủ</a>
 								</li>
 								<li >
 									<a href="javascript:void(0);" >Giới thiệu</a>

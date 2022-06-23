@@ -57,9 +57,9 @@
                 <div class="mb-3">
                     <label for="defaultSelect" class="form-label">Danh mục cha</label>
                     <select id="defaultSelect" name="idDanhMucCha" class="form-select">
-                        <option value="0">Chọn danh mục cha</option>
+                        <option value="">Chọn danh mục cha</option>
                         @foreach($danhMucCha as $dm)
-                        <option value="{{$dm->id}}" >{{$dm->tenDanhMuc}}</option>
+                        <option value="{{$dm->id}}" {{ ($danhmuc->idDanhMucCha == $dm->id) ? 'selected' : '' }}>{{$dm->tenDanhMuc}}</option>
                         @endforeach
                     </select>
                 </div>
