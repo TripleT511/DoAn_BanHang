@@ -54,6 +54,11 @@
         .text-right {
           text-align: right !important;
         }
+
+        .pagination {
+          justify-content: center;
+          margin-top: 5px;
+        }
     </style>
     @yield('css')
   </head>
@@ -204,6 +209,12 @@
               <a href="{{ route('danhgia.index') }}" class="menu-link ">
                 <i class="menu-icon tf-icons bx bxs-star"></i>
                 <div data-i18n="Layouts">Đánh giá</div>
+              </a>
+            </li>
+            <li class="menu-item {{  request()->routeIs('discount.*') ? 'active' : '' }}">
+              <a href="{{ route('discount.index') }}" class="menu-link ">
+                <i class="menu-icon tf-icons bx bxs-discount"></i>
+                <div data-i18n="Layouts">Mã giảm giá</div>
               </a>
             </li>
           </ul>

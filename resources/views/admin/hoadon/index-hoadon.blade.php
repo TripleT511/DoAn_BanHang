@@ -4,21 +4,21 @@
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-              <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tables /</span> Bảng Hoá Đơn</h4>
+             <h4 class="fw-bold py-3">Đơn hàng</h4>
             <ul class="nav nav-pills flex-column flex-md-row mb-3">
-             
+              
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">
-                <h5 class="card-header">Danh sách Hoá Đơn</h5>
+               
                 <div class="table-responsive text-nowrap">
                   <table class="table">
                     <thead>
                       <tr>
                         <th>Họ tên</th>
-                        <th>Địa chỉ</th>
+                       
                         <th>Email</th>
-                        <th>Số điện thoại</th>
+                      
                         <th>Ngày xuất hoá đơn</th>
                         <th>Tổng tiền</th>
                         <th>Trạng thái</th>  
@@ -29,15 +29,11 @@
                       @foreach ($lstHoaDon as $item)
                       <tr>
                         <td>{{ $item->hoTen }}</td>
-                        <td>
-                          {{ $item->diaChi }}
-                        </td>
+                    
                         <td>
                           {{ $item->email }}
                         </td>
-                        <td>
-                          {{ $item->soDienThoai }}
-                        </td>
+                       
                         <td>
                           {{ 
                           date('d-m-Y', strtotime($item->ngayXuatHD))

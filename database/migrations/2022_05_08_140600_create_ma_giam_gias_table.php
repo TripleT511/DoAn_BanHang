@@ -15,10 +15,17 @@ return new class extends Migration
     {
         Schema::create('ma_giam_gias', function (Blueprint $table) {
             $table->id();
-            $table->string('tenMa');
             $table->string('code');
+            $table->string('tenMa');
+            $table->string('hinhAnh');
+            $table->string('moTa');
+            $table->integer('soLuong')->default(1);
+            $table->integer('loaiKhuyenMai')->default(0);
+            $table->double('giaTriKhuyenMai');
+            $table->double('mucGiamToiDa')->nullable();
+            $table->dateTime('ngayBatDau');
             $table->dateTime('ngayKetThuc');
-            $table->integer('soLuong');
+            $table->double('giaTriToiThieu')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -15,6 +15,8 @@
     <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="{{ asset('img/apple-touch-icon-72x72-precomposed.png') }}">
     <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114" href="{{ asset('img/apple-touch-icon-114x114-precomposed.png') }}">
     <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144" href="{{ asset('img/apple-touch-icon-144x144-precomposed.png') }}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
 	
     <!-- GOOGLE WEB FONT -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet">
@@ -22,6 +24,8 @@
     <!-- BASE CSS -->
     <link href="{{ asset('css/bootstrap.custom.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css"/>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css" />
 	@yield('css')
 
 	<!-- SPECIFIC CSS -->
@@ -145,6 +149,69 @@
 				outline: 1px solid #d7d7d7;
 				border-radius: 20px;
 			}
+			.slick_wrapper {
+    			position: relative;
+			}
+
+			.slick_wrapper .arrow.prev {
+				left: -30px;
+			}
+
+			.slick_wrapper .arrow.next {
+				right: -30px;
+			}
+
+			.slick_wrapper .arrow:hover {
+				background-color: var(--theme-color);
+			}
+
+			.slick_wrapper:hover .arrow.prev {
+				left: 0;
+			}
+			.slick_wrapper:hover .arrow {
+				opacity: 1;
+			}
+			.slick_wrapper:hover .arrow.next {
+				right: 0;
+			}
+
+			.slick_wrapper .arrow {
+				position: absolute;
+				top: 50%;
+				transform: translateY(-50%);
+				z-index: 100;
+				width: 40px;
+				height: 40px;
+				line-height: 40px;
+				text-align: center;
+				background-color: #fff;
+				cursor: pointer;
+				color: #000;
+				box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+				border-radius: 4px;
+				opacity: 0;
+				transition: all 0.5s ease-in-out;
+			}
+			.slick_carousel .slick-track {
+				margin: 0 -10px;
+			}
+
+			.slick_carousel .slick-slide {
+				margin: 0 10px;
+			}
+
+			.slick-list {
+				overflow: visible;
+			}
+			.slick-track
+			{
+				display: flex !important;
+			}
+
+			.slick-slide
+			{
+				height: inherit !important;
+			}
 	</style>
 </head>
 
@@ -230,22 +297,6 @@
 									</div>
 									<!-- /menu-wrapper -->
 								</li>
-								<li class="submenu">
-									<a href="javascript:void(0);" class="show-submenu">quần áo giam giá</a>
-									<ul>
-										<li><a href="header-2.html">Header Style 2</a></li>
-										<li><a href="header-3.html">Header Style 3</a></li>
-										<li><a href="header-4.html">Header Style 4</a></li>
-										<li><a href="header-5.html">Header Style 5</a></li>
-										<li><a href="404.html">404 Page</a></li>
-										<li><a href="sign-in-modal.html">Sign In Modal</a></li>
-										<li><a href="contacts.html">Contact Us</a></li>
-										<li><a href="about.html">About 1</a></li>
-										<li><a href="about-2.html">About 2</a></li>
-										<li><a href="modal-advertise.html">Modal Advertise</a></li>
-										<li><a href="modal-newsletter.html">Modal Newsletter</a></li>
-									</ul>
-								</li>
 								<li>
 									<a href="blog.html">Tin tức</a>
 								</li>
@@ -282,47 +333,20 @@
 										<ul>
 											<li><span><a href="#0">Bộ sưu tập</a></span>
 												<ul>
-													<li><a href="listing-grid-1-full.html">xu hướng</a></li>
-													<li><a href="listing-grid-2-full.html">phong cách</a></li>
-													<li><a href="listing-grid-3.html">bán chạy</a></li>
-													<li><a href="listing-grid-5-sidebar-right.html">tất cả bộ sưu tập</a></li>
+													<li><a href="listing-grid-1-full.html">Xu hướng</a></li>
+													<li><a href="listing-grid-2-full.html">Phong cách</a></li>
+													<li><a href="listing-grid-3.html">Bán chạy</a></li>
+													<li><a href="listing-grid-5-sidebar-right.html">Tất cả bộ sưu tập</a></li>
 												</ul>
 											</li>
 											<li><span><a href="#">nam</a></span>
 												<ul>
-													<li><a href="listing-grid-6-sidebar-left.html">giảm giá</a></li>
+													<li><a href="listing-grid-6-sidebar-left.html">Giảm giá</a></li>
 													<li><a href="listing-grid-7-sidebar-right.html">giày</a></li>
-													<li><a href="listing-row-1-sidebar-left.html"> áo</a></li>
-													<li><a href="listing-row-1-sidebar-left.html"> quần</a></li>
-													<li><a href="listing-row-3-sidebar-left.html">phụ kiện</a></li>
-													<li><a href="listing-row-4-sidebar-extended.html">mua nhiều</a></li>
-												</ul>
-											</li>
-											<li><span><a href="#">nữ</a></span>
-												<ul>
-													<li><a href="listing-grid-1-full.html">giảm giá</a></li>
-													<li><a href="listing-row-1-sidebar-left.html">áo</a></li>
-													<li><a href="listing-row-1-sidebar-left.html">quần</a></li>
-													<li><a href="listing-grid-4-sidebar-left.html">đầm</a></li>
-													<li><a href="listing-grid-4-sidebar-left.html">váy</a></li>
-													<li><a href="listing-grid-4-sidebar-left.html">giầy</a></li>
-													<li><a href="listing-grid-3.html">phụ kiện</a></li>
-												</ul>
-											</li>
-											<li><span><a href="#">con trai</a></span>
-												<ul>
-													<li><a href="listing-grid-6-sidebar-left.html">Easy On Shoes</a></li>
-													<li><a href="listing-grid-7-sidebar-right.html">Clothing</a></li>
-													<li><a href="listing-row-3-sidebar-left.html">Must Have</a></li>
-													<li><a href="listing-row-4-sidebar-extended.html">All Boys</a></li>
-												</ul>
-											</li>
-											<li><span><a href="#">con gái</a></span>
-												<ul>
-													<li><a href="listing-grid-1-full.html">New Releases</a></li>
-													<li><a href="listing-grid-2-full.html">Clothing</a></li>
-													<li><a href="listing-grid-3.html">Sale</a></li>
-													<li><a href="listing-grid-4-sidebar-left.html">Best Sellers</a></li>
+													<li><a href="listing-row-1-sidebar-left.html"> Áo</a></li>
+													<li><a href="listing-row-1-sidebar-left.html"> Quần</a></li>
+													<li><a href="listing-row-3-sidebar-left.html">Phụ kiện</a></li>
+													<li><a href="listing-row-4-sidebar-extended.html">Mua nhiều</a></li>
 												</ul>
 											</li>
 											<li><span><a href="#">Customize</a></span>
@@ -358,7 +382,7 @@
 										</ul>
 										<div class="total_drop">
 											<div class="clearfix"><strong>Tổng cộng: </strong><span></span></div>
-											<a href="{{ route('gio-hang') }}" class="btn_1 outline">Xem giỏ hàng</a><a href="checkout.html" class="btn_1">thanh toán</a>
+											<a href="{{ route('gio-hang') }}" class="btn_1 outline">Xem giỏ hàng</a><a href="checkout.html" class="btn_1">Thanh toán</a>
 										</div>
 									</div>
 								</div>
@@ -440,10 +464,9 @@
 					<h3 data-target="#collapse_2">Danh mục</h3>
 					<div class="collapse dont-collapse-sm links" id="collapse_2">
 						<ul>
-							<li><a href="listing-grid-1-full.html">quần áo</a></li>
-							<li><a href="listing-grid-2-full.html">giày</a></li>
-							<li><a href="listing-grid-1-full.html">phụ kiện</a></li>
-							<li><a href="listing-grid-3.html">kính mắt</a></li>
+							<li><a href="listing-grid-1-full.html">Quần áo</a></li>
+							<li><a href="listing-grid-2-full.html">Giày</a></li>
+							<li><a href="listing-grid-1-full.html">Phụ kiện</a></li>
 						</ul>
 					</div>
 				</div>
@@ -527,10 +550,11 @@
 		</div>
 	</div> --}}
 	<!-- COMMON SCRIPTS -->
-	
     <script src="{{ asset('js/common_scripts.min.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js" ></script>
 	@yield('js')
+
 	<!-- SPECIFIC SCRIPTS -->
 	<script src="{{ asset('js/carousel-home.min.js') }}"></script>
 

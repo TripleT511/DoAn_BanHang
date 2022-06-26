@@ -10,14 +10,16 @@ use App\Mail\OrderMail;
 use App\Models\ChiTietHoaDon;
 use App\Models\ChiTietPhieuKho;
 use App\Models\HoaDon;
+use App\Models\MaGiamGia;
 use App\Models\SanPham;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
-
+use Illuminate\Support\Facades\Validator;
 
 class GioHangController extends Controller
 {
@@ -237,6 +239,7 @@ class GioHangController extends Controller
         $Cart = Session::get('Cart');
         $countCart = $Cart ? count($Cart) : 0;
         $total = 0;
+        $lstDiscount = MaGiamGia::all();
         if ($Cart)
             foreach ($Cart as $item) {
                 $total += (float)$item['gia'] * (int)$item['soluong'];
@@ -244,7 +247,8 @@ class GioHangController extends Controller
         return view('cart', [
             'Cart' => $Cart ? $Cart : [],
             'countCart' => $countCart,
-            'total' => $total
+            'total' => $total,
+            'lstDiscount' => $lstDiscount
         ]);
     }
 
@@ -343,8 +347,55 @@ class GioHangController extends Controller
 
         $this->dispatch(new SendMail($user, $hoadon, $newArray));
 
-        Session::flush('Cart');
+        Session::put("Cart", []);
         return view('confirm-checkout');
+    }
+
+    public function addDiscountCode(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'code' => 'required|exists:ma_giam_gias,code',
+            ],
+            [
+                'code.required' => "Mã giảm giá không được bỏ trống",
+                'code.exists' => "Mã giảm giá không tồn tại"
+            ]
+        );
+
+        if ($validator->fails()) {
+            $error = '';
+            foreach ($validator->errors()->all() as $item) {
+                $error .= '
+                    <li class="card-description" style="color: #fff;">' . $item . '</li>
+                ';
+            }
+            return response()->json(['error' => $error]);
+        }
+
+        $code = MaGiamGia::where('code', $request->code)->first();
+        $currentDate = date('Y-m-d H:i:s');
+        if ($code->ngayBatDau > $currentDate) {
+            return response()->json([
+                'error' => 'Mã giảm giá chưa đến thời gian khuyến mãi',
+                'current-date' => $currentDate,
+                'start' => $code->ngayBatDau,
+                'end' => $code->ngayKetThuc
+            ]);
+        } else if (date('Y-m-d', strtotime($code->ngayKetThuc . " +1 days")) < $currentDate) {
+            return response()->json([
+                'error' => 'Mã giảm giá đã hết hạn, vui lòng sử dụng mã khác',
+                'current-date' => $currentDate,
+                'start' => $code->ngayBatDau,
+                'end' => $code->ngayKetThuc
+            ]);
+        }
+        return response()->json([
+            'current-date' => $currentDate,
+            'start' => $code->ngayBatDau,
+            'end' => $code->ngayKetThuc
+        ]);
     }
 
     /**

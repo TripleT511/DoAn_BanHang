@@ -23,10 +23,10 @@
 @endsection
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-              <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tables /</span>Bảng Tài Khoản</h4>
+            <h4 class="fw-bold py-3">Tài khoản</h4>
             <ul class="nav nav-pills flex-column flex-md-row mb-3">
               <li class="nav-item">
-                  <a class="nav-link active" href="{{ route('user.create') }}"><i class="bx bx-user me-1"></i> Thêm tài khoản nhân viên</a>
+                  <a class="nav-link active" href="{{ route('user.create') }}"><i class="bx bx-plus"></i> Thêm mới</a>
               </li>
               <li class="nav-item">
                 <a href="{{ route('user.index', ['block' => true]) }}" class="btn btn-danger">
@@ -37,7 +37,7 @@
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">
-                <h5 class="card-header">Danh Sách Tài Khoản</h5>
+               
                 <div class="table-responsive text-nowrap">
                   <table class="table">
                     <thead>

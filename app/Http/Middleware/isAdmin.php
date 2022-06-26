@@ -21,6 +21,6 @@ class isAdmin
             return $next($request);
         }
 
-        return redirect()->route('adminlogin');
+        return redirect()->route('home');
     }
 }

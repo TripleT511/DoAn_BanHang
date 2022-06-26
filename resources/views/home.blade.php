@@ -75,12 +75,14 @@
 				<div class="col-6 col-md-4 col-xl-3">
 					<div class="grid_item">
 						<figure>
-							<span class="ribbon off">-30%</span>
+							@if($item->giaKhuyenMai != 0)
+								<span class="ribbon off">{{ round((($item->gia-$item->giaKhuyenMai) /$item->gia) * 100) }}%</span>
+							@endif
+							
 							<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
 							@foreach ($item->hinhanhs as $key => $item2)
 								<img class="img-fluid lazy" src="{{ asset('storage/'.$item2->hinhAnh) }}" data-src="{{ asset('storage/'.$item2->hinhAnh) }}" alt="{{ $item->tenSanPham }}">
                             @endforeach
-								
 								
 							</a>
 							<div data-countdown="2019/05/15" class="countdown"></div>

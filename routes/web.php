@@ -11,9 +11,12 @@ use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\TaiKhoanController;
 use App\Http\Controllers\Admin\ThuocTinhController;
 use App\Http\Controllers\Admin\HoaDonController;
+use App\Http\Controllers\Admin\MaGiamGiaController;
 use App\Http\Controllers\GioHangController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\PayMentOnlineController;
+use Faker\Provider\ar_EG\Payment;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -69,15 +72,6 @@ Route::get('/san-pham', function () {
 Route::get('/san-pham', [HomeController::class, 'lstSanPham'])->name('san-pham');
 Route::get('/search', [HomeController::class, 'searchSP'])->name('searchSanPham');
 
-Route::get('/thanh-toan-thanh-cong', function () {
-    return view('confirm-checkout');
-})->name('confirm-checkout');
-
-
-// Route::get('/search', function () {
-//     return view('search');
-// });
-
 // Route::get('/bai-viet', function () {
 //     return view('blog');
 // });
@@ -85,6 +79,9 @@ Route::get('/thanh-toan-thanh-cong', function () {
 // Route::get('/chi-tiet-bai-viet', function () {
 //     return view('blog-detail');
 // });
+
+Route::post('/add-discount-code', [GioHangController::class, 'addDiscountCode'])->name('themMaGiamGia');
+
 
 Route::get('/thanh-toan', [GioHangController::class, 'viewCheckOut'])->name('checkout');
 
@@ -108,11 +105,14 @@ Route::middleware(['isGuest'])->group(function () {
     Route::post('/review', [DanhGiaController::class, 'store']);
 
     Route::post('/thanh-toan', [GioHangController::class, 'checkout']);
+
+    Route::post('/thanh-toan-vnpay', [PayMentOnlineController::class, 'paymentVNPay'])->name('paymentVNPay');
+
+    Route::get('/thanh-toan-thanh-cong', [PayMentOnlineController::class, 'checkoutSuccess'])->name('confirm-checkout');
 });
 
 
 Route::prefix('admin')->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('isAdmin');
 
     Route::get('/thong-ke', [DashboardController::class, 'thongKeDoanhThu']);
 
@@ -129,6 +129,7 @@ Route::prefix('admin')->group(function () {
         Route::resource('thuoctinh', ThuocTinhController::class);
         Route::resource('nhacungcap', NhaCungCapController::class);
         Route::resource('hoadon', HoaDonController::class);
+        Route::resource('discount', MaGiamGiaController::class);
 
 
         // *** Tìm kiếm *** //
@@ -185,4 +186,5 @@ Route::prefix('admin')->group(function () {
     });
 });
 
-Route::get('/{slug}', [HomeController::class, 'sanpham'])->name('chitietsanpham');
+Route::get('/san-pham-{slug}', [HomeController::class, 'sanpham'])->name('chitietsanpham');
+Route::get('/danh-muc-{slug}', [HomeController::class, 'danhmucsanpham'])->name('danhmucsanpham');

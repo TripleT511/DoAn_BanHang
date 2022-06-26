@@ -16,6 +16,16 @@
 	input:invalid {
 		border-color: #c00000;
 	}
+
+	.container_radio .img {
+		width: 50px;
+	}
+
+	.container_radio .img img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+	}
 </style>
 @endsection
 @section('content')
@@ -37,7 +47,7 @@
 	<!-- /page_header -->
 			<div class="row">
 				<div class="col-lg-4 col-md-6">
-				<form action="{{ route('checkout') }}" method="POST">
+				<form action="{{ route('paymentVNPay') }}" method="POST">
 					@csrf
 					<div class="step first">
 						<h3>1. Thông tin thanh toán</h3>
@@ -91,54 +101,27 @@
 					</div>
 					<div class="col-lg-4 col-md-6">
 						<div class="step middle payments">
-							<h3>2. Phương thức thanh toán, vận chuyển</h3>
-								<ul>
-									<li>
-										<label class="container_radio">Credit Card<a href="#0" class="info" data-toggle="modal" data-target="#payments_method"></a>
-											<input type="radio" name="payment" checked>
-											<span class="checkmark"></span>
-										</label>
-									</li>
-									<li>
-										<label class="container_radio">Paypal<a href="#0" class="info" data-toggle="modal" data-target="#payments_method"></a>
-											<input type="radio" name="payment">
-											<span class="checkmark"></span>
-										</label>
-									</li>
-									<li>
-										<label class="container_radio">Cash on delivery<a href="#0" class="info" data-toggle="modal" data-target="#payments_method"></a>
-											<input type="radio" name="payment">
-											<span class="checkmark"></span>
-										</label>
-									</li>
-									<li>
-										<label class="container_radio">Bank Transfer<a href="#0" class="info" data-toggle="modal" data-target="#payments_method"></a>
-											<input type="radio" name="payment">
-											<span class="checkmark"></span>
-										</label>
-									</li>
-								</ul>
-								<div class="payment_info d-none d-sm-block"><figure><img src="img/cards_all.svg" alt=""></figure>	<p>Sensibus reformidans interpretaris sit ne, nec errem nostrum et, te nec meliore philosophia. At vix quidam periculis. Solet tritani ad pri, no iisque definitiones sea.</p></div>
-								
-								<h6 class="pb-2">Shipping Method</h6>
-								
-							
-							<ul>
+							<h3>2. Phương thức thanh toán</h3>
+							<ul style="margin-bottom:
+							10px;">
 								<li>
-									<label class="container_radio">Standard shipping<a href="#0" class="info" data-toggle="modal" data-target="#payments_method"></a>
-										<input type="radio" name="shipping" checked>
+									<label class="container_radio">
+										Thanh toán khi nhận hàng (COD)<a href="#0" class="info" ></a>
+										<input type="radio" name="redirect" checked>
 										<span class="checkmark"></span>
 									</label>
 								</li>
 								<li>
-									<label class="container_radio">Express shipping<a href="#0" class="info" data-toggle="modal" data-target="#payments_method"></a>
-										<input type="radio" name="shipping">
+									<label class="container_radio">
+										<div class="img">
+											<img src="{{ asset('img/thanh-toan/logo-vnpay.png') }}" alt="VNPAY QR">
+										</div>
+										Thanh toán qua VNPAY<a href="#0" class="info" ></a>
+										<input type="radio" name="redirect">
 										<span class="checkmark"></span>
 									</label>
 								</li>
-									
-								</ul>
-							
+							</ul>
 						</div>
 						<!-- /step -->
 						
@@ -161,6 +144,7 @@
 								
 							</ul>
 							<div class="total clearfix">Tổng tiền <span>{{ number_format($total, 0, '', ',') }} ₫</span></div>
+							<input type="hidden" name="tongTien" value="{{ $total }}">
 							<button type="submit" id="payment" class="btn_1 full-width">Thanh toán</button>
 						</div>
 						<!-- /box_general -->
@@ -219,19 +203,5 @@
 	            $('#other_addr_c').fadeOut('fast');
 	    });
 
-	// 	let btnPayMent = document.querySelector('#payment');
-	// 	btnPayMent.addEventListener('click', function() {
-	// 		$.ajax({
-	// 			type: "POST",
-	// 			url: "/thanh-toan",
-	// 			dataType: "json",
-	// 			data: {
-	// 				_token: "{{ csrf_token() }}",
-	// 			},
-	// 			success: function (response) {
-	// 				window.location.href = "{{ route('confirm-checkout')}}";
-	// 			}
-	// 		});
-	// });
 </script>
 @endsection

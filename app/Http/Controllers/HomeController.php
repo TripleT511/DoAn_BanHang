@@ -58,7 +58,7 @@ class HomeController extends Controller
                 return redirect()->route('home');
             }
 
-            return redirect()->intended('/');
+            return redirect()->intended('admin/dashboard');
         }
 
 
@@ -121,6 +121,10 @@ class HomeController extends Controller
         $sanpham = SanPham::with('hinhanhs')->with('danhmuc')->where('slug', $slug)->first();
         $lstDanhGia = DanhGia::with('sanpham')->with('taikhoan')->where('san_pham_id', $sanpham->id)->get();
         return view('product-detail', ['sanpham' => $sanpham, 'lstDanhGia' => $lstDanhGia]);
+    }
+
+    public function danhmucsanpham($slug)
+    {
     }
 
     public function lstSanPham()

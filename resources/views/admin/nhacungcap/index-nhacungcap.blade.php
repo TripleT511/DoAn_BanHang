@@ -4,15 +4,15 @@
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-              <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tables /</span> Bảng Nhà Cung Cấp</h4>
+              <h4 class="fw-bold py-3">Nhà cung cấp</h4>
             <ul class="nav nav-pills flex-column flex-md-row mb-3">
               <li class="nav-item">
-                  <a class="nav-link active" href="{{ route('nhacungcap.create') }}"><i class="bx bx-user me-1"></i> Thêm Nhà Cung Cấp</a>
+                  <a class="nav-link active" href="{{ route('nhacungcap.create') }}"><i class="bx bx-plus"></i> Thêm mới</a>
               </li>
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">
-                <h5 class="card-header">Danh sách Nhà Cung Cấp</h5>
+                
                 <div class="table-responsive text-nowrap">
                   <table class="table">
                     <thead>
