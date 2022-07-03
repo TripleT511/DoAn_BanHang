@@ -16,16 +16,18 @@ class OrderMail extends Mailable
     private $user;
     private $hoadon;
     private $data;
+    private $infoPayMent;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(User $user, HoaDon $hoadon, $data)
+    public function __construct(User $user, HoaDon $hoadon, $data, $infoPayMent)
     {
         $this->user = $user;
         $this->hoadon = $hoadon;
         $this->data = $data;
+        $this->infoPayMent = $infoPayMent;
     }
 
     /**
@@ -36,6 +38,6 @@ class OrderMail extends Mailable
     public function build()
     {
         $message = 'Triple T Shop đã nhận đơn hàng #' . $this->hoadon->id;
-        return $this->subject($message)->markdown('emails.orders')->with('user', $this->user)->with('hoadon', $this->hoadon)->with('data', $this->data);
+        return $this->subject($message)->markdown('emails.orders')->with('user', $this->user)->with('hoadon', $this->hoadon)->with('data', $this->data)->with('infoPayMent', $this->infoPayMent);
     }
 }

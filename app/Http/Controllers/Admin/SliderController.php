@@ -45,8 +45,8 @@ class SliderController extends Controller
             $lstSlider = Slider::where('tieuDe', 'LIKE', '%' . $request->input('txtSearch') . '%')->get();
             foreach ($lstSlider as $key => $item) {
                 $this->fixImage($item);
-                $output2 =''.($item->trangThai == 1) ? '<span class="badge bg-label-primary">hiển thị</span>' : '<span class="badge bg-label-danger">không hiển thị</span>'
-                .'';
+                $output2 = '' . ($item->trangThai == 1) ? '<span class="badge bg-label-primary">hiển thị</span>' : '<span class="badge bg-label-danger">không hiển thị</span>'
+                    . '';
                 $output .= '
                     <tr> 
                     <td>
@@ -56,8 +56,7 @@ class SliderController extends Controller
                     </td>
                     <td> ' . $item->tieuDe  . ' </td>
                     <td>' . $item->slug . '</td>
-                    <td>' . $item->noiDung . ' </td>
-                    <td>'.$output2.' </td>
+                    <td>' . $output2 . ' </td>
                     <td>
                     <a class="btn btn-success" href="' . route('slider.edit', ['slider' => $item]) . '">
                         <i class="bx bx-edit-alt me-1"></i>Sửa
@@ -96,15 +95,12 @@ class SliderController extends Controller
     {
         $request->validate([
             'tieuDe' => 'required|string|unique:sliders|max:100',
-            'hinhAnh' => 'required',
             'noiDung' => 'required|string|min:10',
-            'slug'=> 'required'
+
         ], [
             'tieuDe.required' => "Tiêu đề không được bỏ trống",
-            'hinhAnh.required' => "Thiếu hình ảnh",
             'noiDung.required' => "Nội dung không được bỏ trống",
             'tieuDe.unique' => "Tiêu đề bị trùng",
-            'slug.required'=> "slug không được bỏ trống"
         ]);
 
         $slug = '';
@@ -120,9 +116,9 @@ class SliderController extends Controller
         $slider->fill([
             'hinhAnh' => '',
             'tieuDe' => $request->input('tieuDe'),
-            'noiDung' => $request->input('noiDung'),
+            'noiDung' => $request->noiDung,
             'slug' => $slug,
-            'trangThai'=>'1'
+            'trangThai' => '1'
         ]);
         $slider->save();
 
@@ -172,29 +168,28 @@ class SliderController extends Controller
         $request->validate([
             'tieuDe' => 'required|string|max:100',
             'noiDung' => 'required|string|min:10',
-            'slug'=>'required'
+
         ], [
             'tieuDe.required' => "Tiêu đề không được bỏ trống",
             'noiDung.required' => "Nội dung không được bỏ trống",
-            'slug.required' => "slug không được bỏ trống",
         ]);
 
         $slug = '';
         if ($request->filled('slug')) {
             $slug = $request->input('slug');
         } else {
-            $slug = Str::of($request->input('tieuDe'))->slug('-');
+            $slug = $slider->slug;
         }
 
         $slider->fill([
             'hinhAnh' => $slider->hinhAnh,
             'tieuDe' => $request->input('tieuDe'),
-            'noiDung' => $request->input('noiDung'),
+            'noiDung' => $request->noiDung,
             'slug' => $slug,
-            'trangThai'=>$slider->trangThai,
+            'trangThai' => $slider->trangThai,
         ]);
         $slider->save();
-        if($request->has('trangThai')){
+        if ($request->has('trangThai')) {
             $slider->trangThai = 1;
         } else $slider->trangThai = 0;
 
@@ -218,7 +213,6 @@ class SliderController extends Controller
         Storage::disk('public')->delete($slider->hinhAnh);
         $slider->delete();
 
-        $slider->delete();
         return Redirect::route('slider.index');
     }
 }

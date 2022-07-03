@@ -36,7 +36,7 @@
 		<ul id="banners_grid" class="clearfix">
 			<li>
 				<a href="#0" class="img_container">
-					<img src="img/banners_cat_placeholder.jpg" data-src="img/banner_1.jpg" alt="" class="lazy">
+					<img src="{{ asset('img/banner_02.jpg') }}" data-src="{{ asset('img/banner_02.jpg') }}" alt="" class="lazy">
 					<div class="short_info opacity-mask" data-opacity-mask="rgba(0, 0, 0, 0.5)">
 						<h3>Men's Collection</h3>
 						<div><span class="btn_1">Shop Now</span></div>
@@ -45,7 +45,7 @@
 			</li>
 			<li>
 				<a href="#0" class="img_container">
-					<img src="img/banners_cat_placeholder.jpg" data-src="img/banner_2.jpg" alt="" class="lazy">
+					<img src="{{ asset('img/banner_02.jpg') }}" data-src="{{ asset('img/banner_03.jpg') }}" alt="" class="lazy">
 					<div class="short_info opacity-mask" data-opacity-mask="rgba(0, 0, 0, 0.5)">
 						<h3>Womens's Collection</h3>
 						<div><span class="btn_1">Shop Now</span></div>
@@ -54,7 +54,7 @@
 			</li>
 			<li>
 				<a href="#0" class="img_container">
-					<img src="img/banners_cat_placeholder.jpg" data-src="img/banner_3.jpg" alt="" class="lazy">
+					<img src="{{ asset('img/banner_02.jpg') }}" data-src="{{ asset('img/banner_02.jpg') }}" alt="" class="lazy">
 					<div class="short_info opacity-mask" data-opacity-mask="rgba(0, 0, 0, 0.5)">
 						<h3>Kids's Collection</h3>
 						<div><span class="btn_1">Shop Now</span></div>
@@ -76,25 +76,31 @@
 					<div class="grid_item">
 						<figure>
 							@if($item->giaKhuyenMai != 0)
-								<span class="ribbon off">{{ round((($item->gia-$item->giaKhuyenMai) /$item->gia) * 100) }}%</span>
+								<span class="ribbon off">-{{ round((($item->gia-$item->giaKhuyenMai) /$item->gia) * 100) }}%</span>
+							@else
+								@if($item->dacTrung == 1)
+									<span class="ribbon new">New</span>
+									@elseif($item->dacTrung == 2)
+									<span class="ribbon hot">Hot</span>
+								@endif
 							@endif
-							
 							<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
 							@foreach ($item->hinhanhs as $key => $item2)
 								<img class="img-fluid lazy" src="{{ asset('storage/'.$item2->hinhAnh) }}" data-src="{{ asset('storage/'.$item2->hinhAnh) }}" alt="{{ $item->tenSanPham }}">
                             @endforeach
 								
 							</a>
-							<div data-countdown="2019/05/15" class="countdown"></div>
 						</figure>
 						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
 						<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
 							<h3>{{ $item->tenSanPham }}</h3>
 						</a>
 						<div class="price_box">
-							<span class="new_price">{{ $item->gia }} đ</span>
-							@if($item->giaKhuyenMai != 0)
-								<span class="old_price">{{ $item->giaKhuyenMai }} đ</span>
+							@if($item->giaKhuyenMai == 0)
+							<span class="new_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
+							@elseif($item->giaKhuyenMai != 0)
+							<span class="new_price">{{ number_format($item->giaKhuyenMai, 0, '', ',') }} đ</span>
+							<span class="old_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
 							@endif
 						</div>
 						<ul>
@@ -111,7 +117,7 @@
 		</div>
 		<!-- /container -->
 
-		<div class="featured lazy" data-bg="url(img/featured_home.jpg)">
+		<div class="featured lazy" data-bg="{{ asset('img/banner_03.jpg') }}" style="background-image: url({{ asset('img/banner_02.jpg') }});">
 			<div class="opacity-mask d-flex align-items-center" data-opacity-mask="rgba(0, 0, 0, 0.5)">
 				<div class="container margin_60">
 					<div class="row justify-content-center justify-content-md-start">
@@ -142,12 +148,15 @@
 				@foreach ($lstSanPham as $key=>$item)
 				<div class="item">
 					<div class="grid_item">
-						@if($item->dacTrung == 1)
-						<span class="ribbon new">New</span>
-						@elseif($item->dacTrung == 2)
-						<span class="ribbon hot">Hot</span>
+						@if($item->giaKhuyenMai != 0)
+								<span class="ribbon off">-{{ round((($item->gia-$item->giaKhuyenMai) /$item->gia) * 100) }}%</span>
+							@else
+								@if($item->dacTrung == 1)
+									<span class="ribbon new">New</span>
+									@elseif($item->dacTrung == 2)
+									<span class="ribbon hot">Hot</span>
+								@endif
 						@endif
-						
 						<figure>
 							<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
 							@foreach ($item->hinhanhs as $key => $item2)
@@ -162,7 +171,12 @@
 							<h3>{{ $item->tenSanPham }}</h3>
 						</a>
 						<div class="price_box">
-							<span class="new_price">${{ $item->gia }}</span>
+							@if($item->giaKhuyenMai == 0)
+							<span class="new_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
+							@elseif($item->giaKhuyenMai != 0)
+							<span class="new_price">{{ number_format($item->giaKhuyenMai, 0, '', ',') }} đ</span>
+							<span class="old_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
+							@endif
 						</div>
 						<ul>
 							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Thêm vào giỏ hàng"><i class="ti-shopping-cart"></i><span>Thêm vào giỏ hàng</span></a></li>

@@ -15,6 +15,7 @@ class DanhMuc extends Model
         'tenDanhMuc',
         'slug',
         'idDanhMucCha',
+        'hinhAnh',
         'level'
     ];
 

@@ -50,6 +50,7 @@
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('ad/assets/js/config.js') }}"></script>
+   
     <style>
         .text-right {
           text-align: right !important;
@@ -59,7 +60,14 @@
           justify-content: center;
           margin-top: 5px;
         }
+
+        .form-search-custom {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
     </style>
+   
     @yield('css')
   </head>
 
@@ -237,7 +245,8 @@
 
             <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
               <!-- Search -->
-              <div class="navbar-nav align-items-center">
+              <form id="search-form" action="javascript:void(0)" method="get">
+                <div class="navbar-nav align-items-center">
                 <div class="nav-item d-flex align-items-center">
                   <i class="bx bx-search fs-4 lh-0"></i>
                   <input
@@ -249,6 +258,8 @@
                   />
                 </div>
               </div>
+              </form>
+              
               <!-- /Search -->
 
               <ul class="navbar-nav flex-row align-items-center ms-auto">
@@ -309,7 +320,7 @@
                       <div class="dropdown-divider"></div>
                     </li>
                     <li>
-                      <a class="dropdown-item" href="{{ route('logout') }}">
+                      <a class="dropdown-item" href="{{ route('admin.logout') }}">
                         <i class="bx bx-power-off me-2"></i>
                         <span class="align-middle">Log Out</span>
                       </a>
@@ -366,7 +377,9 @@
     <script src="{{ asset('ad/assets/js/ui-toasts.js') }}"></script>
 
     <!-- endbuild -->
+   <script src="https://cdn.tiny.cloud/1/e1b3imuv3rdzjvyslp1u32g6lzzf6t3fbrn24a6r2nnyep7x/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     @yield('js')
+   
     <!-- Vendors JS -->
     <script src="{{ asset('ad/assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
 

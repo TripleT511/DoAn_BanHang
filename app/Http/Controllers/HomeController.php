@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\DanhGia;
+use App\Models\DanhMuc;
 use App\Models\HinhAnh;
 use App\Models\SanPham;
 use App\Models\User;
 use App\Models\Slider;
-
+use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -52,6 +53,17 @@ class HomeController extends Controller
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password,], $remember)) {
 
+            if (Auth()->user()->email_verified_at == null) {
+                Auth::logout();
+
+                $request->session()->invalidate();
+
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    'email' => 'Tài khoản chưa được xác nhận',
+                ]);
+            }
             $request->session()->regenerate();
 
             if (Auth()->user()->phan_quyen_id == 2) {
@@ -80,7 +92,25 @@ class HomeController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect()->route('adminlogin');
+        return redirect()->route('admin.login');
+    }
+
+    public function logoutUser(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect()->route('home');
+    }
+
+    public function xemThongTin()
+    {
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+
+        return view('user', ['lstDanhMuc' => $lstDanhMuc]);
     }
     /**
      * Display a listing of the resource.
@@ -95,8 +125,9 @@ class HomeController extends Controller
 
         $lstSanPhamNoiBat = SanPham::with('hinhanhs')->with('danhmuc')->take(8)->get();
 
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
 
-        return view('home', ['lstSanPham' => $lstSanPham, 'lstSanPhamNoiBat' => $lstSanPhamNoiBat, 'lstSlider' => $lstSlider]);
+        return view('home', ['lstSanPham' => $lstSanPham, 'lstSanPhamNoiBat' => $lstSanPhamNoiBat, 'lstSlider' => $lstSlider, 'lstDanhMuc' => $lstDanhMuc]);
     }
 
     public function danhgia()
@@ -118,27 +149,57 @@ class HomeController extends Controller
 
     public function sanpham($slug)
     {
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
         $sanpham = SanPham::with('hinhanhs')->with('danhmuc')->where('slug', $slug)->first();
         $lstDanhGia = DanhGia::with('sanpham')->with('taikhoan')->where('san_pham_id', $sanpham->id)->get();
-        return view('product-detail', ['sanpham' => $sanpham, 'lstDanhGia' => $lstDanhGia]);
+        $starActive = round($lstDanhGia->avg('xepHang'));
+        $starNonActive = 5 - $starActive;
+        $countRating = count($lstDanhGia);
+        // Sản phẩm liên quan
+        $lstDanhMucCon = DanhMuc::where('idDanhMucCha', $sanpham->danh_muc_id)->get();
+        $lstIdDanhMucCon = [$sanpham->danh_muc_id];
+        foreach ($lstDanhMucCon as $danhmuc)
+            array_push($lstIdDanhMucCon, $danhmuc->id);
+
+        $lstSanPhamLienQuan = SanPham::whereIn('danh_muc_id', $lstIdDanhMucCon)->with('hinhanhs')->with('danhmuc')->with('danhgias')->get();
+
+        foreach ($lstSanPhamLienQuan as $key => $item) {
+            if ($item->id == $sanpham->id) {
+                // Loại bỏ sản phẩm trùng với sản phẩm đang xem
+                $lstSanPhamLienQuan->forget($key);
+            }
+        }
+
+        return view('product-detail', ['sanpham' => $sanpham, 'lstDanhGia' => $lstDanhGia, 'lstDanhMuc' => $lstDanhMuc, 'lstSanPhamLienQuan' => $lstSanPhamLienQuan, 'countRating' => $countRating, 'starActive' => $starActive, 'starNonActive' => $starNonActive]);
     }
 
     public function danhmucsanpham($slug)
     {
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        //
+        $danhmucCha = DanhMuc::where('slug', $slug)->first();
+        $lstDanhMucCon = DanhMuc::where('idDanhMucCha', $danhmucCha->id)->get();
+        $lstIdDanhMucCon = [$danhmucCha->id];
+        foreach ($lstDanhMucCon as $danhmuc)
+            array_push($lstIdDanhMucCon, $danhmuc->id);
+        $lstSanPham = SanPham::whereIn('danh_muc_id', $lstIdDanhMucCon)->with('hinhanhs')->with('danhmuc')->paginate(8);
+        return view('san-pham', ['lstSanPham' => $lstSanPham, 'lstDanhMuc' => $lstDanhMuc]);
     }
 
     public function lstSanPham()
     {
-        $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->paginate(5);
-        return view('san-pham', ['lstSanPham' => $lstSanPham]);
+        $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->paginate(8);
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        return view('san-pham', ['lstSanPham' => $lstSanPham, 'lstDanhMuc' => $lstDanhMuc]);
     }
 
 
     public function searchSP(Request $request)
     {
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
         $lstSanPham = SanPham::where('tenSanPham', 'LIKE', '%' . $request->keyword . '%')->with('hinhanhs')->with('danhmuc')->paginate(8);
         $soluong = Count(SanPham::where('tenSanPham', 'LIKE', '%' . $request->keyword . '%')->with('hinhanhs')->with('danhmuc')->get());
-        return view('search', ['lstSanPham' => $lstSanPham, 'keyword' => $request->keyword, 'soluong' => $soluong]);
+        return view('search', ['lstSanPham' => $lstSanPham, 'keyword' => $request->keyword, 'soluong' => $soluong, 'lstDanhMuc' => $lstDanhMuc]);
     }
     /**
      * Show the form for creating a new resource.

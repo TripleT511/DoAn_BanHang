@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('san_pham_id');
             $table->foreign('san_pham_id')->references('id')->on('san_phams')->onUpdate('cascade')->onDelete('cascade');
-            $table->text('hinhAnh');
+            $table->text('hinhAnh')->default('images/no-image-available.jpg');
             $table->timestamps();
             $table->softDeletes();
         });

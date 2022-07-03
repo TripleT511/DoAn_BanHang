@@ -33,9 +33,9 @@ class TaiKhoanController extends Controller
     }
     public function index(Request $request)
     {
-        $lstTaiKhoan = User::with('phanquyen')->paginate(3);
-        if($request->block) {
-            $lstTaiKhoan =  User::with('phanquyen')->onlyTrashed()->paginate(3);
+        $lstTaiKhoan = User::with('phanquyen')->paginate(5);
+        if ($request->block) {
+            $lstTaiKhoan =  User::with('phanquyen')->onlyTrashed()->paginate(5);
         }
 
         foreach ($lstTaiKhoan as $item) {
@@ -48,45 +48,50 @@ class TaiKhoanController extends Controller
     public function searchTaiKhoan(Request $request)
     {
         $output = "";
-
+        $pagination = "";
         if ($request->input('txtSearch') != "") {
-            
-            $lstTaiKhoan = User::withCount('phanquyen')->where('hoTen', 'LIKE', '%' . $request->input('txtSearch') . '%')->orWhere('email', 'LIKE', '%' . $request->input('txtSearch') . '%')->orWhere('soDienThoai', '=',$request->input('txtSearch'))->withTrashed()->get();
-            foreach ($lstTaiKhoan as $key => $item) {             
-                $this->fixImage($item);                   
-                $output2=''.($item->deleted_at == null) ? '<span class="badge bg-label-primary">Hoạt động</span>' : '<span class="badge bg-label-info">Bị khoá</span>'.'';
-                $output3=''.($item->deleted_at == null) ? '
-                <a class="btn btn-success" href="'. route('user.edit', ['user' => $item]) .'>
+
+            $lstTaiKhoan = User::withCount('phanquyen')->where('hoTen', 'LIKE', '%' . $request->input('txtSearch') . '%')->orWhere('email', 'LIKE', '%' . $request->input('txtSearch') . '%')->orWhere('soDienThoai', '=', $request->input('txtSearch'))->withTrashed()->paginate(2);
+            $pagination = $lstTaiKhoan->links();
+
+            foreach ($lstTaiKhoan as $key => $item) {
+                $this->fixImage($item);
+                $output2 = '' . ($item->deleted_at == null) ? '<span class="badge bg-label-primary">Hoạt động</span>' : '<span class="badge bg-label-info">Bị khoá</span>' . '';
+                $output3 = '' . ($item->deleted_at == null) ? '
+                <a class="btn btn-success" href="' . route('user.edit', ['user' => $item]) . '>
                  <i class="bx bx-edit-alt me-1"></i>Sửa
                 </a>
-                <form class="d-inline-block"  method="post" action="'. route('user.destroy',['user'=>$item]) .'">
+                <form class="d-inline-block"  method="post" action="' . route('user.destroy', ['user' => $item]) . '">
                   <input type="hidden" name="_method" value="DELETE">
-                  <input type="hidden" name="_token" value="'.csrf_token().'">
+                  <input type="hidden" name="_token" value="' . csrf_token() . '">
                      <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Khoá</button>
                 </form>
                 ' : '
-                <a class="btn btn-success" href="'. route('mokhoa',['user'=>$item]) .'">
+                <a class="btn btn-success" href="' . route('mokhoa', ['user' => $item]) . '">
                 <i class="bx bx-edit-alt me-1"></i>mở khoá
                 </a>'
-                .'';
+                    . '';
                 $output .= '
                 <tr>
                 <td>
                   <div class="img">
-                      <img src="'.asset('storage/'.$item->anhDaiDien) .'" class="image-user " alt="'. $item->hoTen.'">
+                      <img src="' . asset('storage/' . $item->anhDaiDien) . '" class="image-user " alt="' . $item->hoTen . '">
                   </div>
                 </td>
-                <td>'. $item->hoTen .'</td>
-                <td>'. $item->email .' </td>
-                <td>'. $item->soDienThoai .'</td>
-                <td>'. $item->phanquyen->tenViTri.'</td>
-                <td>'.$output2.'</td>
-               <td>'.$output3.'</td>
+                <td>' . $item->hoTen . '</td>
+                <td>' . $item->email . ' </td>
+                <td>' . $item->soDienThoai . '</td>
+                <td>' . $item->phanquyen->tenViTri . '</td>
+                <td>' . $output2 . '</td>
+               <td>' . $output3 . '</td>
               </tr>
                 ';
             }
         }
-        return response()->json($output);
+        return response()->json([
+            'data' => $output,
+            'pagination' => strval($pagination)
+        ]);
     }
     /**
      * Show the form for creating a new resource.
@@ -96,7 +101,7 @@ class TaiKhoanController extends Controller
     public function create()
     {
         $lstPhanQuyen = PhanQuyen::all();
-        return View('admin.taikhoan.create-taikhoan',['lstPhanQuyen'=> $lstPhanQuyen]);
+        return View('admin.taikhoan.create-taikhoan', ['lstPhanQuyen' => $lstPhanQuyen]);
     }
 
     /**
@@ -123,23 +128,23 @@ class TaiKhoanController extends Controller
             'anhDaiDien.required' => 'Bắt buộc chọn Hình ảnh',
             'phan_quyen_id.required' => 'Bắt buộc chọn quyền',
         ]);
-        $user= new User();
-        $user-> fill([
-            'hoTen' =>$request->input('hoTen'),
-            'email' =>$request->input('email'),
-            'password' =>Hash::make($request->password),
-            'soDienThoai' =>$request->input('soDienThoai'),
-            'phan_quyen_id'=>$request->input('phan_quyen_id'),
-            'anhDaiDien' =>''
+        $user = new User();
+        $user->fill([
+            'hoTen' => $request->input('hoTen'),
+            'email' => $request->input('email'),
+            'password' => Hash::make($request->password),
+            'soDienThoai' => $request->input('soDienThoai'),
+            'phan_quyen_id' => $request->input('phan_quyen_id'),
+            'anhDaiDien' => ''
         ]);
         $user->save();
-        
-        if ($request->hasFile('anhDaiDien')) {        
+
+        if ($request->hasFile('anhDaiDien')) {
             Storage::disk('public')->delete($user->anhDaiDien);
-        $user->anhDaiDien = $request->file('anhDaiDien')->store('images/tai-khoan/', 'public'); 
-    }
-    $user->save();
-    return Redirect::route('user.index');
+            $user->anhDaiDien = $request->file('anhDaiDien')->store('images/tai-khoan/', 'public');
+        }
+        $user->save();
+        return Redirect::route('user.index');
     }
 
     /**
@@ -163,8 +168,8 @@ class TaiKhoanController extends Controller
     {
         $this->fixImage($user);
         $lstPhanQuyen = PhanQuyen::all();
-        return View('admin.taikhoan.edit-taikhoan',['user' => $user,'lstPhanQuyen'=> $lstPhanQuyen]);
-     }
+        return View('admin.taikhoan.edit-taikhoan', ['user' => $user, 'lstPhanQuyen' => $lstPhanQuyen]);
+    }
 
     /**
      * Update the specified resource in storage.
@@ -179,27 +184,27 @@ class TaiKhoanController extends Controller
             'hoTen' => 'required|string|max:255',
             'soDienThoai' => 'required|string',
             'email' => 'required|string|max:255',
-            
+
         ], [
             'email.required' => 'Email không được bỏ trống',
             'hoTen.required' => 'Họ Tên không được bỏ trống',
             'soDienThoai.required' => 'Số điện thoại không được bỏ trống',
         ]);
-        $user-> fill([
-            'hoTen' =>$user->hoTen,
-            'email' =>$user->email,
-            'password' =>$user->password,
-            'soDienThoai' =>$user->soDienThoai,
-            'phan_quyen_id'=>$user->phan_quyen_id,
-            'anhDaiDien' =>$user->anhDaiDien
+        $user->fill([
+            'hoTen' => $user->hoTen,
+            'email' => $user->email,
+            'password' => $user->password,
+            'soDienThoai' => $user->soDienThoai,
+            'phan_quyen_id' => $user->phan_quyen_id,
+            'anhDaiDien' => $user->anhDaiDien
         ]);
-        $user-> save();
-        if ($request->hasFile('anhDaiDien')) {        
+        $user->save();
+        if ($request->hasFile('anhDaiDien')) {
             Storage::disk('public')->delete($user->anhDaiDien);
-             $user->anhDaiDien = $request->file('anhDaiDien')->store('images/tai-khoan', 'public'); 
+            $user->anhDaiDien = $request->file('anhDaiDien')->store('images/tai-khoan', 'public');
         }
-         $user->save();
-         return Redirect::route('user.index');
+        $user->save();
+        return Redirect::route('user.index');
     }
 
     /**
@@ -211,13 +216,13 @@ class TaiKhoanController extends Controller
     public function destroy(User $user)
     {
         if ($user->phan_quyen_id == 0) return redirect()->route('user.index')->withError('Bạn không thể xoá tài khoán này');
-        elseif($user->phan_quyen_id != 0) $user->delete();
+        elseif ($user->phan_quyen_id != 0) $user->delete();
         return Redirect::route('user.index');
     }
 
     public function moKhoa($user)
     {
-       $user = User::withTrashed()->find($user)->restore();
-       return Redirect::route('user.index');
+        $user = User::withTrashed()->find($user)->restore();
+        return Redirect::route('user.index');
     }
 }

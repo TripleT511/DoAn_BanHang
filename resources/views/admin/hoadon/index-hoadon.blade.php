@@ -6,7 +6,6 @@
 <div class="container-xxl flex-grow-1 container-p-y">
              <h4 class="fw-bold py-3">Đơn hàng</h4>
             <ul class="nav nav-pills flex-column flex-md-row mb-3">
-              
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">
@@ -53,17 +52,29 @@
                         </td>
                         <td>
                           @if($item->trangThai == 0)
-                            <a class="btn btn-primary" href="{{ route('hoadon.update', ['hoadon' => $item]) }}">
-                              <i class="bx bx-edit-alt me-1"></i>Xác nhận
-                            </a>
+                          <form class="d-inline-block" method="post" action="{{ route('hoadon.update', ['hoadon' => $item]) }}">
+                            @csrf
+                            @method("PATCH")
+                            <input type="hidden" name="page_on" value="{{ $lstHoaDon->currentPage() }}">
+                            <input type="hidden" name="trangThai" value="1">
+                            <button style="outline: none; border: none" class="btn btn-primary" type="submit"><i class="bx bx-trash me-1"></i> Xác nhận</button>
+                          </form>
                           @elseif($item->trangThai == 1) 
-                            <a class="btn btn-primary" href="{{ route('hoadon.update', ['hoadon' => $item]) }}">
-                              <i class="bx bx-edit-alt me-1"></i>Đóng gói
-                            </a>
+                           <form class="d-inline-block" method="post" action="{{ route('hoadon.update', ['hoadon' => $item]) }}">
+                            @csrf
+                            @method("PATCH")
+                            <input type="hidden" name="page_on" value="{{ $lstHoaDon->currentPage() }}">
+                            <input type="hidden" name="trangThai" value="2">
+                            <button style="outline: none; border: none" class="btn btn-primary" type="submit"><i class="bx bx-trash me-1"></i>Đóng gói</button>
+                          </form>
                           @elseif($item->trangThai == 2) 
-                            <a class="btn btn-primary" href="{{ route('hoadon.update', ['hoadon' => $item]) }}">
-                              <i class="bx bx-edit-alt me-1"></i>Vận chuyển
-                            </a>
+                            <form class="d-inline-block" method="post" action="{{ route('hoadon.update', ['hoadon' => $item]) }}">
+                            @csrf
+                            @method("PATCH")
+                            <input type="hidden" name="page_on" value="{{ $lstHoaDon->currentPage() }}">
+                            <input type="hidden" name="trangThai" value="3">
+                            <button style="outline: none; border: none" class="btn btn-primary" type="submit"><i class="bx bx-trash me-1"></i> Vận chuyển</button>
+                          </form>
                           @endif
 
                           @if($item->trangThai != 4)

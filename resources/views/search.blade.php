@@ -214,21 +214,32 @@
 					<div class="col-6 col-md-4 col-xl-3">
 						<div class="grid_item">
 							<figure>
-								<span class="ribbon off">-{{$item->giaKhuyenMai}}đ</span>
+								@if($item->giaKhuyenMai != 0)
+								<span class="ribbon off">-{{ round((($item->gia-$item->giaKhuyenMai) /$item->gia) * 100) }}%</span>
+								@else
+									@if($item->dacTrung == 1)
+										<span class="ribbon new">New</span>
+										@elseif($item->dacTrung == 2)
+										<span class="ribbon hot">Hot</span>
+									@endif
+								@endif
 								<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
 									@foreach($item->hinhanhs as $key => $item2) 
 									@if($key == 1) <?php break; ?> @endif
 										<img class="img-fluid lazy loaded" src="{{ asset('storage/'.$item2->hinhAnh) }}" data-src="{{ asset('storage/'.$item2->hinhAnh) }}" alt="{{ $item->tenSanPham }}" >
 									@endforeach
 								</a>
-								<div data-countdown="2019/05/15" class="countdown"></div>
 							</figure>
 							<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
 								<h3>{{$item->tenSanPham}}</h3>
 							</a>
 							<div class="price_box">
-								<span class="new_price">{{$item->gia}}đ</span>
-								<span class="old_price">110000đ</span>
+								@if($item->giaKhuyenMai == 0)
+								<span class="new_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
+								@elseif($item->giaKhuyenMai != 0)
+								<span class="new_price">{{ number_format($item->giaKhuyenMai, 0, '', ',') }} đ</span>
+								<span class="old_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
+								@endif
 							</div>
 							<ul>
 								{{-- <li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>

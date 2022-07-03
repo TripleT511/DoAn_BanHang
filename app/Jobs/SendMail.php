@@ -20,17 +20,19 @@ class SendMail implements ShouldQueue
     protected $user;
     protected $hoadon;
     protected $data;
+    protected $infoPayMent;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $user, HoaDon $hoadon, $data)
+    public function __construct(User $user, HoaDon $hoadon, $data, $infoPayMent)
     {
         $this->user = $user;
         $this->hoadon = $hoadon;
         $this->data = $data;
+        $this->infoPayMent = $infoPayMent;
     }
 
 
@@ -42,7 +44,8 @@ class SendMail implements ShouldQueue
     public function handle()
     {
         $data = $this->data;
-        $mail = new OrderMail($this->user, $this->hoadon, $data);
-        Mail::to('tamdz515@gmail.com')->send($mail);
+        $infoPayMent = $this->infoPayMent;
+        $mail = new OrderMail($this->user, $this->hoadon, $data, $infoPayMent);
+        Mail::to($this->hoadon->email)->send($mail);
     }
 }

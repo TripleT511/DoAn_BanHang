@@ -212,6 +212,40 @@
 			{
 				height: inherit !important;
 			}
+
+			ul {
+				border-top: 0 !important;
+			}
+
+			.cate-item:hover > ul {
+				display: block !important;
+				background: #fff;
+			}
+
+			.info-user-login {
+				display: flex !important;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.info-user-login .img-avatar {
+				width: 30px;
+				height: 30px;
+				border-radius: 50%;
+				overflow: hidden;
+			}
+
+			.info-user-login .img-avatar.online {
+				border: 1px solid #004dda;
+			}
+
+			.info-user-login .img-avatar img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				display: flex;
+				margin: auto;
+			}
 	</style>
 </head>
 
@@ -241,14 +275,17 @@
 						<div class="main-menu">
 							<div id="header_menu">
 								<a href="{{ route('home') }}"><img src="img/logo_black.svg" alt="" width="100" height="35"></a>
-								<a href="#" class="open_close" id="close_in"><i class="ti-close"></i></a>
+								<a href="{{ route('home') }}" class="open_close" id="close_in"><i class="ti-close"></i></a>
 							</div>
 							<ul>
-								<li >
+								<li>
 									<a href="{{ route('home') }}" >Trang chủ</a>
 								</li>
-								<li >
+								<li>
 									<a href="javascript:void(0);" >Giới thiệu</a>
+								</li>
+								<li>
+									<a href="{{ route('san-pham') }}" >Sản phẩm</a>
 								</li>
 								<li class="megamenu submenu">
 									<a href="javascript:void(0);" class="show-submenu-mega">Đồ nam</a>
@@ -320,7 +357,7 @@
 						<nav class="categories">
 							<ul class="clearfix">
 								<li><span>
-										<a href="#">
+										<a href="{{ route('home') }}">
 											<span class="hamburger hamburger--spin">
 												<span class="hamburger-box">
 													<span class="hamburger-inner"></span>
@@ -331,32 +368,34 @@
 									</span>
 									<div id="menu">
 										<ul>
-											<li><span><a href="#0">Bộ sưu tập</a></span>
-												<ul>
-													<li><a href="listing-grid-1-full.html">Xu hướng</a></li>
-													<li><a href="listing-grid-2-full.html">Phong cách</a></li>
-													<li><a href="listing-grid-3.html">Bán chạy</a></li>
-													<li><a href="listing-grid-5-sidebar-right.html">Tất cả bộ sưu tập</a></li>
-												</ul>
-											</li>
-											<li><span><a href="#">nam</a></span>
-												<ul>
-													<li><a href="listing-grid-6-sidebar-left.html">Giảm giá</a></li>
-													<li><a href="listing-grid-7-sidebar-right.html">giày</a></li>
-													<li><a href="listing-row-1-sidebar-left.html"> Áo</a></li>
-													<li><a href="listing-row-1-sidebar-left.html"> Quần</a></li>
-													<li><a href="listing-row-3-sidebar-left.html">Phụ kiện</a></li>
-													<li><a href="listing-row-4-sidebar-extended.html">Mua nhiều</a></li>
-												</ul>
-											</li>
-											<li><span><a href="#">Customize</a></span>
-												<ul>
-													<li><a href="listing-row-1-sidebar-left.html">For Men</a></li>
-													<li><a href="listing-row-2-sidebar-right.html">For Women</a></li>
-													<li><a href="listing-row-4-sidebar-extended.html">For Boys</a></li>
-													<li><a href="listing-grid-1-full.html">For Girls</a></li>
-												</ul>
-											</li>
+<?php 
+function renderChild($item)
+{ 
+	foreach($item as $value) { ?>
+		<li class="cate-item">
+			<a href="{{ route('danhmucsanpham', ['slug' => $value->slug]) }}">{{ $value->tenDanhMuc }}</a>
+				<?php if (isset($value->childs) && count($value->childs) > 0) { ?>
+				<ul>
+					<?php renderChild($value->childs); ?>
+				</ul>
+			<?php
+		} ?>
+		</li>
+<?php } 
+}	
+?>
+											@foreach($lstDanhMuc as $item)
+												<li class="cate-item">
+													<span>
+														<a href="{{ route('danhmucsanpham', ['slug' => $item->slug]) }}">{{ $item->tenDanhMuc }}</a>
+													</span>
+													@if(isset($item->childs) && count($item->childs) > 0)
+													<ul>
+														<?php renderChild($item->childs); ?>
+													</ul>
+													@endif
+												</li>
+											@endforeach
 										</ul>
 									</div>
 								</li>
@@ -382,7 +421,7 @@
 										</ul>
 										<div class="total_drop">
 											<div class="clearfix"><strong>Tổng cộng: </strong><span></span></div>
-											<a href="{{ route('gio-hang') }}" class="btn_1 outline">Xem giỏ hàng</a><a href="checkout.html" class="btn_1">Thanh toán</a>
+											<a href="{{ route('gio-hang') }}" class="btn_1 outline">Xem giỏ hàng</a><a href="{{ route('checkout') }}" class="btn_1">Thanh toán</a>
 										</div>
 									</div>
 								</div>
@@ -393,21 +432,41 @@
 							</li>
 							<li>
 								<div class="dropdown dropdown-access">
-									<a href="account.html" class="access_link"><span>Account</span></a>
+									@guest
+									<a href="#" class="info-user-login">
+										<div class="img-avatar">
+											<img src="{{ asset('storage/images/user-default.jpg') }}" alt="User">
+										</div>
+									</a>
+									@endguest
+									@auth
+									<a href="{{ route('xem-thong-in-ca-nhan') }}" class="info-user-login">
+										<div class="img-avatar online">
+											<img src="{{  asset('storage/'.Auth()->user()->anhDaiDien) }}" alt="{{ Auth()->user()->hoTen }}">
+										</div>
+									</a>
+									@endauth
 									<div class="dropdown-menu">
-										<a href="account.html" class="btn_1">Đăng nhập</a>
+										@guest
+										<a href="{{ route('user.login') }}" class="btn_1">Đăng nhập</a>
+										@endguest
+										@auth
+										<a href="{{ route('user.logout') }}" class="btn_1">Đăng xuất</a>
+										@endauth
 										<ul>
 											<li>
-												<a href="track-order.html"><i class="ti-truck"></i>theo dõi đơn hàng</a>
+												<a href="track-order.html"><i class="ti-truck"></i>Theo dõi đơn hàng</a>
+											</li>
+											@auth
+											<li>
+												<a href="account.html"><i class="ti-package"></i>Đơn hàng của tôi</a>
 											</li>
 											<li>
-												<a href="account.html"><i class="ti-package"></i>đơn hàng của tôi</a>
+												<a href="{{ route('xem-thong-in-ca-nhan') }}"><i class="ti-user"></i>Thông tin cá nhân</a>
 											</li>
+											@endauth
 											<li>
-												<a href="account.html"><i class="ti-user"></i>thông tin cá nhân</a>
-											</li>
-											<li>
-												<a href="help.html"><i class="ti-help-alt"></i>trợ giúp và câu hỏi</a>
+												<a href="help.html"><i class="ti-help-alt"></i>Trợ giúp và câu hỏi</a>
 											</li>
 										</ul>
 									</div>
@@ -448,15 +507,13 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-3 col-md-6">
-					<h3 data-target="#collapse_1">đường dẫn nhanh</h3>
+					<h3 data-target="#collapse_1">Liên kết</h3>
 					<div class="collapse dont-collapse-sm links" id="collapse_1">
 						<ul>
-							<li><a href="about.html">About us</a></li>
-							<li><a href="help.html">Faq</a></li>
-							<li><a href="help.html">Help</a></li>
-							<li><a href="account.html">My account</a></li>
-							<li><a href="blog.html">Blog</a></li>
-							<li><a href="contacts.html">Contacts</a></li>
+							<li><a href="about.html">Về chúng tôi</a></li>
+							<li><a href="help.html">Câu hỏi thường gặp</a></li>
+							<li><a href="blog.html">Tin tức</a></li>
+							<li><a href="contacts.html">Liên hệ</a></li>
 						</ul>
 					</div>
 				</div>
@@ -464,14 +521,14 @@
 					<h3 data-target="#collapse_2">Danh mục</h3>
 					<div class="collapse dont-collapse-sm links" id="collapse_2">
 						<ul>
-							<li><a href="listing-grid-1-full.html">Quần áo</a></li>
-							<li><a href="listing-grid-2-full.html">Giày</a></li>
-							<li><a href="listing-grid-1-full.html">Phụ kiện</a></li>
+							@foreach($lstDanhMuc as $item)
+								<li><a href="{{ route('danhmucsanpham', ['slug' => $item->slug]) }}">{{ $item->tenDanhMuc }}</a></li>
+							@endforeach
 						</ul>
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-6">
-						<h3 data-target="#collapse_3">Liên lạc</h3>
+						<h3 data-target="#collapse_3">Về chúng tôi</h3>
 					<div class="collapse dont-collapse-sm contacts" id="collapse_3">
 						<ul>
 							<li><i class="ti-home"></i>65 Huỳnh Thúc Kháng, P.Bến Nghé, Q.1, Tp.HCM</li>
@@ -481,11 +538,11 @@
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-6">
-						<h3 data-target="#collapse_4">Keep in touch</h3>
+						<h3 data-target="#collapse_4">Hỗ trợ</h3>
 					<div class="collapse dont-collapse-sm" id="collapse_4">
 						<div id="newsletter">
 						    <div class="form-group">
-						        <input type="email" name="email_newsletter" id="email_newsletter" class="form-control" placeholder="Your email">
+						        <input type="email" name="email_newsletter" id="email_newsletter" class="form-control" placeholder="Nhập email của bạn">
 						        <button type="submit" id="submit-newsletter"><i class="ti-angle-double-right"></i></button>
 						    </div>
 						</div>
@@ -529,8 +586,8 @@
 				</div>
 				<div class="col-lg-6">
 					<ul class="additional_links">
-						<li><a href="#0">Terms and conditions</a></li>
-						<li><a href="#0">Privacy</a></li>
+						<li><a href="#0">Các điều khoản</a></li>
+						<li><a href="#0">Chính sách</a></li>
 						<li><span>© 2020 Allaia</span></li>
 					</ul>
 				</div>

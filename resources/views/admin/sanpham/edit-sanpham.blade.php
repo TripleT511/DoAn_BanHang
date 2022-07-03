@@ -124,7 +124,7 @@
 </div>
 @endsection
 @section('js')
-    <script src="https://cdn.tiny.cloud/1/c4yq515bjllc9t8mkucpjw8rmw5jnuktk654ihvvk2k4ve5f/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
     <script>
 
         // === Preview Image === // 
@@ -141,24 +141,58 @@
 
         // === Preview Image === // 
 
-        // === wysiwyg Editor === // 
+        // === CK Editor === // 
         tinymce.init({
             selector: '#moTa',
-            plugins: 'a11ychecker advcode casechange export formatpainter image editimage linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tableofcontents tinycomments tinymcespellchecker',
-            toolbar: 'a11ycheck addcomment showcomments casechange checklist code export formatpainter image editimage pageembed permanentpen table tableofcontents',
+            plugins: 'a11ychecker advcode casechange export formatpainter image  editimage linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tableofcontents tinymcespellchecker',
+            toolbar: 'a11ycheck addcomment showcomments casechange checklist code export formatpainter image editimage pageembed permanentpen table insertfile tableofcontents undo redo link',
+            image_title: true,
+            automatic_uploads: true,
+            file_picker_callback: function (callback, value, meta) {
+                let x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth;
+                let y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight;
+
+                let type = 'image' === meta.filetype ? 'Images' : 'Files',
+                    url  = '/laravel-filemanager?editor=tinymce5&type=' + type;
+
+                tinymce.activeEditor.windowManager.openUrl({
+                    url : url,
+                    title : 'Filemanager',
+                    width : x * 0.8,
+                    height : y * 0.8,
+                    onMessage: (api, message) => {
+                        callback(message.content);
+                    }
+                });
+            },
             toolbar_mode: 'floating',
-            tinycomments_mode: 'embedded',
-            tinycomments_author: 'Author name',
             language: 'vi'
-            });
+        });
         tinymce.init({
             selector: '#noiDung',
-            plugins: 'a11ychecker advcode casechange export formatpainter image editimage linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tableofcontents tinycomments tinymcespellchecker',
-            toolbar: 'a11ycheck addcomment showcomments casechange checklist code export formatpainter image editimage pageembed permanentpen table tableofcontents',
+            plugins: 'a11ychecker advcode casechange export formatpainter image  editimage linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tableofcontents tinymcespellchecker',
+            toolbar: 'a11ycheck addcomment showcomments casechange checklist code export formatpainter image editimage pageembed permanentpen table insertfile tableofcontents undo redo link',
+            image_title: true,
+            automatic_uploads: true,
+            file_picker_callback: function (callback, value, meta) {
+                let x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth;
+                let y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight;
+
+                let type = 'image' === meta.filetype ? 'Images' : 'Files',
+                    url  = '/laravel-filemanager?editor=tinymce5&type=' + type;
+
+                tinymce.activeEditor.windowManager.openUrl({
+                    url : url,
+                    title : 'Filemanager',
+                    width : x * 0.8,
+                    height : y * 0.8,
+                    onMessage: (api, message) => {
+                        callback(message.content);
+                    }
+                });
+            },
             toolbar_mode: 'floating',
-            tinycomments_mode: 'embedded',
-            tinycomments_author: 'Author name',
             language: 'vi'
-            });
+        });
     </script>
 @endsection

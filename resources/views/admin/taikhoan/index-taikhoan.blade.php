@@ -118,7 +118,7 @@
 
             
             //Search DiaDanh
-            $('#searchInput').on('keyup', function() {
+            $('#search-form').on('submit', function() {
                 var val = $('#searchInput').val();
                 if(val != "") {
                     $.ajax({
@@ -129,7 +129,8 @@
                     },
                     dataType: "json",
                     success: function (response) {
-                      $("#lstTaiKhoan").html(response);
+                      $("#lstTaiKhoan").html(response.data);
+                      $(".pagination").html(response.pagination);
                     }
                 });
                 }

@@ -129,12 +129,27 @@ class DanhGiaController extends Controller
         $lstDanhGia = DanhGia::with('sanpham')->with('taikhoan')->where('san_pham_id', $request->sanphamId)->orderBy('created_at', 'desc')->get();
 
         foreach ($lstDanhGia as $key => $item) {
+            $starActive = $item->xepHang;
+            $starNonActive = 5 - $item->xepHang;
+            $star1 = "";
+            $star2 = "";
+            for ($i = 0; $i < $starActive; $i++) {
+                $star1 .= '<i class="icon-star"></i>';
+            }
+            for ($i = 0; $i < $starNonActive; $i++) {
+                $star2 .= '<i class="icon-star empty"></i>';
+            }
             $output .= '
                 <div class="col-lg-6">
                     <div class="review_content">
                         <div class="clearfix add_bottom_10">
-                            <span class="rating"><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star"></i><em>5.0/5.0</em></span>
-                            <em>Published 54 minutes ago</em>
+                            <span class="rating">
+                            ' .
+                $star1 . $star2
+                . '
+                            </i>
+                            </span>
+                            <em>' . date('d-m-Y', strtotime($item->created_at)) . '</em>
                         </div>
                         <h4>' . $item->taikhoan->hoTen . '</h4>
                         <p>' . $item->noiDung . '</p>

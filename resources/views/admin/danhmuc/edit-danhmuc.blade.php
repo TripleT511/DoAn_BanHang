@@ -10,7 +10,7 @@
         }
         .preview-image-item {
             width: 100px;
-            height: 150px;
+            height: 100px;
             padding: 5px;
             position: relative;
             border-radius: 5px;
@@ -25,11 +25,13 @@
             height: 100%;
             object-fit: contain;
         }
+
+        
     </style>
 @endsection
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Danh Mục Sản Phẩm/</span>Danh Mục Sản Phẩm</h4>
+    <h4 class="fw-bold mb-4">Sửa Danh Mục Sản Phẩm</h4>
     <!-- Basic Layout -->
     <div class="row">
         
@@ -63,7 +65,18 @@
                         @endforeach
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary">Cập nhật</button>
+                <div class="mb-3">
+                    <label for="hinhAnh" class="form-label">Hình Ảnh</label>
+                    <input class="form-control" type="file" id="hinhAnh" name="hinhAnh">
+                </div>
+                <div class="mb-3">
+                    <div class="list-preview-image">
+                        <div class="preview-image-item">
+                            <img src="{{ asset('storage/'.$danhmuc->hinhAnh) }}" alt="imgPreview" id="imgPreview">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu</button>
                 <button type="button" class="btn btn-dark"onclick="history.back()">Cancel</button>
                 </form>
             </div>
@@ -72,4 +85,19 @@
     
     </div>
 </div>
+@endsection
+@section('js')
+<script>
+// === Preview Image === // 
+       
+$("#hinhAnh").on("change", function (e) {
+        var filePath = URL.createObjectURL(e.target.files[0]);
+        $(".list-preview-image").css('display', 'flex');
+        
+        $("#imgPreview").show().attr("src", filePath);
+        
+    });
+
+// === Preview Image === // 
+</script>
 @endsection

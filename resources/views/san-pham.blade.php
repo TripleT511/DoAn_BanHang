@@ -14,15 +14,14 @@
 				<div class="container">
 					<div class="breadcrumbs">
 						<ul>
-							<li><a href="#">Trang chủ</a></li>
-							<li><a href="#">Category</a></li>
-							<li>Page active</li>
+							<li><a href="{{ route('home') }}">Trang chủ</a></li>
+							<li>Sản phẩm</li>
 						</ul>
 					</div>
-					<h1>Shoes - Grid listing</h1>
+					<h1>Sản phẩm</h1>
 				</div>
 			</div>
-			<img src="img/bg_cat_shoes.jpg" class="img-fluid" alt="">
+			<img src="{{ asset('img/banner_01.jpg') }}" class="img-fluid" alt="Nhà của gu">
 		</div>
 		<!-- /top_banner -->
 		
@@ -54,7 +53,7 @@
 			<div class="collapse" id="filters"><div class="row small-gutters filters_listing_1">
 			<div class="col-lg-3 col-md-6 col-sm-6">
 				<div class="dropdown">
-					<a href="#" data-toggle="dropdown" class="drop">Danh mục</a>
+					<a href="{{ route('home') }}" data-toggle="dropdown" class="drop">Danh mục</a>
 					<div class="dropdown-menu">
 						<div class="filter_type">
 								<ul>
@@ -83,7 +82,7 @@
 										</label>
 									</li>
 								</ul>
-								<a href="#0" class="apply_filter">áp dụng</a>
+								<a href="#0" class="apply_filter">Áp dụng</a>
 							</div>
 					</div>
 				</div>
@@ -91,7 +90,7 @@
 			</div>
 			<div class="col-lg-3 col-md-6 col-sm-6">
 				<div class="dropdown">
-					<a href="#" data-toggle="dropdown" class="drop">Màu</a>
+					<a href="{{ route('home') }}" data-toggle="dropdown" class="drop">Màu</a>
 					<div class="dropdown-menu">
 						<div class="filter_type">
 								<ul>
@@ -120,7 +119,7 @@
 										</label>
 									</li>
 								</ul>
-								<a href="#0" class="apply_filter">áp dụng</a>
+								<a href="#0" class="apply_filter">Áp dụng</a>
 							</div>
 					</div>
 				</div>
@@ -128,7 +127,7 @@
 			</div>
 			<div class="col-lg-3 col-md-6 col-sm-6">
 				<div class="dropdown">
-					<a href="#" data-toggle="dropdown" class="drop">Nhãn hiệu</a>
+					<a href="{{ route('home') }}" data-toggle="dropdown" class="drop">Nhãn hiệu</a>
 					<div class="dropdown-menu">
 						<div class="filter_type">
 								<ul>
@@ -157,7 +156,7 @@
 										</label>
 									</li>
 								</ul>
-								<a href="#0" class="apply_filter">áp dụng</a>
+								<a href="#0" class="apply_filter">Áp dụng</a>
 							</div>
 					</div>
 				</div>
@@ -165,7 +164,7 @@
 			</div>
 			<div class="col-lg-3 col-md-6 col-sm-6">
 				<div class="dropdown">
-					<a href="#" data-toggle="dropdown" class="drop">Giá tiền</a>
+					<a href="{{ route('home') }}" data-toggle="dropdown" class="drop">Giá tiền</a>
 					<div class="dropdown-menu">
 						<div class="filter_type">
 								<ul>
@@ -194,7 +193,7 @@
 										</label>
 									</li>
 								</ul>
-								<a href="#0" class="apply_filter">áp dụng</a>
+								<a href="#0" class="apply_filter">Áp dụng</a>
 							</div>
 					</div>
 				</div>
@@ -211,20 +210,31 @@
 				<div class="col-6 col-md-4 col-xl-3">
 					<div class="grid_item">
 						<figure>
-							<span class="ribbon off">-{{$item->giaKhuyenMai}}đ</span>
+							@if($item->giaKhuyenMai != 0)
+								<span class="ribbon off">-{{ round((($item->gia-$item->giaKhuyenMai) /$item->gia) * 100) }}%</span>
+							@else
+								@if($item->dacTrung == 1)
+									<span class="ribbon new">New</span>
+									@elseif($item->dacTrung == 2)
+									<span class="ribbon hot">Hot</span>
+								@endif
+							@endif
 							<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
 								@foreach ($item->hinhanhs as $key => $item2)
 								<img class="img-fluid lazy" src="{{ asset('storage/'.$item2->hinhAnh) }}" data-src="{{ asset('storage/'.$item2->hinhAnh) }}" alt="{{ $item->tenSanPham }}">
 								@endforeach
 							</a>
-							<div data-countdown="2019/05/15" class="countdown"></div>
 						</figure>
 						<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
 							<h3>{{$item->tenSanPham}}</h3>
 						</a>
 						<div class="price_box">
-							<span class="new_price">{{$item->gia}}đ</span>
-							<span class="old_price">110000đ</span>
+							@if($item->giaKhuyenMai == 0)
+							<span class="new_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
+							@elseif($item->giaKhuyenMai != 0)
+							<span class="new_price">{{ number_format($item->giaKhuyenMai, 0, '', ',') }} đ</span>
+							<span class="old_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
+							@endif
 						</div>
 						<ul>
 							{{-- <li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>

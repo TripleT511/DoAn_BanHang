@@ -6,9 +6,6 @@
 <div class="container-xxl flex-grow-1 container-p-y">
               <h4 class="fw-bold py-3">Đánh giá</h4>
             <ul class="nav nav-pills flex-column flex-md-row mb-3">
-              <li class="nav-item">
-                  <a class="nav-link active" href="{{ route('danhgia.create') }}"><i class="bx bx-plus"></i> Thêm mới</a>
-              </li>
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">
@@ -17,10 +14,10 @@
                   <table class="table">
                     <thead>
                       <tr>
-                        <th>tên sản phẩm</th>                    
-                        <th>họ và tên</th>
-                        <th>Noi dung</th>
-                        <th>Xep Hang</th>
+                        <th>Tên sản phẩm</th>                    
+                        <th>Họ tên</th>
+                        <th>Nội dung</th>
+                        <th>Rating</th>
                         <th>Hành động</th>
                       </tr>
                     </thead>
@@ -28,16 +25,20 @@
                     @foreach ($lstDanhGia as $item)
                       <tr>
                       </td>
-                        <td><strong>{{ $item->sanpham->tenSanPham }}</strong>
+                        <td>
+                          <a href="{{ route('chitietsanpham', ['slug' => $item->sanpham->slug]) }}" target="_blank">
+                            <strong>{{ $item->sanpham->tenSanPham }}</strong>
+                          </a>
+                          
                       </td>
                       </td>
-                        <td><strong>{{ $item->taikhoan->hoTen }}</strong>
+                        <td>{{ $item->taikhoan->hoTen }}</>
                       </td>
                       </td>
-                        <td><strong>{{ $item->noiDung }}</strong>
+                        <td>{{ $item->noiDung }}</>
                       </td>
                       </td>
-                        <td><strong>{{ $item->xepHang }}</strong>
+                        <td>{{ $item->xepHang }}</>
                       </td>
                       <td>
                           <form class="d-inline-block" method="post" action="{{ route('danhgia.destroy', ['danhgium' => $item]) }}">

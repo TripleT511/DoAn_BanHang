@@ -10,6 +10,8 @@ use App\Models\DanhMuc;
 
 use App\Http\Requests\StoreSanPhamRequest;
 use App\Http\Requests\UpdateSanPhamRequest;
+use App\Models\ThuocTinh;
+use App\Models\TuyChonThuocTinh;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -52,8 +54,11 @@ class SanPhamController extends Controller
      */
     public function create()
     {
+        $lstThuocTinh = ThuocTinh::all();
+        $lstTuyChonThuocTinh = TuyChonThuocTinh::all();
+        Session::forget("lstThuocTinh");
         $lstDanhMucCha = DanhMuc::where('idDanhMucCha', null)->get();
-        return View('admin.sanpham.create-sanpham', ['lstDanhMuc' => $lstDanhMucCha]);
+        return View('admin.sanpham.create-sanpham', ['lstDanhMuc' => $lstDanhMucCha, 'lstThuocTinh' => $lstThuocTinh, 'lstTuyChonThuocTinh' => $lstTuyChonThuocTinh]);
     }
 
     /**
@@ -64,6 +69,8 @@ class SanPhamController extends Controller
      */
     public function store(StoreSanPhamRequest $request)
     {
+
+        dd($request);
         $request->validate([
             'tenSanPham' => 'required|unique:san_phams',
             'maSKU' => 'required'

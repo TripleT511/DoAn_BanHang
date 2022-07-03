@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('code');
             $table->string('tenMa');
             $table->string('hinhAnh');
-            $table->string('moTa');
-            $table->integer('soLuong')->default(1);
+            $table->text('moTa');
+            $table->integer('soLuong')->default(1)->nullable();
             $table->integer('loaiKhuyenMai')->default(0);
             $table->double('giaTriKhuyenMai');
             $table->double('mucGiamToiDa')->nullable();

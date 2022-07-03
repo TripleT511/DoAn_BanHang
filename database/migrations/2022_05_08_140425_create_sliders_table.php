@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('sliders', function (Blueprint $table) {
             $table->id();
-            $table->text('hinhAnh');
+            $table->text('hinhAnh')->default('images/no-image-available.jpg');
             $table->string('tieuDe');
             $table->string('noiDung');
             $table->string('slug');

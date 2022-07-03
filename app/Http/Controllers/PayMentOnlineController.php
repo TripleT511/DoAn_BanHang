@@ -6,6 +6,7 @@ use App\Jobs\SendMail;
 use App\Models\ChiTietHoaDon;
 use App\Models\GioHang;
 use App\Models\HoaDon;
+use App\Models\MaGiamGia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
@@ -43,8 +44,57 @@ class PayMentOnlineController extends Controller
             'ghiChu' => $request->ghiChu_billing,
         );
 
+
+        $Cart = Session::get('Cart');
+        if (!$Cart) {
+            return redirect()->route('gio-hang');
+        }
+
+        $total = 0;
         Session::forget("HoaDon");
         Session::put("HoaDon", $hoadon);
+
+        foreach ($Cart as $item) {
+            $total += (int)$item['soluong'] * (float)$item['gia'];
+        }
+
+        $discountCode = Session::get('DiscountCode');
+        $valueDiscount = 0;
+        $infoPayMent = array(
+            "thanhTien" => number_format($total, 0, '', ',') . " đ",
+            "vanChuyen" => number_format(0, 0, '', ',') . " đ",
+            "giamGia" => number_format(0, 0, '', ',') . " đ",
+            "tongCong" => number_format(0, 0, '', ',') . " đ",
+            "hinhThuc" => "Thanh toán qua VNPAY"
+        );
+
+        if ($discountCode) {
+            $loaiKhuyenMai = $discountCode['type'];
+            $value =  $discountCode['value'];
+            $maxValue = $discountCode['max_value'];
+            $newTotal = 0;
+            if ($loaiKhuyenMai == 0) {
+                $newTotal = $total - $value;
+                $valueDiscount = $total - $newTotal;
+                if ($maxValue && $valueDiscount > $maxValue) {
+                    $newTotal = $total - $maxValue;
+                    $valueDiscount = $total - $newTotal;
+                }
+                $total = $newTotal;
+            } else if ($loaiKhuyenMai == 1) {
+                $percent = $value / 100;
+                $newTotal = $total - ($total * $percent);
+                $valueDiscount = $total - $newTotal;
+                if ($maxValue && $valueDiscount > $maxValue) {
+                    $newTotal = $total - $maxValue;
+                    $valueDiscount = $total - $newTotal;
+                }
+                $total = $newTotal;
+            }
+        }
+        $infoPayMent["giamGia"] = number_format($valueDiscount, 0, '', ',') . " đ";
+        $infoPayMent["tongCong"] = number_format($total, 0, '', ',') . " đ";
+        Session::put("infoPayMent", $infoPayMent);
 
         //  Thanh toán VN PAY
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
@@ -55,7 +105,7 @@ class PayMentOnlineController extends Controller
         $vnp_TxnRef = Str::random(30); //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
         $vnp_OrderInfo = 'Thanh toán đơn hàng qua VNPAY';
         $vnp_OrderType = 'billPayment';
-        $vnp_Amount = $request->tongTien * 100;
+        $vnp_Amount = $total * 100;
         $vnp_Locale = 'vn';
         $vnp_BankCode = 'NCB';
         $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
@@ -121,7 +171,6 @@ class PayMentOnlineController extends Controller
 
         if ($request->has('vnp_Amount')) {
             $hoadonSS = Session::get('HoaDon');
-
             $Cart = Session::get('Cart');
             $user = Auth::user();
             $total = $request->vnp_Amount / 100;
@@ -130,13 +179,13 @@ class PayMentOnlineController extends Controller
             $hoadon->fill([
                 'nhan_vien_id' => null,
                 'khach_hang_id' => $user->id,
-                'hoTen' => $hoadonSS['hoTen'],
-                'email' => $hoadonSS['email'],
-                'diaChi' => $hoadonSS['diaChi'],
-                'soDienThoai' => $hoadonSS['soDienThoai'],
+                'hoTen' => $hoadonSS["hoTen"],
+                'email' => $hoadonSS["email"],
+                'diaChi' => $hoadonSS["diaChi"],
+                'soDienThoai' => $hoadonSS["soDienThoai"],
                 'ngayXuatHD' => date('Y-m-d H:i:s'),
                 'tongTien' => $total,
-                'ghiChu' => $hoadonSS['ghiChu'],
+                'ghiChu' => $hoadonSS["ghiChu"],
                 'trangThai' => 4,
             ]);
             $hoadon->save();
@@ -171,9 +220,16 @@ class PayMentOnlineController extends Controller
                 $gioHang->save();
             }
 
-            $this->dispatch(new SendMail($user, $hoadon, $newArray));
 
+            $infoPayMent = Session::get('infoPayMent');
+
+            $this->dispatch(new SendMail($user, $hoadon, $newArray, $infoPayMent));
+            $code = Session::get('DiscountCode');
+            $maGiamGia = MaGiamGia::whereId($code["id"])->first();
+            $maGiamGia->soLuong = $maGiamGia->soLuong - 1;
+            $maGiamGia->save();
             Session::forget("Cart");
+            Session::forget("DiscountCode");
         }
 
         return view('confirm-checkout');

@@ -15,9 +15,5 @@ class ThuocTinhSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('thuoc_tinhs')->insert([
-            ['tenThuocTinh' => 'Size', 'loaiThuocTinh' => 'Text', 'slug' => 'size'],
-            ['tenThuocTinh' => 'Màu sắc', 'loaiThuocTinh' => 'Color', 'slug' => 'color'],
-        ]);
     }
 }

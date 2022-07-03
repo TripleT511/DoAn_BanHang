@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreign('san_pham_id')->references('id')->on('san_phams')->onUpdate('cascade')->onDelete('cascade');
             $table->string('sku');
             $table->string('donVi');
-            $table->string('soLuong');
+            $table->integer('soLuong');
             $table->double('gia');
             $table->double('tongTien');
             $table->softDeletes();

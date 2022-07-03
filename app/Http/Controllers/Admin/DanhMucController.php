@@ -9,6 +9,7 @@ use App\Http\Requests\StoreDanhMucRequest;
 use App\Http\Requests\UpdateDanhMucRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 
@@ -19,40 +20,32 @@ class DanhMucController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    protected function fixImage(DanhMuc $user)
+    {
+        if (Storage::disk('public')->exists($user->anhDaiDien)) {
+            $user->anhDaiDien = $user->anhDaiDien;
+        } else {
+            $user->anhDaiDien = 'images/no-image-available.jpg';
+        }
+    }
     public function index()
     {
-        $listDanhMuc = DanhMuc::with('childs')->paginate(3);
+        $listDanhMuc = DanhMuc::with('childs')->paginate(10);
+        $listDanhMucCha = DanhMuc::orderBy('slug', 'desc')->get();
 
-        return view('admin.danhmuc.index-danhmuc', ['lstDanhMuc' => $listDanhMuc]);
+        return view('admin.danhmuc.index-danhmuc', ['lstDanhMuc' => $listDanhMuc, 'danhMucCha' => $listDanhMucCha]);
     }
 
 
     public function searchDanhMuc(Request $request)
     {
-        $output = "";
-
-        if ($request->input('txtSearch') != "") {
-            $lstDanhMuc = DanhMuc::where('tenDanhMuc', 'LIKE', '%' . $request->input('txtSearch') . '%')->get();
-            foreach ($lstDanhMuc as $key => $item) {
-                $output .= '
-                <tr>
-                 <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>' . $item->tenDanhMuc . '</strong></td>
-                 <td><i class="fab fa-angular fa-lg text-danger me-3"></i> ' . $item->idDanhMucCha . '</td>
-                       <td>
-                          <a class="btn btn-success" href="' . route('danhmuc.edit', ['danhmuc' => $item]) . '">
-                            <i class="bx bx-edit-alt me-1"></i>Sửa
-                          </a>
-                          <form class="d-inline-block" method="post" action="' . route('danhmuc.destroy', ['danhmuc' => $item]) . '">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <input type="hidden" name="_token" value="' . csrf_token() . '">
-                            <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
-                          </form>
-                        </td>
-              </tr>
-                ';
-            }
+        $lstDanhMuc =
+            DanhMuc::with('childs')->paginate(5);
+        if ($request->keyword != "") {
+            $lstDanhMuc = DanhMuc::where('tenDanhMuc', 'LIKE', '%' . $request->keyword . '%')->with('childs')->paginate(5);
         }
-        return response()->json($output);
+        $listDanhMucCha = DanhMuc::orderBy('slug', 'desc')->get();
+        return view('admin.danhmuc.index-danhmuc', ['lstDanhMuc' => $lstDanhMuc, 'danhMucCha' => $listDanhMucCha]);
     }
     /**
      * Show the form for creating a new resource.
@@ -100,9 +93,15 @@ class DanhMucController extends Controller
             'tenDanhMuc' => $request->input('tenDanhMuc'),
             'slug' => $slug,
             'idDanhMucCha' => $idDanhMucCha,
+            'hinhAnh' => 'images/no-image-available.jpg',
             'level' => $level,
         ]);
 
+        $danhmuc->save();
+
+        if ($request->hasFile('hinhAnh')) {
+            $danhmuc->hinhAnh = $request->file('hinhAnh')->store('images/danh-muc', 'public');
+        }
         $danhmuc->save();
 
 
@@ -150,12 +149,18 @@ class DanhMucController extends Controller
     {
         $request->validate([
             'tenDanhMuc' => 'required',
-            'slug' => 'required',
 
         ], [
             'tenSanPham.required' => "Tên sản phẩm không được bỏ trống",
-            'slug.required' => "Slug không được bỏ trống"
         ]);
+
+        if ($request->tenDanhMuc != $danhmuc->tenDanhMuc) {
+            $request->validate([
+                'tenDanhMuc' => 'unique:danh_mucs',
+            ], [
+                'tenDanhMuc.unique' => 'Tên danh mục không được trùng',
+            ]);
+        }
         $idDanhMucCha = $request->input('idDanhMucCha') != null && $request->input('idDanhMucCha') != $danhmuc->id ? $request->input('idDanhMucCha') : null;
 
         // Xác định cấp danh mục
@@ -164,14 +169,26 @@ class DanhMucController extends Controller
             $level = DanhMuc::find($idDanhMucCha)->level + 1;
         }
 
+        $slug = $danhmuc->slug;
+        if ($request->filled('slug')) {
+            $slug = $request->input('slug');
+        }
+
         $danhmuc->fill([
             'tenDanhMuc' => $request->input('tenDanhMuc'),
-            'slug' => $request->input('slug'),
+            'slug' => $slug,
             'idDanhMucCha' => $idDanhMucCha,
+            'hinhAnh' => $danhmuc->hinhAnh,
             'level' => $level,
         ]);
 
         $danhmuc->save();
+
+        if ($request->hasFile('hinhAnh')) {
+            $danhmuc->hinhAnh = $request->file('hinhAnh')->store('images/danh-muc', 'public');
+        }
+        $danhmuc->save();
+
         return Redirect::route('danhmuc.index');
     }
 

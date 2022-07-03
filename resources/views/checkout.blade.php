@@ -47,7 +47,7 @@
 	<!-- /page_header -->
 			<div class="row">
 				<div class="col-lg-4 col-md-6">
-				<form action="{{ route('paymentVNPay') }}" method="POST">
+				<form action="{{ route('thanhtoanDefault') }}" id="form-checkout" method="POST">
 					@csrf
 					<div class="step first">
 						<h3>1. Thông tin thanh toán</h3>
@@ -107,7 +107,7 @@
 								<li>
 									<label class="container_radio">
 										Thanh toán khi nhận hàng (COD)<a href="#0" class="info" ></a>
-										<input type="radio" name="redirect" checked>
+										<input type="radio" name="redirect" value="{{ route('thanhtoanDefault') }}" checked>
 										<span class="checkmark"></span>
 									</label>
 								</li>
@@ -117,7 +117,7 @@
 											<img src="{{ asset('img/thanh-toan/logo-vnpay.png') }}" alt="VNPAY QR">
 										</div>
 										Thanh toán qua VNPAY<a href="#0" class="info" ></a>
-										<input type="radio" name="redirect">
+										<input type="radio" name="redirect" value="{{ route('paymentVNPay') }}">
 										<span class="checkmark"></span>
 									</label>
 								</li>
@@ -139,11 +139,11 @@
 							</ul>
 							<ul>
 								<li class="clearfix"><em><strong>Tạm tính</strong></em>  <span>{{ number_format($total, 0, '', ',') }} ₫</span></li>
-								<li class="clearfix"><em><strong>Giảm giá </strong></em> <span>{{ number_format(0, 0, '', ',') }} ₫</span></li>
+								<li class="clearfix"><em><strong>Giảm giá </strong></em> <span>{{ $discount }} ₫</span></li>
 								<li class="clearfix"><em><strong>Phí vận chuyển </strong></em> <span>{{ number_format(0, 0, '', ',') }} ₫</span></li>
 								
 							</ul>
-							<div class="total clearfix">Tổng tiền <span>{{ number_format($total, 0, '', ',') }} ₫</span></div>
+							<div class="total clearfix">Tổng tiền <span>{{ number_format($newTotal, 0, '', ',') }} ₫</span></div>
 							<input type="hidden" name="tongTien" value="{{ $total }}">
 							<button type="submit" id="payment" class="btn_1 full-width">Thanh toán</button>
 						</div>
@@ -184,7 +184,13 @@
 				document.querySelector("#validate-sdt").innerHTML = "";
 			}
 
-		})
+		});
+
+		let radCheckout = document.querySelectorAll('input[name="redirect"]');
+		radCheckout.forEach(item => item.addEventListener('change', function(e) {
+				document.getElementById("form-checkout").action = e.target.value;
+			})
+		);
 
 		txtEmail.addEventListener("blur", function(event) {
 			if(!txtEmail.checkValidity()) {

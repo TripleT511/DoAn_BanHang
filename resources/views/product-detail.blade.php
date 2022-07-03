@@ -43,7 +43,10 @@
 		line-height: 50px;
 	}
 
-	
+	.review_content .rating i.empty,
+	.product-rating-overview i.empty {
+    	background-color: #ccc;
+	}
 </style>
 @endsection
 @section('content')
@@ -62,8 +65,7 @@
 				Fruitcake chocolate bar tootsie roll gummies gummies jelly beans cake.
 			</div>
 		</div>
-	        <div class="countdown_inner">-20% This offer ends in <div data-countdown="2019/05/15" class="countdown"></div>
-	        </div>
+	        
 	        <div class="row">
 	            <div class="col-md-6">
 	                <div class="all">
@@ -98,7 +100,15 @@
 	                <!-- /page_header -->
 	                <div class="prod_info">
 	                    <h1>{{ $sanpham->tenSanPham }}</h1>
-	                    <span class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i><em>4 reviews</em></span>
+	                    <span class="rating">
+							@for ($i = 0; $i < $starActive; $i++)
+								<i class="icon-star voted"></i>
+							@endfor
+							@for ($i = 0; $i < $starNonActive; $i++)
+								<i class="icon-star"></i>
+							@endfor
+							<em>( {{ $countRating }} đánh giá )</em>
+						</span>
 	                    <p><small>SKU: {{ $sanpham->sku }}</small><br>{!! $sanpham->moTa !!}</p>
 	                    <div class="prod_options">
 	                        <div class="row">
@@ -136,11 +146,18 @@
 	                    </div>
 	                    <div class="row">
 	                        <div class="col-lg-5 col-md-6">
-	                            <div class="price_main"><span class="new_price">{{ number_format($sanpham->gia, 0, '', ',') }} đ</span>
-								
-									@if($sanpham->giaKhuyenMai != 0)<span class="percentage">-20% </span>@endif <span class="old_price">@if($sanpham->giaKhuyenMai != 0)
+	                            <div class="price_main">
+									<span class="new_price">{{ number_format($sanpham->gia, 0, '', ',') }} đ
+									</span>
+									@if($sanpham->giaKhuyenMai != 0)
+									<span class="percentage">
+									-{{ round((($sanpham->gia - $sanpham->giaKhuyenMai) / $sanpham->gia) * 100) }}%
+									</span>
+									<span class="old_price">
 										{{ number_format($sanpham->giaKhuyenMai, 0, '', ',') }} đ
-									@endif</span></div>
+									</span>
+									@endif
+								</div>
 								
 	                        </div>
 	                        <div class="col-lg-4 col-md-6">
@@ -241,14 +258,17 @@
 									<div class="col-lg-6">
 										<div class="product-rating-overview">
 											<div class="overview-top">
-												<p><b>5 / 5</b></p>
+
+												<p><b>{{ $starActive }} / 5</b></p>
 											</div>
 											<div class="overview-bottom">
+											@for ($i = 0; $i < $starActive; $i++)
 												<i class="icon-star"></i>
-												<i class="icon-star"></i>
-												<i class="icon-star"></i>
-												<i class="icon-star"></i>
-												<i class="icon-star"></i>
+											@endfor
+											@for ($i = 0; $i < $starNonActive; $i++)
+												<i class="icon-star empty"></i>
+											@endfor
+										
 											</div>
 										</div>	
 									</div>
@@ -297,12 +317,17 @@
 										<div class="review_content">
 											<div class="clearfix add_bottom_10">
 												<span class="rating">
-													@for($item->xepHang; $item->xepHang > 0; $item->xepHang--)
-														<i class="icon-star"></i>
-													@endfor
-													
+												@php
+												$starNonActive2 = 5 - $item->xepHang;
+												@endphp
+												@for($item->xepHang; $item->xepHang > 0; $item->xepHang--)
+													<i class="icon-star"></i>
+												@endfor
+												@for($i = 0; $i < $starNonActive2; $i++)
+													<i class="icon-star empty"></i>
+												@endfor
 												</span>
-												<em>Published 54 minutes ago</em>
+												<em>{{ date('d-m-Y', strtotime($item->created_at)) }}</em>
 											</div>
 											<h4>{{  $item->taikhoan->hoTen }}</h4>
 											<p>{{  $item->noiDung }}</p>
@@ -331,29 +356,57 @@
 	           
 	        </div>
 	        <div class="owl-carousel owl-theme products_carousel">
+				@foreach($lstSanPhamLienQuan as $item)
 	            <div class="item">
 	                <div class="grid_item">
-	                    <span class="ribbon new">New</span>
+	                    @if($item->giaKhuyenMai != 0)
+								<span class="ribbon off">-{{ round((($item->gia-$item->giaKhuyenMai) /$item->gia) * 100) }}%</span>
+							@else
+								@if($item->dacTrung == 1)
+									<span class="ribbon new">New</span>
+									@elseif($item->dacTrung == 2)
+									<span class="ribbon hot">Hot</span>
+								@endif
+						@endif
 	                    <figure>
-	                        <a href="product-detail-1.html">
-	                            <img class="owl-lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="img/products/shoes/4.jpg" alt="">
-	                        </a>
+							<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
+								@foreach ($item->hinhanhs as $key => $item2) 
+								 @if($key == 1) <?php break; ?> @endif
+								<img class="owl-lazy" src="{{ asset('storage/'.$item->hinhAnh) }}g" data-src="{{ asset('storage/'.$item2->hinhAnh) }}" alt="">
+								@endforeach
+							</a>
+	                            
 	                    </figure>
-	                    <div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
-	                    <a href="product-detail-1.html">
-	                        <h3>ACG React Terra</h3>
+	                    <div class="rating">
+							@php
+								$starActive = round($item->danhgias->avg('xepHang'));
+								$starNonActive = 5 - $starActive;
+							@endphp
+							@for ($i = 0; $i < $starActive; $i++)
+								<i class="icon-star voted"></i>
+							@endfor
+							@for ($i = 0; $i < $starNonActive; $i++)
+								<i class="icon-star"></i>
+							@endfor
+						</div>
+	                    <a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
+	                        <h3>{{ $item->tenSanPham }}</h3>
 	                    </a>
 	                    <div class="price_box">
-	                        <span class="new_price">$110.00</span>
+							@if($item->giaKhuyenMai == 0)
+							<span class="new_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
+							@elseif($item->giaKhuyenMai != 0)
+							<span class="new_price">{{ number_format($item->giaKhuyenMai, 0, '', ',') }} đ</span>
+							<span class="old_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
+							@endif
 	                    </div>
 	                    <ul>
-	                        <li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>
-	                        <li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to compare"><i class="ti-control-shuffle"></i><span>Add to compare</span></a></li>
 	                        <li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to cart"><i class="ti-shopping-cart"></i><span>Add to cart</span></a></li>
 	                    </ul>
 	                </div>
 	                <!-- /grid_item -->
 	            </div>
+				@endforeach
 	            
 	            <!-- /item -->
 	        </div>

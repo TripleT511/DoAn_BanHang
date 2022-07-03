@@ -42,4 +42,9 @@ class SanPham extends Model
     {
         return $this->hasMany(ChiTietPhieuKho::class, 'san_pham_id', 'id');
     }
+
+    public function danhgias()
+    {
+        return $this->hasMany(DanhGia::class, 'san_pham_id', 'id');
+    }
 }

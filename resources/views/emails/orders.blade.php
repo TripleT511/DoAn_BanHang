@@ -17,7 +17,7 @@
 | -------------------------- |:---------------------------:|
 | <strong  style="color: #004dda; font-size: 14px;">Họ tên:</strong>|<p style="color: #202020; text-align: left; font-weight: normal; margin: 0;">{{ $hoadon->hoTen }}</p>|
 | <strong  style="color: #004dda; font-size: 14px;">Địa chỉ:</strong>|<p style="color: #202020; text-align: left; font-weight: normal; margin: 0;">{{ $hoadon->diaChi }}</p>|
-| <strong  style="color: #004dda; font-size: 14px;">Số điện thoại:</strong>|<p style="color: #202020; text-align: left; font-weight: normal; margin: 0;">{{ $user->soDienThoai }}</p>|
+| <strong  style="color: #004dda; font-size: 14px;">Số điện thoại:</strong>|<p style="color: #202020; text-align: left; font-weight: normal; margin: 0;">{{ $hoadon->soDienThoai }}</p>|
 @endcomponent
 <h4 style="color: #202020; font-size: 18px; font-weight: bold;">Chi tiết đơn hàng</h4>
 @component('mail::table')
@@ -26,7 +26,15 @@
 @foreach($data as $key=>$dt)
 |<span style="color: #202020; font-size:14px; font-weight:normal;">{{ ++$key}}</span>|<span style="color: #202020; font-size:14px; font-weight:normal;">{{ $data[--$key]['tenSanPham'] }}</span>|<span style="color: #202020; font-size:14px; font-weight:normal;">{{number_format( $dt['donGia'], 0, '', ',') }} đ</span>|<span style="color: #202020; font-size:14px; font-weight:normal;"> {{$dt['soLuong']}}</span>|<span style="color: #202020; font-size:14px; font-weight:normal;">{{number_format( $dt['tongTien'], 0, '', ',') }} đ</span>|
 @endforeach
-<p style="color: #202020; text-align: left; font-weight: normal; margin: 0;">Tổng giá trị đơn hàng (Đã bao gồm thuế VAT): {{number_format( $hoadon->tongTien, 0, '', ',') }} đ</p>
 @endcomponent
-
+@component('mail::table')
+|       |          |
+|:-----:|:--------:|
+|<p style="color: #202020; font-size:14px; font-weight:normal; text-align:left; margin: 0;">Thành tiền:</p>|<p style="color: #202020; font-size:14px; font-weight:normal; margin: 0;text-align: right;">{{ $infoPayMent["thanhTien"] }}</p>|
+|<p style="color: #202020; font-size:14px; font-weight:normal; text-align:left; margin: 0;">Phí vận chuyển:</p>|<p style="color: #202020; font-size:14px; font-weight:normal; margin: 0;text-align: right;">{{ $infoPayMent["vanChuyen"] }}</p>|
+|<p style="color: #202020; font-size:14px; font-weight:normal; text-align:left; margin: 0;">Giảm giá:</p>|<p style="color: #202020; font-size:14px; font-weight:normal; margin: 0;text-align: right;">-{{$infoPayMent["giamGia"] }}</p>|
+|<p style="color: #202020; font-size:14px; font-weight:normal; text-align:left; margin: 0;">Tổng cộng:</p>|<p style="color: #202020; font-size:14px; font-weight:normal; margin: 0;text-align: right;">{{ $infoPayMent["tongCong"] }}</p>|
+|<p style="color: #202020; font-size:14px; font-weight:normal; text-align:left; margin: 0;">Hình thức thanh toán:</p>|<p style="color: #202020; font-size:14px; font-weight:normal; margin: 0;text-align: right;">{{ $infoPayMent["hinhThuc"] }}</p>|
+@endcomponent
+<p style="color: #202020;"><strong>Ghi chú: </strong>{{ $hoadon->ghiChu }}</p>
 @endcomponent

@@ -46,16 +46,16 @@
                 <form method="post" action="{{ route('slider.update', ['slider' => $slider]) }}" enctype="multipart/form-data">
                 @csrf
                     @method("PATCH")
-                    @if($slider->trangThai == 1) <input class="form-check-input" type="checkbox" name="trangThai" value="" id="defaultCheck1" checked><span>  hiển thị slideshow</span>
-                   @else  <input class="form-check-input" type="checkbox" name="trangThai" value="" id="defaultCheck1"><span>  hiển thị slideshow</span>
-                    @endif
+                   
                 <div class="mb-3">
                     <label class="form-label" for="tieuDe">Tiêu Đề</label>
                     <input type="text" name="tieuDe" class="form-control" id="tieuDe"value="{{ $slider->tieuDe }}" placeholder="Nhập Tiêu Đề SlideShow" />
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="noiDung">Nội Dung</label>
-                    <input type="text" name="noiDung" class="form-control" id="noiDung" value="{{ $slider->noiDung }}" placeholder="Nhập Nội dung SlideShow" />
+                    <textarea name="noiDung" id="noiDung" class="form-control noidung">
+                        {!! $slider->noiDung !!}
+                    </textarea>
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="slug">Slug</label>
@@ -72,7 +72,10 @@
                         </div>
                     </div>
                 </div>
-                   
+                <div class="mb-3">
+                    <input class="form-check-input" type="checkbox" name="trangThai" value="" id="defaultCheck1" {{ ($slider->trangThai == 1) ? 'checked' : '' }}>
+                    <span> Hiển thị</span>
+                </div>
                 <button type="submit" class="btn btn-primary">Cập nhật</button>
                 <button type="button" class="btn btn-dark" onclick="history.back()">Thoát</button>
                 </form>
@@ -84,7 +87,7 @@
 </div>
 @endsection
 @section('js')
-    <script src="https://cdn.tiny.cloud/1/c4yq515bjllc9t8mkucpjw8rmw5jnuktk654ihvvk2k4ve5f/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
     <script>
 
         // === Preview Image === // 
@@ -97,15 +100,33 @@
 
         // === Preview Image === // 
 
-        // === wysiwyg Editor === // 
+        // === CK Editor === // 
+       
         tinymce.init({
             selector: '#noiDung',
-            plugins: 'a11ychecker advcode casechange export formatpainter image editimage linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tableofcontents tinycomments tinymcespellchecker',
-            toolbar: 'a11ycheck addcomment showcomments casechange checklist code export formatpainter image editimage pageembed permanentpen table tableofcontents',
+            plugins: 'a11ychecker advcode casechange export formatpainter image  editimage linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tableofcontents tinymcespellchecker',
+            toolbar: 'a11ycheck addcomment showcomments casechange checklist code export formatpainter image editimage pageembed permanentpen table insertfile tableofcontents undo redo link',
+            image_title: true,
+            automatic_uploads: true,
+            file_picker_callback: function (callback, value, meta) {
+                let x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth;
+                let y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight;
+
+                let type = 'image' === meta.filetype ? 'Images' : 'Files',
+                    url  = '/laravel-filemanager?editor=tinymce5&type=' + type;
+
+                tinymce.activeEditor.windowManager.openUrl({
+                    url : url,
+                    title : 'Filemanager',
+                    width : x * 0.8,
+                    height : y * 0.8,
+                    onMessage: (api, message) => {
+                        callback(message.content);
+                    }
+                });
+            },
             toolbar_mode: 'floating',
-            tinycomments_mode: 'embedded',
-            tinycomments_author: 'Author name',
             language: 'vi'
-            });
+        });
     </script>
 @endsection

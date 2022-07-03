@@ -17,7 +17,7 @@ class isGuest
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->phan_quyen_id == 2) {
+        if (Auth::check() && Auth::user()->phan_quyen_id == 2 && Auth::user()->email_verified_at != null) {
             return $next($request);
         }
 

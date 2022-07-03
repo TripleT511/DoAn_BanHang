@@ -12,43 +12,122 @@
         height: 100%;
         object-fit: contain;
       }
+      .list-preview-image {
+            display: none;
+            align-content: center;
+            gap: 10px;
+        }
+        .preview-image-item {
+            width: 100px;
+            height: 100px;
+            padding: 5px;
+            position: relative;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid #d7d7d7;
+        }
+
+        .preview-image-item img {
+            display: flex;
+            margin: auto;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .img {
+        position: relative;
+        width: 50px;
+        height: 50px;
+        padding: 5px;
+        }
+
+        .img img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: flex;
+        margin: auto;
+      }
       
     </style>
 @endsection
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-            <h4 class="fw-bold py-3">Danh Mục Sản Phẩm</h4>
-            <ul class="nav nav-pills flex-column flex-md-row mb-3">
-              <li class="nav-item">
-                  <a class="nav-link active" href="{{ route('danhmuc.create') }}"><i class="bx bx-plus"></i> Thêm mới</a>
-              </li>
-            </ul>
-              <!-- Basic Bootstrap Table -->
-              <div class="card">
-                <div class="table-responsive text-nowrap">
-                  <table class="table">
-                    <thead>
-                      <tr>
-                        <th>Tên Danh Mục</th>
-                        <th>Danh Mục Cha</th>                    
-                        <th>Hành động</th>
-                      </tr>
-                    </thead>
-                    <tbody class="table-border-bottom-0" id="DanhMuc">
-                      <?php
-                        dequyDanhMuc($lstDanhMuc);
-                      ?>
-                    </tbody>
-                  </table>
-                </div>
+  <h4 class="fw-bold py-3">Danh Mục Sản Phẩm</h4>
+  <div class="card mb-4">
+    <div class="card-body">
+      @if($errors->any()) 
+          @foreach ($errors->all() as $err)
+              <li class="card-description" style="color: #fc424a;">{{ $err }}</li>
+          @endforeach
+      @endif
+      <form method="post" action="{{ route('danhmuc.store') }}">
+          @csrf
+      <div class="mb-3">
+          <label class="form-label" for="basic-default-fullname">Tên Danh Mục Sản Phẩm</label>
+          <input type="text" name="tenDanhMuc" class="form-control" id="basic-default-fullname" placeholder="Nhập tên Danh Mục Sản Phẩm" />
+      </div>
+      <div class="mb-3">
+          <label class="form-label" for="basic-default-fullname">Slug</label>
+          <input type="text" name="slug" class="form-control" id="basic-default-fullname" placeholder="Nhập liên kết danh mục" />
+      </div>
+      <div class="mb-3">
+          <label for="defaultSelect" class="form-label">Danh mục cha</label>
+          <select id="defaultSelect" name="idDanhMucCha" class="form-select">
+              <option value="">Chọn danh mục cha</option>
+              @foreach($danhMucCha as $dm)
+              <option value="{{$dm->id}}">{{$dm->tenDanhMuc}}</option>
+              @endforeach
+          </select>
+      </div>
+      <div class="mb-3">
+          <label for="hinhAnh" class="form-label">Hình Ảnh</label>
+          <input class="form-control" type="file" id="hinhAnh" name="hinhAnh">
+      </div>
+      <div class="mb-3">
+          <div class="list-preview-image">
+              <div class="preview-image-item">
+                  <img src="" alt="imgPreview" id="imgPreview">
               </div>
-              <div class="pagination__wrapper">
-                <ul class="pagination">
-                  {!!$lstDanhMuc->withQueryString()->links() !!}
-                </ul>
-              </div>
-              <!--/ Basic Bootstrap Table -->
-<?php
+          </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Lưu</button>
+      </form>
+    </div>
+  </div>
+  <ul class="nav nav-pills flex-column flex-md-row mb-3 justify-content-end">
+    <li class="nav-item "  style="margin-left: 10px;">
+        <form action="{{ route('searchDanhMuc') }}" method="GET" class="form-search-custom">
+            <input type="text" class="form-control" name="keyword" id="searchDanhMuc" placeholder="Từ khoá ..."  >
+            <button type="submit" class="btn btn-success"><i class='bx bx-search'></i></button>
+        </form>
+    </li>
+  </ul>
+  <div class="card">
+    <div class="table-responsive text-nowrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Hình ảnh</th>
+            <th>Tên Danh Mục</th>              
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody class="table-border-bottom-0" id="DanhMuc">
+          <?php
+            dequyDanhMuc($lstDanhMuc);
+          ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="pagination__wrapper">
+    <ul class="pagination">
+      {!!$lstDanhMuc->withQueryString()->links() !!}
+    </ul>
+  </div>
+  <?php
 function dequyDanhMuc($danhmuc, $idDanhMucCha = 0, $char = '')
     {
         foreach ($danhmuc as $key => $item) {
@@ -56,18 +135,22 @@ function dequyDanhMuc($danhmuc, $idDanhMucCha = 0, $char = '')
             if ($item->idDanhMucCha == $idDanhMucCha) {
               ?>
               <tr>
-                 <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $char . $item->tenDanhMuc }}</strong></td>
-                 <td><i class="fab fa-angular fa-lg text-danger me-3"></i> {{ $item->idDanhMucCha }}</td>
-                       <td>
-                          <a class="btn btn-success" href="{{ route('danhmuc.edit', ['danhmuc' => $item]) }}">
-                            <i class="bx bx-edit-alt me-1"></i>Sửa
-                          </a>
-                          <form class="d-inline-block" method="post" action="{{ route('danhmuc.destroy', ['danhmuc'=>$item]) }}">
-                            @csrf
-                            @method("DELETE")
-                            <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
-                          </form>
-                        </td>
+                <td>
+                  <div class="img">
+                    <img src="{{ asset('storage/'.$item->hinhAnh) }}" alt="{{ $item->tenDanhMuc }}">
+                  </div>
+                </td>
+                <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $char . $item->tenDanhMuc }}</strong></td>
+                <td>
+                  <a class="btn btn-success" href="{{ route('danhmuc.edit', ['danhmuc' => $item]) }}">
+                    <i class="bx bx-edit-alt me-1"></i>Sửa
+                  </a>
+                  <form class="d-inline-block" method="post" action="{{ route('danhmuc.destroy', ['danhmuc'=>$item]) }}">
+                    @csrf
+                    @method("DELETE")
+                    <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
+                  </form>
+                </td>
               </tr>
               <?php
 
@@ -80,111 +163,21 @@ function dequyDanhMuc($danhmuc, $idDanhMucCha = 0, $char = '')
         }
     }
 ?>
-              
-              <!--/ Responsive Table -->
-            </div>
+</div>
+
 @endsection
 @section('js')
 <script>
-    $(function() {
-      let lstRemoveProduct = document.querySelectorAll(".table-product tr");
-        let lstSP = document.querySelectorAll(".product-search-item");
-        let lstBtnDelete = document.querySelectorAll(".btn-xoa");
-        let lstBtnUpdate = document.querySelectorAll(".btn-update");
-
-            
-            //Search DiaDanh
-            $('#searchInput').on('keyup', function() {
-                var val = $('#searchInput').val();
-                if(val != "") {
-                    $.ajax({
-                    type: "get",
-                    url: "/admin/dmuc/timkiem",
-                    data: {
-                        txtSearch: val
-                    },
-                    dataType: "json",
-                    success: function (response) {
-                      $("#DanhMuc").html(response);
-                    }
-                });
-                }
-                
-            });
-
-           
-
-          
-
-            // function renderUI() {
-            //     $("#searchSlider").val('');
-            //     $.ajax({
-            //         type: "get",
-            //         url: "/admin/slideshow/xem-chi-tiet",
-            //         dataType: "json",
-            //         success: function (response) {
-            //             $(".table-product").html(response);
-            //             lstBtnDelete = document.querySelectorAll(".btn-xoa");
-            //             lstBtnUpdate = document.querySelectorAll(".btn-update");
-            //             let lstSoLuong = document.querySelectorAll(".input-sl");
-            //             let lstGia = document.querySelectorAll(".input-gia");
-
-            //              // Xoá chi tiết phiếu kho
-            //             lstBtnDelete.forEach(item => item.addEventListener('click', function () {
-            //                     $.ajax({
-            //                         type: "get",
-            //                         url: "/admin/kho/xoa-chi-tiet",
-            //                         dataType: "json",
-            //                         data: {
-            //                             id: item.dataset.id
-            //                         },
-            //                         success: function (response) {
-            //                            renderUI();
-            //                         }
-            //                     });
-            //             }));
-
-            //             // Cập nhật chi tiết phiếu kho
-            //             lstBtnUpdate.forEach((item, index) => item.addEventListener('click', function () {
-            //                 if(lstSoLuong[index].value <= 0 || isNaN(lstSoLuong[index].value) || isNaN(lstGia[index].value) || lstGia[index].value <= 0) {
-            //                     document.querySelector(".bs-toast").classList.add("bg-danger");
-            //                     document.querySelector(".bs-toast").classList.remove("bg-success");
-            //                     document.querySelector(".toast-body").innerText = "Lỗi";
-            //                     document.querySelector(".bs-toast").classList.add("show");
-            //                     setTimeout(() => {
-            //                         document.querySelector(".bs-toast").classList.remove("show");
-            //                     }, 2000);
-            //                 } else {
-            //                     $.ajax({
-            //                         type: "get",
-            //                         url: "/admin/kho/cap-nhat-chi-tiet",
-            //                         dataType: "json",
-            //                         data: {
-            //                             id: item.dataset.id,
-            //                             soluong: lstSoLuong[index].value,
-            //                             gia: lstGia[index].value
-            //                         },
-            //                         success: function (response) {
-            //                             document.querySelector(".bs-toast").classList.remove("bg-danger");
-            //                             document.querySelector(".bs-toast").classList.add("bg-success");
-            //                             document.querySelector(".toast-body").innerText = "Cập nhật thành công";
-
-            //                             document.querySelector(".bs-toast").classList.add("show");
-            //                             setTimeout(() => {
-            //                                 document.querySelector(".bs-toast").classList.remove("show");
-            //                             }, 2000);
-            //                            renderUI();
-            //                         }
-            //                     });
-            //                 }
-                                
-            //             }))
-            //         }
-            //     });
-            // }  
+// === Preview Image === // 
+       
+$("#hinhAnh").on("change", function (e) {
+        var filePath = URL.createObjectURL(e.target.files[0]);
+        $(".list-preview-image").css('display', 'flex');
+        
+        $("#imgPreview").show().attr("src", filePath);
+        
     });
 
-
+// === Preview Image === // 
 </script>
-
 @endsection

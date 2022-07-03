@@ -202,7 +202,6 @@
 	                            <a href="product-detail-1.html">
 	                                <img class="img-fluid lazy" src="img/products/product_placeholder_square_medium.jpg" data-src="img/products/shoes/1.jpg" alt="">
 	                            </a>
-	                            <div data-countdown="2019/05/15" class="countdown"></div>
 	                        </figure>
 	                    </div>
 	                    <div class="col-sm-8">

@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\HoaDon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Redis;
 
 class HoaDonController extends Controller
 {
@@ -69,9 +72,43 @@ class HoaDonController extends Controller
      * @param  \App\Models\HoaDon  $hoaDon
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, HoaDon $hoaDon)
+    public function update(Request $request, HoaDon $hoadon)
     {
-        //
+
+        $hoadon->nhan_vien_id = Auth::user()->id;
+        $hoadon->khach_hang_id = $hoadon->khach_hang_id;
+        $hoadon->hoTen = $hoadon->hoTen;
+        $hoadon->diaChi = $hoadon->diaChi;
+        $hoadon->email = $hoadon->email;
+        $hoadon->soDienThoai = $hoadon->soDienThoai;
+        $hoadon->ngayXuatHD = $hoadon->ngayXuatHD;
+        $hoadon->tongTien = $hoadon->tongTien;
+        $hoadon->ghiChu = $hoadon->ghiChu;
+
+        switch ($request->trangThai) {
+            case '1':
+                $hoadon->trangThai = 1;
+                break;
+            case '2':
+                $hoadon->trangThai = 2;
+                break;
+            case '3':
+                $hoadon->trangThai = 3;
+                break;
+            case '4':
+                $hoadon->trangThai = 4;
+                break;
+            case '5':
+                $hoadon->trangThai = 5;
+                break;
+            default:
+                $hoadon->trangThai = 1;
+                break;
+        }
+
+        $hoadon->save();
+
+        return Redirect::route('hoadon.index', ['page' => $request->page_on]);
     }
 
     /**

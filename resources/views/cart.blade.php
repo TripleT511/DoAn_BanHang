@@ -154,10 +154,15 @@
 		font-weight: bold;
 	}
 
-	.coupon-item .coupon-content .title,
-	.coupon-item .coupon-content .des{
+	.coupon-item .coupon-content .title{
 		display: -webkit-box;
 		-webkit-line-clamp: 1;
+		-webkit-box-orient: vertical;  
+		overflow: hidden;
+	}
+	.coupon-item .coupon-content .des {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
 		-webkit-box-orient: vertical;  
 		overflow: hidden;
 	}
@@ -342,7 +347,9 @@
 									<div class="coupon-content">
 										<div class="header">
 											<p class="title">
-											{{ $discount->tenMa }}
+											{{ $discount->tenMa }} 
+											@if($discount->mucGiamToiDa != null)<span style="font-weight: normal;">(tối đa {{(float)$discount->mucGiamToiDa / 1000 }}K)</span> 
+											@endif
 										</p>
 										<p class="des">
 											Áp dụng cho đơn hàng từ {{number_format($discount->giaTriToiThieu, 0, '', ',') }} ₫
@@ -392,7 +399,7 @@
 					<p class="cart-price">{{ number_format($total, 0, '', ',') }} ₫</p>
 				</li>
 				<li>
-					<span>Giảm giá:</span> 0 ₫
+					<span>Giảm giá:</span> <p class="discount" style="margin: 0;">  0 ₫</p> 
 				</li>
 				<li>
 					<span>Phí vận chuyển:</span> 0 ₫
@@ -504,7 +511,8 @@
 				url: "/add-discount-code",
 				data: {
 					_token: "{{ csrf_token() }}",
-					code: $("#couponCode").val()
+					code: $("#couponCode").val(),
+					total: {{ $total}}
 				},
 				dataType: "json",
 				success: function (response) {
@@ -512,10 +520,20 @@
 					if(response.error) {
 						toast.querySelector(".toast-body").innerHTML = response.error;
 						toast.classList.remove("toast-success");
-							toast.classList.add("toast-danger", "show");
+						toast.classList.add("toast-danger", "show");
 						setTimeout(() => {
 							toast.classList.remove("show");
 							}, 2000);
+							return;
+					}
+					if(response.success) {
+						toast.querySelector(".toast-body").innerHTML = response.success;
+						toast.classList.remove("toast-danger");
+						toast.classList.add("toast-success", "show");
+						setTimeout(() => {
+							toast.classList.remove("show");
+							}, 2000);
+						refreshEvent(response);	
 					}
 				}
 			});
@@ -559,7 +577,6 @@
 		}));
 
 		lstBtnDecre.forEach((item, index) => item.addEventListener('click', function() {
-			console.log("b");
 			let soLuong = lstBtnQty[index].value;
 			if(isNaN(soLuong) || soLuong < 0) {
 				let toast = document.querySelector(".toast");
@@ -616,9 +633,16 @@
 				} else {
 					document.querySelector("#lstCart").innerHTML = response.cartMain;
 					document.querySelector(".cart-price").innerHTML = `${response.total} ₫`;
-					document.querySelector(".cart-total").innerHTML = `${response.total} ₫`;
+					document.querySelector(".cart-total").innerHTML = `${response.newTotal} ₫`;
 				}
 
+
+				// Nếu có mã giảm giá
+				if(response.discount) {
+					document.querySelector(".discount").innerHTML =`-${response.discount} ₫`;
+				}
+
+				//
 				lstBtnDelete = document.querySelectorAll(".btn-trash");
 				lstBtnIncre = document.querySelectorAll(".inc.button_inc");
 				lstBtnDecre = document.querySelectorAll(".dec.button_inc");

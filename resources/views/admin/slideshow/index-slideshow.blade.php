@@ -32,7 +32,6 @@
                       <tr>
                         <th>Hình ảnh</th>
                         <th>Tiêu đề</th>  
-                        <th>Nội dung</th>     
                         <th>Slug</th>   
                         <th>Trạng thái</th>
                         <th>Hành động</th>
@@ -47,7 +46,6 @@
                           </div>
                         </td>
                         <td> {{ $item->tieuDe }}</td>
-                        <td> {{ $item->noiDung }}</td>  
                         <td> {{ $item->slug }} </td>
                         <td>@if($item->trangThai == 1) <span class="badge bg-label-primary">hiển thị</span>
                            @else <span class="badge bg-label-danger">không hiển thị</span> @endif </td>

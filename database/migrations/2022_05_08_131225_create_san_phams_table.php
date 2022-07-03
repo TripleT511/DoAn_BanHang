@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreign('danh_muc_id')->references('id')->on('danh_mucs')->onUpdate('cascade')->onDelete('cascade');
             $table->string('tenSanPham')->unique();
             $table->text('moTa');
-            $table->text('noiDung');
+            $table->longText('noiDung');
             $table->integer('dacTrung')->nullable();
             $table->double('gia');
             $table->double('giaKhuyenMai')->nullable()->default(0);

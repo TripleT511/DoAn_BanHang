@@ -139,6 +139,12 @@
               <li class="nav-item">
                   <a class="nav-link active" href="{{ route('discount.create') }}"><i class="bx bx-plus"></i> Thêm mới</a>
               </li>
+              <li class="nav-item "  style="margin-left: 10px;">
+                  <a class="nav-link bg-success text-white" href="{{ route('discount.index') }}"><i class='bx bxs-gift'></i> Mã giảm giá sắp & đang chạy</a>
+              </li>
+              <li class="nav-item " style="margin-left: 10px;">
+                  <a class="nav-link bg-danger text-white"  href="{{ route('maHetHan') }}"><i class='bx bx-notification-off'></i> Mã giảm giá hết hạn</a>
+              </li>
             </ul>
             <div class="list-discount">
                 @foreach ($lstDiscount as $item)
@@ -169,12 +175,12 @@
                       </div>
                       <div class="code-count">
                         <span>
-                          Số lần sử dụng: {{ $item->soLuong }}
+                          Số lần sử dụng: {{ $item->soLuong == null ? "Không giới hạn" : $item->soLuong }}
                         </span>
                       </div>
                     </div>
                     <div class="action">
-                      <a class="btn btn-success" href="{{ route('discount.edit', ['discount' => $item]) }}">
+                      <a class="btn btn-success" href="{{ route('discount.destroy', ['discount' => $item]) }}">
                             <i class="bx bx-edit-alt me-1"></i>Sửa
                           </a>
                           <form class="d-inline-block" method="post" action="{{ route('discount.destroy', ['discount'=>$item]) }}">
@@ -187,7 +193,11 @@
                   </div>
                 @endforeach
             </div>
-              
+              <div class="pagination__wrapper">
+                <ul class="pagination">
+                  {!!$lstDiscount->withQueryString()->links() !!}
+                </ul>
+              </div>
               <!--/ Responsive Table -->
             </div>
 @endsection

@@ -16,6 +16,7 @@ use App\Http\Controllers\GioHangController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\PayMentOnlineController;
+use App\Models\DanhMuc;
 use Faker\Provider\ar_EG\Payment;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,10 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
+    \UniSharp\LaravelFilemanager\Lfm::routes();
+});
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -47,12 +52,16 @@ Route::post('/update-cart', [GioHangController::class, 'capNhatGioHang'])->name(
 Route::post('/remove-cart', [GioHangController::class, 'xoaGioHang'])->name('remove-cart');
 
 Route::get('/login', function () {
-    return view('user.login');
+    $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+    return view('user.login', ['lstDanhMuc' => $lstDanhMuc]);
 })->name('user.login');
 
 Route::get('/register', function () {
-    return view('user.register');
+    $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+    return view('user.register', ['lstDanhMuc' => $lstDanhMuc]);
 })->name('user.register');
+
+Route::get('/user-logout', [HomeController::class, 'logoutUser'])->name('user.logout');
 
 Route::post('/dangky', [HomeController::class, 'store'])->name('dangky');
 
@@ -60,28 +69,12 @@ Route::post('/dangky', [HomeController::class, 'store'])->name('dangky');
 Route::get('/checkout', function () {
     return view('checkout');
 });
-Route::get('/c', function () {
-    return view('user');
-});
-
-
-Route::get('/san-pham', function () {
-    return view('san-pham');
-});
 
 Route::get('/san-pham', [HomeController::class, 'lstSanPham'])->name('san-pham');
+
 Route::get('/search', [HomeController::class, 'searchSP'])->name('searchSanPham');
 
-// Route::get('/bai-viet', function () {
-//     return view('blog');
-// });
-
-// Route::get('/chi-tiet-bai-viet', function () {
-//     return view('blog-detail');
-// });
-
 Route::post('/add-discount-code', [GioHangController::class, 'addDiscountCode'])->name('themMaGiamGia');
-
 
 Route::get('/thanh-toan', [GioHangController::class, 'viewCheckOut'])->name('checkout');
 
@@ -90,21 +83,18 @@ Route::post('/login', [
     'login'
 ])->name('login');
 
-Route::get('/logout', [
-    HomeController::class,
-    'logout'
-])->name('logout');
+
 
 Route::get('/send-mail', [MailController::class, 'sendMail'])->name('sendMail');
 
+
 Route::middleware(['isGuest'])->group(function () {
-    Route::get('/user', function () {
-        return view('user');
-    });
+
+    Route::get('/thong-tin-ca-nhan', [HomeController::class, 'xemThongTin'])->name('xem-thong-in-ca-nhan');
 
     Route::post('/review', [DanhGiaController::class, 'store']);
 
-    Route::post('/thanh-toan', [GioHangController::class, 'checkout']);
+    Route::post('/thanh-toan', [GioHangController::class, 'checkout'])->name('thanhtoanDefault');
 
     Route::post('/thanh-toan-vnpay', [PayMentOnlineController::class, 'paymentVNPay'])->name('paymentVNPay');
 
@@ -131,6 +121,9 @@ Route::prefix('admin')->group(function () {
         Route::resource('hoadon', HoaDonController::class);
         Route::resource('discount', MaGiamGiaController::class);
 
+        // Mã giảm giá hết hạn
+        Route::get('/discount-het-han', [MaGiamGiaController::class, 'indexDie'])->name('maHetHan');
+
 
         // *** Tìm kiếm *** //
         Route::get('/slideshow/timkiem', [SliderController::class, 'searchSlider']);
@@ -138,7 +131,12 @@ Route::prefix('admin')->group(function () {
         Route::get('/binhluan/timkiem', [DanhGiaController::class, 'searchBinhLuan']);
         Route::get('/taikhoan/timkiem', [TaiKhoanController::class, 'searchTaiKhoan']);
         Route::get('/taikhoan/mokhoa{user}', [TaiKhoanController::class, 'moKhoa'])->name('mokhoa');
-        Route::get('/dmuc/timkiem', [DanhMucController::class, 'searchDanhMuc']);
+
+        Route::get('search/danhmuc', [DanhMucController::class, 'searchDanhMuc'])->name('searchDanhMuc');
+
+
+        Route::post('/upload-image', [MaGiamGiaController::class, 'upLoadImageEditor'])->name('upLoadImageEditor');
+
 
         // *** Tìm kiếm *** //
 
@@ -168,9 +166,6 @@ Route::prefix('admin')->group(function () {
 
 
 
-        // Get Thuộc Tính
-        Route::get('/thuoctinhdata/lay-danh-sach-thuoc-tinh', [ThuocTinhController::class, 'getAllThuocTinh']);
-
         // Thêm Thuộc Tính
         Route::get('/thuoctinhdata/them-thuoc-tinh', [ThuocTinhController::class, 'addThuocTinh']);
     });
@@ -179,7 +174,10 @@ Route::prefix('admin')->group(function () {
         return view('admin.login');
     })->name('adminlogin');
 
-
+    Route::get('/logout', [
+        HomeController::class,
+        'logout'
+    ])->name('admin.logout');
 
     Route::get('/forgot', function () {
         return view('admin.forgot');

@@ -17,20 +17,6 @@ class ThuocTinhController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getAllThuocTinh()
-    {
-        $lstThuocTinh = ThuocTinh::all();
-        $output = "";
-
-        foreach ($lstThuocTinh as $key => $item) {
-            $output .= '
-            <option id="' . $item->id . '" class="attr-id-' . $item->id . '" value="' . $item->tenThuocTinh . '"></option>
-            ';
-        }
-
-
-        return response()->json($output);
-    }
 
     public function addThuocTinh(Request $request)
     {
@@ -46,11 +32,25 @@ class ThuocTinhController extends Controller
         $lstNewThuocTinh =
             Session::get("lstThuocTinh");
         $output = '';
-        foreach ($lstNewThuocTinh as $value => $item) {
-            $output .= '<div class="attr-item d-flex align-items-center">
+        foreach ($lstNewThuocTinh as $item) {
+            $lstThuocTinhSanPham[$item['id']] = array();
+            Session::put("lstThuocTinhSanPham", $lstThuocTinhSanPham[$item['id']]);
+            $valueOptions = TuyChonThuocTinh::where('thuoc_tinh_id', $item["id"])->get();
+            $stringValueOption = "";
+            foreach ($valueOptions as $value) {
+                $stringValueOption .= '
+                <option value="' . $value->id . '">' . $value->tieuDe . '</option>';
+            }
+            $output .= '<div class="attr-item d-flex align-items-center ">
                             <i class="bx bx-radio-circle"></i>
                             ' . $item['tenThuocTinh'] . '
-                            <button type="button" class="btn btn-outline-success d-flex align-items-center" style="gap: 5px"><i class="bx bxs-plus-circle"></i> Thêm </button>
+                            <div class="tag-input tag-input-' . $item['id'] . '">
+                            
+                                <select id="valueOptions-' . $item['id'] . '" data-id="' . $item['id'] . '" name="valueOptions" class="form-select  form-select-value form-select-' . $item['id'] . '">
+                                    <option value="">Chọn giá trị thuộc tính</option>
+                                    ' . $stringValueOption . '
+                                </select>
+                            </div>
                             <button type="button" class="btn btn-outline-danger d-flex align-items-center" style="gap: 5px"><i class="bx bx-trash"></i> Xoá</button>
                         </div>';
         }
@@ -59,7 +59,7 @@ class ThuocTinhController extends Controller
     }
     public function index()
     {
-        $lstThuocTinh = ThuocTinh::paginate(1)->withQueryString();
+        $lstThuocTinh = ThuocTinh::paginate(5)->withQueryString();
 
         return View('admin.thuoctinh.index-thuoctinh', ['lstThuocTinh' => $lstThuocTinh]);
     }

@@ -14,18 +14,17 @@
 		<div class="page_header">
 			<div class="breadcrumbs">
 				<ul>
-					<li><a href="#">Home</a></li>
-					<li><a href="#">Category</a></li>
-					<li>Page active</li>
+					<li><a href="#">Trang chủ</a></li>
+					<li>Đăng nhập</li>
 				</ul>
-		</div>
-		<h1>Đăng nhập</h1>
+		    </div>
+        </div>
 	</div>
 	<!-- /page_header -->
 			<div class="row justify-content-center">
 			<div class="col-xl-6 col-lg-6 col-md-8">
 				<div class="box_account">
-					<h3 class="client">Already Client</h3>
+					<h3 class="client">Đăng nhập</h3>
                     <form action="{{ route('login') }}" method="POST">
                         {{ @csrf_field() }}
                         <div class="form_container">
@@ -69,26 +68,15 @@
                                 <p>A new password will be sent shortly.</p>
                                 <div class="text-center"><input type="submit" value="Reset Password" class="btn_1"></div>
                             </div>
+                             <div style="margin-top: 15px;">
+                                Nếu bạn chưa có tài khoản ? <a href="{{ route('user.register') }}">Đăng ký</a>
+                            </div>
                             </div>
                             <!-- /form_container -->
                         </div>
                     </form>
+                   
 				<!-- /box_account -->
-				<div class="row">
-					<div class="col-md-6 d-none d-lg-block">
-						<ul class="list_ok">
-							<li>Find Locations</li>
-							<li>Quality Location check</li>
-							<li>Data Protection</li>
-						</ul>
-					</div>
-					<div class="col-md-6 d-none d-lg-block">
-						<ul class="list_ok">
-							<li>Secure Payments</li>
-							<li>H24 Support</li>
-						</ul>
-					</div>
-				</div>
 				<!-- /row -->
 			</div>
 			

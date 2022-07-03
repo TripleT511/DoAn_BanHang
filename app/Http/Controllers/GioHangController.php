@@ -9,10 +9,12 @@ use App\Jobs\SendMail;
 use App\Mail\OrderMail;
 use App\Models\ChiTietHoaDon;
 use App\Models\ChiTietPhieuKho;
+use App\Models\DanhMuc;
 use App\Models\HoaDon;
 use App\Models\MaGiamGia;
 use App\Models\SanPham;
 use Carbon\Carbon;
+use Illuminate\Bus\Dispatcher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -76,8 +78,10 @@ class GioHangController extends Controller
                     "sku" => $sanpham->sku,
                     "soluong" => $request->soLuong,
                     "gia" => $sanpham->gia,
-                    "tongTien" => $sanpham->gia
+                    "tongTien" => 0
                 );
+
+                $lstCart[$idSanPham]['tongTien'] = (int)$lstCart[$idSanPham]['soluong'] *  (float)$lstCart[$idSanPham]['gia'];
             }
             Session::put("Cart", $lstCart);
         } else {
@@ -89,8 +93,9 @@ class GioHangController extends Controller
                 "sku" => $sanpham->sku,
                 "soluong" => $request->soLuong,
                 "gia" => $sanpham->gia,
-                "tongTien" => $sanpham->gia
+                "tongTien" => 0
             );
+            $lstCart[$idSanPham]['tongTien'] = (int)$lstCart[$idSanPham]['soluong'] *  (float)$lstCart[$idSanPham]['gia'];
             Session::put("Cart", $lstCart);
         }
 
@@ -143,6 +148,7 @@ class GioHangController extends Controller
     {
 
         $newCart = Session::get('Cart');
+        $discountCode = Session::get('DiscountCode');
         $output = '';
         $outputMain = '';
         $total = 0;
@@ -209,12 +215,42 @@ class GioHangController extends Controller
             </div>           
          ';
         }
+        $valueDiscount = 0;
+        $newTotal = $total;
+        if ($discountCode) {
+            $loaiKhuyenMai = $discountCode['type'];
+            $value =  $discountCode['value'];
+            $maxValue = $discountCode['max_value'];
+
+            if ($loaiKhuyenMai == 0) {
+                $newTotal = $total - $value;
+                $valueDiscount = $total - $newTotal;
+                if ($maxValue && $valueDiscount > $maxValue) {
+                    $newTotal = $total - $maxValue;
+                    $valueDiscount = $total - $newTotal;
+                }
+            } else if ($loaiKhuyenMai == 1) {
+                $percent = $value / 100;
+                $newTotal = $total - ($total * $percent);
+                $valueDiscount = $total - $newTotal;
+                if ($maxValue && $valueDiscount > $maxValue) {
+                    $newTotal = $total - $maxValue;
+                    $valueDiscount = $total - $newTotal;
+                }
+            }
+        }
+
 
         return response()->json([
             'cartMain' => $outputMain,
             'newCart' => $output,
             'numberCart' => $newCart ? count($newCart) : 0,
             'total' => number_format($total, 0, '', ','),
+            'discount' =>
+            number_format($valueDiscount, 0, '', ','),
+            'success' => $valueDiscount != 0 ? 'Áp dụng mã giảm giá thành công' : 'Cập nhật giỏ hàng thành công',
+            'newTotal' =>
+            number_format($newTotal, 0, '', ','),
         ]);
     }
 
@@ -229,13 +265,16 @@ class GioHangController extends Controller
             Session::put("Cart", $lstCart);
         }
 
+        Session::forget('DiscountCode');
+
         return $this->renderCartTemplate();
     }
 
 
     public function index(Request $request)
     {
-
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        $discountCode = Session::forget("DiscountCode");
         $Cart = Session::get('Cart');
         $countCart = $Cart ? count($Cart) : 0;
         $total = 0;
@@ -244,11 +283,13 @@ class GioHangController extends Controller
             foreach ($Cart as $item) {
                 $total += (float)$item['gia'] * (int)$item['soluong'];
             }
+
         return view('cart', [
             'Cart' => $Cart ? $Cart : [],
             'countCart' => $countCart,
             'total' => $total,
-            'lstDiscount' => $lstDiscount
+            'lstDiscount' => $lstDiscount,
+            'lstDanhMuc' => $lstDanhMuc,
         ]);
     }
 
@@ -257,18 +298,46 @@ class GioHangController extends Controller
         if (Auth::check() && Auth::user()->phan_quyen_id == 2) {
 
             $Cart = Session::get('Cart');
+            $discountCode = Session::get('DiscountCode');
             $countCart = $Cart ? count($Cart) : 0;
             $total = 0;
+            $newTotal = 0;
             if ($Cart)
                 foreach ($Cart as $item) {
                     $total += (float)$item['gia'] * (int)$item['soluong'];
                 }
 
+            $valueDiscount = 0;
+            if ($discountCode) {
+                $loaiKhuyenMai = $discountCode['type'];
+                $value =  $discountCode['value'];
+                $maxValue = $discountCode['max_value'];
+                $newTotal = $total;
+                if ($loaiKhuyenMai == 0) {
+                    $newTotal = $total - $value;
+                    $valueDiscount = $total - $newTotal;
+                    if ($maxValue && $valueDiscount > $maxValue) {
+                        $newTotal = $total - $maxValue;
+                        $valueDiscount = $total - $newTotal;
+                    }
+                } else if ($loaiKhuyenMai == 1) {
+                    $percent = $value / 100;
+                    $newTotal = $total - ($total * $percent);
+                    $valueDiscount = $total - $newTotal;
+                    if ($maxValue && $valueDiscount > $maxValue) {
+                        $newTotal = $total - $maxValue;
+                        $valueDiscount = $total - $newTotal;
+                    }
+                }
+            }
             return view('checkout', [
                 'user' => Auth::user(),
                 'Cart' => $Cart ? $Cart : [],
                 'countCart' => $countCart,
-                'total' => $total
+                'total' => $total,
+                'newTotal' => $newTotal,
+                'discount' =>
+                number_format($valueDiscount != 0 ? -$valueDiscount : $valueDiscount, 0, '', ','),
             ]);
         }
 
@@ -291,6 +360,10 @@ class GioHangController extends Controller
         ]);
 
         $Cart = Session::get('Cart');
+        if (!$Cart) {
+            return redirect()->route('gio-hang');
+        }
+        $discountCode = Session::get('DiscountCode');
         $user = Auth::user();
         $total = 0;
 
@@ -339,15 +412,56 @@ class GioHangController extends Controller
             ]);
             $gioHang->save();
 
-            $total = (int)$item['soluong'] * (float)$item['gia'];
+            $total += (int)$item['soluong'] * (float)$item['gia'];
+        }
+
+        $valueDiscount = 0;
+        $infoPayMent = array(
+            "thanhTien" => number_format($total, 0, '', ',') . " đ",
+            "vanChuyen" => number_format(0, 0, '', ',') . " đ",
+            "giamGia" => number_format(0, 0, '', ',') . " đ",
+            "tongCong" => number_format(0, 0, '', ',') . " đ",
+            "hinhThuc" => "Thanh toán khi nhận hàng"
+        );
+        if ($discountCode) {
+            $loaiKhuyenMai = $discountCode['type'];
+            $value =  $discountCode['value'];
+            $maxValue = $discountCode['max_value'];
+            $newTotal = 0;
+            if ($loaiKhuyenMai == 0) {
+                $newTotal = $total - $value;
+                $valueDiscount = $total - $newTotal;
+                if ($maxValue && $valueDiscount > $maxValue) {
+                    $newTotal = $total - $maxValue;
+                    $valueDiscount = $total - $newTotal;
+                }
+                $total = $newTotal;
+            } else if ($loaiKhuyenMai == 1) {
+                $percent = $value / 100;
+                $newTotal = $total - ($total * $percent);
+                $valueDiscount = $total - $newTotal;
+                if ($maxValue && $valueDiscount > $maxValue) {
+                    $newTotal = $total - $maxValue;
+                    $valueDiscount = $total - $newTotal;
+                }
+                $total = $newTotal;
+            }
         }
 
         $hoadon->tongTien = $total;
         $hoadon->save();
 
-        $this->dispatch(new SendMail($user, $hoadon, $newArray));
+        $infoPayMent["giamGia"] = number_format($valueDiscount, 0, '', ',') . " đ";
+        $infoPayMent["tongCong"] = number_format($total, 0, '', ',') . " đ";
+
+        $this->dispatch(new SendMail($user, $hoadon, $newArray, $infoPayMent));
 
         Session::put("Cart", []);
+        // Trừ số lượng mã
+        $maGiamGia = MaGiamGia::whereId($discountCode["id"])->first();
+        $maGiamGia->soLuong = $maGiamGia->soLuong - 1;
+        $maGiamGia->save();
+        Session::forget("DiscountCode");
         return view('confirm-checkout');
     }
 
@@ -391,11 +505,26 @@ class GioHangController extends Controller
                 'end' => $code->ngayKetThuc
             ]);
         }
-        return response()->json([
-            'current-date' => $currentDate,
-            'start' => $code->ngayBatDau,
-            'end' => $code->ngayKetThuc
-        ]);
+
+        if ($code->soLuong == 0 && $code->soLuong != null) {
+            return response()->json(['error' => 'Lượt sử dụng mã đã hết, vui lòng sử dụng mã khác']);
+        }
+
+        if ($code->giaTriToiThieu != null && $request->total < $code->giaTriToiThieu) {
+            return response()->json(['error' => 'Đơn hàng chưa đủ điều kiện để sử dụng mã này']);
+        }
+
+        Session::forget("DiscountCode");
+        $discountCode = array(
+            'id' => $code->id,
+            'code' => $code->code,
+            'type' => $code->loaiKhuyenMai,
+            'value' => $code->giaTriKhuyenMai,
+            'max_value' => $code->mucGiamToiDa,
+        );
+        Session::put("DiscountCode", $discountCode);
+
+        return $this->renderCartTemplate();
     }
 
     /**
