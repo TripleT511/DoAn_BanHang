@@ -19,6 +19,8 @@ class HoaDon extends Model
         'soDienThoai',
         'ngayXuatHD',
         'tongTien',
-        'ghiChu'
+        'ghiChu',
+        'trangThaiThanhToan',
+        'trangThai',
     ];
 }

@@ -33,26 +33,12 @@ class PayMentOnlineController extends Controller
         ]);
 
         $user = Auth::user();
-        $hoadon = [];
-
-        $hoadon = array(
-            'khach_hang_id' => $user->id,
-            'hoTen' => $request->hoTen_billing,
-            'email' => $request->email_billing,
-            'diaChi' => $request->diaChi_billing,
-            'soDienThoai' => $request->soDienThoai_billing,
-            'ghiChu' => $request->ghiChu_billing,
-        );
-
-
         $Cart = Session::get('Cart');
         if (!$Cart) {
             return redirect()->route('gio-hang');
         }
 
         $total = 0;
-        Session::forget("HoaDon");
-        Session::put("HoaDon", $hoadon);
 
         foreach ($Cart as $item) {
             $total += (int)$item['soluong'] * (float)$item['gia'];
@@ -99,8 +85,8 @@ class PayMentOnlineController extends Controller
         //  Thanh toán VN PAY
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
         $vnp_Returnurl = "http://127.0.0.1:8000/thanh-toan-thanh-cong";
-        $vnp_TmnCode = ""; //Mã website tại VNPAY 
-        $vnp_HashSecret = ""; //Chuỗi bí mật
+        $vnp_TmnCode = "D0D9N7LY"; //Mã website tại VNPAY 
+        $vnp_HashSecret = "MQWFQOJLSODQKYSYZEWXEFXDKIJGSEQN"; //Chuỗi bí mật
 
         $vnp_TxnRef = Str::random(30); //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
         $vnp_OrderInfo = 'Thanh toán đơn hàng qua VNPAY';
@@ -125,7 +111,13 @@ class PayMentOnlineController extends Controller
             "vnp_OrderInfo" => $vnp_OrderInfo,
             "vnp_OrderType" => $vnp_OrderType,
             "vnp_ReturnUrl" => $vnp_Returnurl,
-            "vnp_TxnRef" => $vnp_TxnRef
+            "vnp_TxnRef" => $vnp_TxnRef,
+            "khach_hang_id" => $user->id,
+            "hoTen" => $request->hoTen_billing,
+            "email" => $request->email_billing,
+            "diaChi" => $request->diaChi_billing,
+            "soDienThoai" => $request->soDienThoai_billing,
+            "ghiChu" => $request->ghiChu_billing,
         );
 
         if (isset($vnp_BankCode) && $vnp_BankCode != "") {
@@ -170,7 +162,6 @@ class PayMentOnlineController extends Controller
     {
 
         if ($request->has('vnp_Amount')) {
-            $hoadonSS = Session::get('HoaDon');
             $Cart = Session::get('Cart');
             $user = Auth::user();
             $total = $request->vnp_Amount / 100;
@@ -179,13 +170,14 @@ class PayMentOnlineController extends Controller
             $hoadon->fill([
                 'nhan_vien_id' => null,
                 'khach_hang_id' => $user->id,
-                'hoTen' => $hoadonSS["hoTen"],
-                'email' => $hoadonSS["email"],
-                'diaChi' => $hoadonSS["diaChi"],
-                'soDienThoai' => $hoadonSS["soDienThoai"],
+                'hoTen' => $request->hoTen,
+                'email' => $request->email,
+                'diaChi' => $request->diaChi,
+                'soDienThoai' => $request->soDienThoai,
                 'ngayXuatHD' => date('Y-m-d H:i:s'),
                 'tongTien' => $total,
-                'ghiChu' => $hoadonSS["ghiChu"],
+                'ghiChu' => $request->ghiChu,
+                'trangThaiThanhToan' => 1,
                 'trangThai' => 4,
             ]);
             $hoadon->save();

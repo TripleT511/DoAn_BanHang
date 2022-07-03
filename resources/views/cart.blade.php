@@ -549,7 +549,7 @@
 
 		// Câp nhật số lượng sản phẩm trong giỏ hàng //
 		lstBtnIncre.forEach((item, index) => item.addEventListener('click', function() {
-			console.log("a");
+			
 			let soLuong = lstBtnQty[index].value;
 			if(isNaN(soLuong)) {
 				let toast = document.querySelector(".toast");
@@ -571,6 +571,15 @@
 				sanphamId: lstBtnDelete[index].getAttribute("data-id")
 			},
 			success: function (response) {
+				let toast = document.querySelector(".toast");
+				if(response.error) {
+						toast.querySelector(".toast-body").innerHTML = response.error;
+						toast.classList.remove("toast-success");
+							toast.classList.add("toast-danger", "show");
+						setTimeout(() => {
+							toast.classList.remove("show");
+							}, 2000);
+				}
 				refreshEvent(response);	
 			}
 			});
@@ -598,6 +607,16 @@
 				sanphamId: lstBtnDelete[index].getAttribute("data-id")
 			},
 			success: function (response) {
+				
+				if(response.error) {
+						let toast = document.querySelector(".toast");
+						toast.querySelector(".toast-body").innerHTML = response.error;
+						toast.classList.remove("toast-success");
+							toast.classList.add("toast-danger", "show");
+						setTimeout(() => {
+							toast.classList.remove("show");
+							}, 2000);
+				}
 				refreshEvent(response);	
 			}
 			});
@@ -689,6 +708,15 @@
 						sanphamId: lstBtnDelete[index].getAttribute("data-id")
 					},
 					success: function (response) {
+						if(response.error) {
+						let toast = document.querySelector(".toast");
+						toast.querySelector(".toast-body").innerHTML = response.error;
+						toast.classList.remove("toast-success");
+							toast.classList.add("toast-danger", "show");
+						setTimeout(() => {
+							toast.classList.remove("show");
+							}, 2000);
+						}
 						refreshEvent(response);	
 					}
 					});
@@ -732,6 +760,15 @@
 						sanphamId: lstBtnDelete[index].getAttribute("data-id")
 					},
 					success: function (response) {
+						if(response.error) {
+						let toast = document.querySelector(".toast");
+						toast.querySelector(".toast-body").innerHTML = response.error;
+						toast.classList.remove("toast-success");
+							toast.classList.add("toast-danger", "show");
+						setTimeout(() => {
+							toast.classList.remove("show");
+							}, 2000);
+						}
 						refreshEvent(response);	
 					}
 					});

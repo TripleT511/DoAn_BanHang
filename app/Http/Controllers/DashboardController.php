@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\HoaDon;
+use App\Models\LuotTimKiem;
+
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -18,7 +20,8 @@ class DashboardController extends Controller
 
     public function index()
     {
-        return view('admin.dashboard');
+        $lstLuotTimKiem = LuotTimKiem::orderBy('soLuong','desc')->limit(10)->get();
+        return View('admin.dashboard', ['lstLuotTimKiem' => $lstLuotTimKiem]);
     }
 
     public function thongKeDoanhThu(Request $request)

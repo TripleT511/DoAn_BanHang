@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PhieuKho;
 use App\Http\Requests\StorePhieuKhoRequest;
 use App\Http\Requests\UpdatePhieuKhoRequest;
+use App\Models\ChiTietHoaDon;
 use App\Models\ChiTietPhieuKho;
 use App\Models\DanhMuc;
 use App\Models\HinhAnh;
@@ -338,8 +339,10 @@ class PhieuKhoController extends Controller
     {
         $request->validate([
             'maDonHang' => 'unique:phieu_khos',
+            'nhacungcapid' => 'required',
         ], [
             'maDonHang.unique' => "Mã đơn hàng không được trùng",
+            'nhacungcapid.required' => "Nhà cung cấp bắt buộc chọn"
         ]);
 
 
@@ -347,7 +350,8 @@ class PhieuKhoController extends Controller
         $maDonHang = '';
 
         if (!$request->input('maDonHang')) {
-            $maDonHang = $request->input('loaiPhieu') == 0 ? "PN" . Str::random(10) : "PX" . Str::random(10);
+            $maDonHang =
+                "PN" . Str::random(10);
         } else {
             $maDonHang = $request->input('maDonHang');
         }
@@ -360,37 +364,38 @@ class PhieuKhoController extends Controller
             'user_id' => Auth::user()->id,
             'ngayTao' => Carbon::now(),
             'ghiChu' => $request->input('ghiChu'),
-            'loaiPhieu' => $request->input('loaiPhieu'),
+            'loaiPhieu' => 0,
             'trangThai' => 0
         ]);
         $phieukho->save();
 
         $lstChiTietPhieuKho = Session::get('lstSanPham');
+        if ($lstChiTietPhieuKho) {
+            foreach ($lstChiTietPhieuKho as $key => $value) {
+                $chitietpk = new ChiTietPhieuKho();
+                $chitietpk->fill([
+                    'phieu_kho_id' => $phieukho->id,
+                    'san_pham_id' => $value['id'],
+                    'sku' => $value['sku'],
+                    'donVi' => $value['donViTinh'],
+                    'soLuong' => $value['soluong'],
+                    'gia' => $value['gia'],
+                    'tongTien' => $value['tongTien']
+                ]);
+                $chitietpk->save();
 
-        foreach ($lstChiTietPhieuKho as $key => $value) {
-            $chitietpk = new ChiTietPhieuKho();
-            $chitietpk->fill([
-                'phieu_kho_id' => $phieukho->id,
-                'san_pham_id' => $value['id'],
-                'sku' => $value['sku'],
-                'donVi' => $value['donViTinh'],
-                'soLuong' => $value['soluong'],
-                'gia' => $value['gia'],
-                'tongTien' => $value['tongTien']
-            ]);
-            $chitietpk->save();
-
-            // Update giá nhập sản phẩm
-            $sanpham = SanPham::whereId($value['id'])->first();
-            $sanpham->giaNhap = $value['gia'];
-            $sanpham->save();
+                // Update giá nhập sản phẩm
+                $sanpham = SanPham::whereId($value['id'])->first();
+                $sanpham->giaNhap = $value['gia'];
+                $sanpham->save();
+            }
         }
+
 
         // Xoa Session
         Session::flush('lstSanPham');
-        $lstPhieuKho = PhieuKho::with('nhacungcap')->with('user')->get();
 
-        return  Redirect::route('phieukho.index', ['lstPhieuKho' => $lstPhieuKho]);
+        return Redirect::route('phieukho.index');
     }
 
     /**
@@ -430,11 +435,9 @@ class PhieuKhoController extends Controller
 
 
             $phieukho->save();
-
-            $lstPhieuKho = PhieuKho::with('nhacungcap')->with('user')->get();
-
-            return View('admin.kho.index-kho')->with('lstPhieuKho', $lstPhieuKho);
         }
+
+        return Redirect::route('phieukho.index');
     }
 
     /**
@@ -445,7 +448,13 @@ class PhieuKhoController extends Controller
      */
     public function destroy(PhieuKho $phieukho)
     {
-        //
+        $chitietpk = ChiTietPhieuKho::where('phieu_kho_id', $phieukho->id)->get();
+        foreach ($chitietpk as $item) {
+            $item->delete();
+        }
+
+        $phieukho->delete();
+        return Redirect::back();
     }
 
     public function xemPhieuKho(Request $request)
@@ -514,10 +523,10 @@ class PhieuKhoController extends Controller
                         ' .  $item->soLuong . '
                     </td>
                     <td>         
-                        ' .  $item->gia . '
+                        ' .   number_format($item->gia, 0, ',', ',') . ' đ
                     </td>
                     <td>
-                        ' . (float)$item->gia * (int)$item->soLuong . '
+                        ' .  number_format((float)$item->gia * (int)$item->soLuong, 0, ',', ',') . ' đ
                     </td>
                 </tr>';
         }
@@ -534,9 +543,9 @@ class PhieuKhoController extends Controller
                                 <dt class="col-sm-5 text-right">Tổng số mặt hàng: </dt>
                                 <dd class="col-sm-7 text-right">' . $tongSP . '</dd>
                                 <dt class="col-sm-5 text-right">Tổng tiền hàng: </dt>
-                                <dd class="col-sm-7 text-right">' . number_format($tongTien, 0, ',', ',') . '</dd>
+                                <dd class="col-sm-7 text-right">' . number_format($tongTien, 0, ',', ',') . ' đ</dd>
                                 <dt class="col-sm-5 text-right">Tổng cộng: </dt>
-                                <dd class="col-sm-7 text-right">' . number_format($tongTien, 0, ',', ',') . '</dd>
+                                <dd class="col-sm-7 text-right">' . number_format($tongTien, 0, ',', ',') .  ' đ</dd>
                             </div>
                         </div>
                     </div>

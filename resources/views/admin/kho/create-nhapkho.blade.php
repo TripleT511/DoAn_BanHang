@@ -107,7 +107,7 @@
 @endsection
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Phiếu Nhập Kho/</span> Thêm Phiếu</h4>
+    <h4 class="fw-bold mb-4"> Thêm Phiếu Nhập Kho</h4>
     <!-- Basic Layout -->
     <div class="row">
         
@@ -124,22 +124,25 @@
                 <form method="post" id="themPhieuKho" action="{{ route('phieukho.store') }}">
                     @csrf
                     <fieldset>
-                <legend>Phiếu kho</legend>
-                <div class="mb-3">
+                {{-- <div class="mb-3">
                     <label for="loaiPhieu" class="form-label">Loại Phiếu</label>
                     <select id="loaiPhieu" name="loaiPhieu" class="form-select">
                         <option value="0">Phiếu nhập</option>
                         <option value="1">Phiếu xuất</option>
                     </select>
                 </div>
+             --}}
                 <div class="mb-3">
                     <label class="form-label" for="maDonHang">Mã đơn hàng</label>
-                    <input type="text" name="maDonHang" class="form-control" id="maDonHang" placeholder="Nhập Mã đơn hàng" />
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="maDonHang" name="maDonHang" placeholder="Mã đơn hàng"  aria-describedby="random-maDonHang">
+                        <button class="btn btn-outline-secondary" type="button" id="random-maDonHang">Tạo mã tự động</button>
+                      </div>
                 </div>
                 <div class="mb-3">
                     <label for="defaultSelect" class="form-label">Nhà Cung Cấp</label>
                     <select id="defaultSelect" name="nhacungcapid" class="form-select">
-                        <option value="0">Chọn Nhà Cung Cấp</option>
+                        <option value="">Chọn Nhà Cung Cấp</option>
                         @foreach($lstNCC as $ncc)
                         <option value="{{$ncc->id}}">{{$ncc->tenNhaCungCap}}</option>
                         @endforeach
@@ -318,6 +321,27 @@
         let lstBtnUpdate = document.querySelectorAll(".btn-update");
         let modelBtn = document.querySelector(".btn-create-product");
 
+        // === Random maDonHang Generator === //
+        let btnRandom = document.querySelector('#random-maDonHang');
+        let txtmaDonHang = document.querySelector('#maDonHang');
+        const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+        function generateString(length) {
+            let result = ' ';
+            const charactersLength = characters.length;
+            for ( let i = 0; i < length; i++ ) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+
+            return result;
+        }
+
+        btnRandom.addEventListener( 'click', function() {
+            let newString = generateString(30);
+            txtmaDonHang.value = newString;
+        });
+
+        // === Random maDonHang Generator === //
         
 
         // === Thêm sản phẩm === //

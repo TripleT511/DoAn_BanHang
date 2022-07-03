@@ -136,6 +136,7 @@
 	                            </div>
 	                        </div>
 	                        <div class="row">
+								
 	                            <label class="col-xl-5 col-lg-5  col-md-6 col-6"><strong>Số lượng</strong></label>
 	                            <div class="col-xl-4 col-lg-5 col-md-6 col-6">
 	                                <div class="numbers-row">
@@ -401,7 +402,7 @@
 							@endif
 	                    </div>
 	                    <ul>
-	                        <li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to cart"><i class="ti-shopping-cart"></i><span>Add to cart</span></a></li>
+	                        <li><a href="#add-to-cart-now" class="add-to-cart-now" data-id="{{ $item->id }}" data-toggle="tooltip" data-placement="left" title="Thêm vào giỏ hàng"><i class="ti-shopping-cart"></i><span>Thêm vào giỏ hàng</span></a></li>
 	                    </ul>
 	                </div>
 	                <!-- /grid_item -->
@@ -572,6 +573,47 @@
                     }
                 });
 	});
+
+	// Thêm vào giỏ hàng sản phẩm liên quan
+
+	let lstBtnAddToCartNow = document.querySelectorAll(".add-to-cart-now");
+	lstBtnAddToCartNow.forEach((item, index) => item.addEventListener("click", function(){
+		$.ajax({
+				type: "POST",
+				url: "/add-to-cart",
+				dataType: "json",
+				data: {
+					_token: $("#token").val(),
+					sanphamId: lstBtnAddToCartNow[index].dataset.id,
+					soLuong: 1,
+				},
+				success: function (response) {
+					let toast = document.querySelector(".toast");
+					if(response.error) {
+						toast.querySelector(".toast-body").innerHTML = response.error;
+						toast.classList.remove("toast-success");
+							toast.classList.add("toast-danger", "show");
+						setTimeout(() => {
+							toast.classList.remove("show");
+							}, 2000);
+					} else {
+						toast.querySelector(".toast-body").innerHTML = response.message;
+						toast.classList.remove("toast-danger");
+						toast.classList.add("toast-success", "show");
+						setTimeout(() => {
+							toast.classList.remove("show");
+							}, 2000);
+						$("#lstReview").html(response.output);
+						$("#lstItemCart").html(response.newCart);
+						document.querySelector(".total_drop div span").innerHTML = `${response.total} ₫`;
+						document.querySelector(".dropdown-cart a strong").innerHTML = response.numberCart;
+					}
+				}
+			});
+	}));
+
+	
+
 
 	closeToast.addEventListener('click', function() {
 		toast.classList.remove("show");

@@ -20,6 +20,7 @@
                       
                         <th>Ngày xuất hoá đơn</th>
                         <th>Tổng tiền</th>
+                        <th>Thanh toán</th>
                         <th>Trạng thái</th>  
                         <th>Hành động</th>               
                       </tr>
@@ -39,6 +40,14 @@
                           }}
                         </td>
                         <td>
+                          {{ $item->tongTien }}
+                        </td>
+                         <td>
+                          @if($item->trangThaiThanhToan == 0) <span class="badge bg-label-dark">Chưa thanh toán</span>
+                          @elseif($item->trangThaiThanhToan == 1) <span class="badge bg-label-success">Đã thanh toán</span>
+                          @endif
+                        </td>
+                        <td>
                           @if($item->trangThai == 0) <span class="badge bg-label-primary">Chờ xác nhận</span>
                           @elseif($item->trangThai == 1) <span class="badge bg-label-info">Đã xác nhận</span>
                           @elseif($item->trangThai == 2) <span class="badge bg-label-dark">Chờ giao hàng</span>
@@ -47,9 +56,7 @@
                           @elseif($item->trangThai == 5) <span class="badge bg-label-danger">Đã huỷ</span>
                           @endif
                         </td>
-                        <td>
-                          {{ $item->tongTien }}
-                        </td>
+                       
                         <td>
                           @if($item->trangThai == 0)
                           <form class="d-inline-block" method="post" action="{{ route('hoadon.update', ['hoadon' => $item]) }}">

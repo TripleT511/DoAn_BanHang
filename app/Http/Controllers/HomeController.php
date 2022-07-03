@@ -9,15 +9,17 @@ use App\Models\SanPham;
 use App\Models\User;
 use App\Models\Slider;
 use Dflydev\DotAccessData\Data;
+use App\Models\LuotTimKiem;
+use App\Jobs\SendMail2;
+use App\Models\ChiTietHoaDon;
+use App\Models\ChiTietPhieuKho;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-
-
-
+use Illuminate\Auth\Events\Registered;
 
 class HomeController extends Controller
 {
@@ -199,7 +201,23 @@ class HomeController extends Controller
         $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
         $lstSanPham = SanPham::where('tenSanPham', 'LIKE', '%' . $request->keyword . '%')->with('hinhanhs')->with('danhmuc')->paginate(8);
         $soluong = Count(SanPham::where('tenSanPham', 'LIKE', '%' . $request->keyword . '%')->with('hinhanhs')->with('danhmuc')->get());
-        return view('search', ['lstSanPham' => $lstSanPham, 'keyword' => $request->keyword, 'soluong' => $soluong, 'lstDanhMuc' => $lstDanhMuc]);
+        if (empty($request->keyword)) {
+        } elseif ($request->keyword == ' ') {
+        } else {
+            $kt = LuotTimKiem::where('tuKhoa', '=', $request->keyword)->first();
+            if ($kt) {
+                $kt->fill([
+                    'soLuong' => $kt->soLuong + 1,
+                ]);
+                $kt->save();
+            } else {
+                $luottimkiem = LuotTimKiem::create([
+                    'tuKhoa' => $request->keyword,
+                    'soLuong' => '1',
+                ]);
+            }
+        }
+        return view('search', ['lstSanPham' => $lstSanPham, 'keyword' => $request->keyword, 'soluong' => $soluong,  'lstDanhMuc' => $lstDanhMuc]);
     }
     /**
      * Show the form for creating a new resource.
@@ -223,12 +241,15 @@ class HomeController extends Controller
         $request->validate([
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
-            'soDienThoai' => 'required|string|max:10|min:10',
+            'soDienThoai' => 'required|string|max:11|min:10',
+            'g-recaptcha-response' => 'required|captcha',
         ], [
             'email.required' => 'Email không được bỏ trống',
             'email.unique' => 'Email đã tồn tại',
             'password.required' => 'Mật khẩu không được bỏ trống',
             'soDienThoai.required' => 'Số điện thoại không được bỏ trống',
+            'soDienThoai.min' => 'Số điện thoại không hợp lệ',
+            'g-recaptcha-response.required' => 'Vui lòng xác nhận captcha',
         ]);
         $user = new User();
         $user->fill([
@@ -237,15 +258,12 @@ class HomeController extends Controller
             'password' => Hash::make($request->password),
             'soDienThoai' => $request->input('soDienThoai'),
             'phan_quyen_id' => '2',
-            'anhDaiDien' => ''
+            'anhDaiDien' => 'images/user-default.jpg',
+            'diaChi' => ''
         ]);
         $user->save();
 
-        if ($request->hasFile('anhDaiDien')) {
-            $user->anhDaiDien = $request->file('anhDaiDien')->store('images/tai-khoan/', 'public');
-        }
-        $user->save();
-        return Redirect::route('home');
+        return Redirect::route('user.login')->with('success', 'Vui lòng kiểm tra email để xác nhận tài khoản');
     }
 
     /**

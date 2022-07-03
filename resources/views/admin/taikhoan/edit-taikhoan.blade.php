@@ -29,7 +29,7 @@
 @endsection
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tables /</span>Chỉnh sửa tài khoản nhân viên</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tài Khoản/</span>Chỉnh sửa tài khoản nhân viên</h4>
     <!-- Basic Layout -->
     <div class="row">
         <div class="col-xl">
@@ -47,7 +47,7 @@
                     @method("PATCH")
                     <div class="mb-3">
                     <label class="form-label" for="basic-default-fullname">Họ tên</label>
-                    <input type="text" name="hoTen" class="form-control" id="basic-default-fullname" value="{{ $user->hoTen }}" placeholder="John Doe" />
+                    <input type="text" name="hoTen" class="form-control" id="basic-default-fullname" value="{{ $user->hoTen }}" placeholder="Nhập Họ Tên....." />
                 </div>
 
                 <div class="mb-3">
@@ -61,7 +61,10 @@
                     placeholder="037 934 5986"
                     />
                 </div>
-
+                <div class="mb-3">
+                    <label class="form-label" for="basic-default-fullname">Địa Chỉ</label>
+                    <input type="text" name="diaChi" class="form-control" id="basic-default-fullname" value="{{ $user->diaChi }}" placeholder="Nhập Địa Chỉ....." />
+                </div>
                 <div class="mb-3">
                     <label class="form-label" for="basic-default-email">Email</label>
                     <div class="input-group input-group-merge">
@@ -82,7 +85,7 @@
           
                 <div class="mb-3">
                         <label for="exampleFormControlSelect1" class="form-label">Phân quyền</label>
-                        <select id="defaultSelect" name="phanquyenid" class="form-select">
+                        <select id="defaultSelect" name="phan_quyen_id" class="form-select">
                         <option value="0">Chọn quyền</option>
                         @foreach($lstPhanQuyen as $pq)
                         <option value="{{$pq->viTri}}" {{ $user->phan_quyen_id == $pq->viTri ? 'selected' : ''}} >{{$pq->tenViTri}}</option>
@@ -103,7 +106,7 @@
                     </div>
                 </div>
                 
-                <button type="submit" class="btn btn-primary">Thêm</button>
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
                 <button type="button" class="btn btn-dark" onclick="history.back()">Thoát</button>
                 </form>
             </div>

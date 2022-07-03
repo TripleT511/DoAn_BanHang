@@ -234,11 +234,6 @@
 				border-radius: 50%;
 				overflow: hidden;
 			}
-
-			.info-user-login .img-avatar.online {
-				border: 1px solid #004dda;
-			}
-
 			.info-user-login .img-avatar img {
 				width: 100%;
 				height: 100%;
@@ -442,7 +437,11 @@ function renderChild($item)
 									@auth
 									<a href="{{ route('xem-thong-in-ca-nhan') }}" class="info-user-login">
 										<div class="img-avatar online">
+											@if(Auth()->user()->social_type != null)
+											<img src="{{  Auth()->user()->anhDaiDien }}" alt="{{ Auth()->user()->hoTen }}">
+											@else
 											<img src="{{  asset('storage/'.Auth()->user()->anhDaiDien) }}" alt="{{ Auth()->user()->hoTen }}">
+											@endif
 										</div>
 									</a>
 									@endauth

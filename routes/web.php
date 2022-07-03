@@ -12,13 +12,17 @@ use App\Http\Controllers\Admin\TaiKhoanController;
 use App\Http\Controllers\Admin\ThuocTinhController;
 use App\Http\Controllers\Admin\HoaDonController;
 use App\Http\Controllers\Admin\MaGiamGiaController;
+
 use App\Http\Controllers\GioHangController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LuotTimKiemController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\PayMentOnlineController;
 use App\Models\DanhMuc;
 use Faker\Provider\ar_EG\Payment;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoginSocialiteController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +40,13 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']
 });
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+//
+
+Route::get('/email/verify/{id}/{hash}', function (Request $request) {
+
+    return $request;
+})->name('verification.verify');
 
 Route::get('/mail', function () {
     return view('mail.order');
@@ -64,6 +75,11 @@ Route::get('/register', function () {
 Route::get('/user-logout', [HomeController::class, 'logoutUser'])->name('user.logout');
 
 Route::post('/dangky', [HomeController::class, 'store'])->name('dangky');
+
+Route::get('auth/google', [LoginSocialiteController::class, 'redirectToGoogle'])->name('login_google');
+Route::get('auth/callback/google', [LoginSocialiteController::class, 'handleCallbackgoogle']);
+Route::get('auth/facebook', [LoginSocialiteController::class, 'redirectToFB'])->name('login_facebook');
+Route::get('auth/callback/facebook', [LoginSocialiteController::class, 'handleCallbackFB']);
 
 
 Route::get('/checkout', function () {
@@ -140,6 +156,11 @@ Route::prefix('admin')->group(function () {
 
         // *** Tìm kiếm *** //
 
+        //Đổi mật khẩu
+        Route::get('/user/{user}/doimatkhau', [TaiKhoanController::class, 'changepass'])->name('changepass');
+        Route::post('/user/{user}/doimatkhau', [TaiKhoanController::class, 'doimatkhau'])->name('doimatkhau');
+
+
         // Search sản phẩm ( tạo phiếu kho )
         Route::get('/kho/timkiem', [PhieuKhoController::class, 'searchSanPham']);
 
@@ -172,7 +193,7 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/login', function () {
         return view('admin.login');
-    })->name('adminlogin');
+    })->name('admin.login');
 
     Route::get('/logout', [
         HomeController::class,

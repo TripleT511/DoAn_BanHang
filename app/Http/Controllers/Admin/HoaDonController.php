@@ -88,6 +88,7 @@ class HoaDonController extends Controller
         switch ($request->trangThai) {
             case '1':
                 $hoadon->trangThai = 1;
+                $hoadon->nhan_vien_id = Auth()->user()->id;
                 break;
             case '2':
                 $hoadon->trangThai = 2;

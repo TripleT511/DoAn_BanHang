@@ -12,6 +12,7 @@ use App\Models\ChiTietPhieuKho;
 use App\Models\DanhMuc;
 use App\Models\HoaDon;
 use App\Models\MaGiamGia;
+use App\Models\PhieuKho;
 use App\Models\SanPham;
 use Carbon\Carbon;
 use Illuminate\Bus\Dispatcher;
@@ -22,6 +23,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+
 
 class GioHangController extends Controller
 {
@@ -64,6 +67,30 @@ class GioHangController extends Controller
     {
         $idSanPham = $request->sanphamId;
         $sanpham = SanPham::whereId($idSanPham)->first();
+
+        // Số lượng tồn kho
+        $soLuongNhap = ChiTietPhieuKho::with('phieukho')->whereHas('phieukho', function ($query) {
+            $query->where([
+                'trangThai' => 1,
+                'loaiPhieu' => 0
+            ]);
+        })->where('san_pham_id', $sanpham->id)->where('soLuong', ">", 0)->sum('soLuong');
+
+        $soLuongXuat = ChiTietPhieuKho::with('phieukho')->whereHas('phieukho', function ($query) {
+            $query->where([
+                'trangThai' => 1,
+                'loaiPhieu' => 1
+            ]);
+        })->where('san_pham_id', $sanpham->id)->where('soLuong', ">", 0)->sum('soLuong');
+
+        $soLuongTon = $soLuongNhap - $soLuongXuat;
+
+        if ($request->soLuong > $soLuongTon) {
+            return response()->json([
+                'error' => "Sản phẩm " . $sanpham->tenSanPham . " hiện chỉ còn " . $soLuongTon . " sản phẩm",
+            ]);
+        }
+
         $lstCart = Session::get('Cart');
         if ($lstCart) {
             if (isset($lstCart[$idSanPham])) {
@@ -133,6 +160,30 @@ class GioHangController extends Controller
     public function capNhatGioHang(Request $request)
     {
         $idSanPham = $request->sanphamId;
+
+
+        // Số lượng tồn kho
+        $soLuongNhap = ChiTietPhieuKho::with('phieukho')->whereHas('phieukho', function ($query) {
+            $query->where([
+                'trangThai' => 1,
+                'loaiPhieu' => 0
+            ]);
+        })->where('san_pham_id', $idSanPham)->where('soLuong', ">", 0)->sum('soLuong');
+
+        $soLuongXuat = ChiTietPhieuKho::with('phieukho')->whereHas('phieukho', function ($query) {
+            $query->where([
+                'trangThai' => 1,
+                'loaiPhieu' => 1
+            ]);
+        })->where('san_pham_id', $idSanPham)->where('soLuong', ">", 0)->sum('soLuong');
+
+        $soLuongTon = $soLuongNhap - $soLuongXuat;
+
+        if ($request->soLuong > $soLuongTon) {
+            $stringError = "Sản phẩm " . SanPham::find($idSanPham)->tenSanPham . " hiện chỉ còn " . $soLuongTon . " sản phẩm";
+            return $this->renderCartTemplate($stringError);
+        }
+
         $lstCart = Session::get('Cart');
         if ($request->soLuong > 0) {
             $lstCart[$idSanPham]['soluong'] = (int)$request->soLuong;
@@ -144,7 +195,7 @@ class GioHangController extends Controller
         return $this->renderCartTemplate();
     }
 
-    public function renderCartTemplate()
+    public function renderCartTemplate($error = '')
     {
 
         $newCart = Session::get('Cart');
@@ -251,6 +302,7 @@ class GioHangController extends Controller
             'success' => $valueDiscount != 0 ? 'Áp dụng mã giảm giá thành công' : 'Cập nhật giỏ hàng thành công',
             'newTotal' =>
             number_format($newTotal, 0, '', ','),
+            'error' => $error
         ]);
     }
 
@@ -296,7 +348,7 @@ class GioHangController extends Controller
     public function viewCheckOut(Request $request)
     {
         if (Auth::check() && Auth::user()->phan_quyen_id == 2) {
-
+            $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
             $Cart = Session::get('Cart');
             $discountCode = Session::get('DiscountCode');
             $countCart = $Cart ? count($Cart) : 0;
@@ -338,6 +390,7 @@ class GioHangController extends Controller
                 'newTotal' => $newTotal,
                 'discount' =>
                 number_format($valueDiscount != 0 ? -$valueDiscount : $valueDiscount, 0, '', ','),
+                'lstDanhMuc' => $lstDanhMuc
             ]);
         }
 
@@ -385,6 +438,19 @@ class GioHangController extends Controller
 
         $newArray = [];
 
+        //Thêm phiếu xuất
+        $phieuXuat = new PhieuKho();
+        $phieuXuat->fill([
+            'maDonHang' => "PX" . Str::random(30),
+            'nha_cung_cap_id' => null,
+            'user_id' => null,
+            'ngayTao' => Carbon::now(),
+            'ghiChu' => "",
+            'loaiPhieu' => 1,
+            'trangThai' => 0
+        ]);
+        $phieuXuat->save();
+
         foreach ($Cart as $item) {
             array_push($newArray, [
                 'tenSanPham' => $item['tenSanPham'],
@@ -411,6 +477,19 @@ class GioHangController extends Controller
                 'soLuong' => $item['soluong'],
             ]);
             $gioHang->save();
+
+            //Chi tiết phiếu xuất
+            $chiTietPhieuKho = new ChiTietPhieuKho();
+            $chiTietPhieuKho->fill([
+                'phieu_kho_id' => $phieuXuat->id,
+                'san_pham_id' => $item['id'],
+                'sku' => $item['sku'],
+                'donVi' => 'Cái',
+                'soLuong' => $item['soluong'],
+                'gia' => $item['gia'],
+                'tongTien' => $item['gia'] * $item['soluong']
+            ]);
+            $chiTietPhieuKho->save();
 
             $total += (int)$item['soluong'] * (float)$item['gia'];
         }

@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('phieu_khos', function (Blueprint $table) {
             $table->id();
             $table->string('maDonHang');
-            $table->unsignedBigInteger('nha_cung_cap_id');
+            $table->unsignedBigInteger('nha_cung_cap_id')->nullable();
             $table->foreign('nha_cung_cap_id')->references('id')->on('nha_cung_caps')->onUpdate('cascade')->onDelete('cascade');
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->dateTime('ngayTao');
             $table->string('ghiChu')->nullable();

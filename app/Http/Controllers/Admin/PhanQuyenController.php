@@ -39,7 +39,25 @@ class PhanQuyenController extends Controller
      */
     public function store(StorePhanQuyenRequest $request)
     {
-        //
+        $request->validate([
+            'tenViTri' => 'required|unique:phan_quyens|string',
+            'viTri' => 'required|unique:phan_quyens',
+            
+        ], [
+            'tenViTri.required' => "Tên vị trí không được bỏ trống",
+            'tenViTri.unique' => "Tên vị trí bị trùng",
+            'viTri.required' => "Mã vị trí không được bỏ trống",
+            'viTri.unique' => "Mã vị trí bị trùng",
+
+        ]);
+
+        $phanquyen = new PhanQuyen();
+        $phanquyen->fill([
+            'tenViTri'=> $request->input('tenViTri'),
+            'viTri'=> $request->input('viTri'),
+        ]);
+        $phanquyen->save();
+        return Redirect::route('phanquyen.index');
     }
 
     /**
@@ -61,7 +79,7 @@ class PhanQuyenController extends Controller
      */
     public function edit(PhanQuyen $phanQuyen)
     {
-        return view('admin.phanquyen.edit-phanquyen');
+        return view('admin.phanquyen.edit-phanquyen', ['phanquyen' => $phanquyen]);
     }
 
     /**
@@ -73,7 +91,19 @@ class PhanQuyenController extends Controller
      */
     public function update(UpdatePhanQuyenRequest $request, PhanQuyen $phanQuyen)
     {
-        //
+        $request->validate([
+            'tenViTri' => 'required',
+            'viTri' => 'required',  
+        ], [
+            'tenViTri.required' => "Tên vị trí không được bỏ trống",
+            'viTri.required' => "Mã vị trí không được bỏ trống",
+        ]);
+        $phanquyen->fill([
+            'tenViTri'=> $request->input('tenViTri'),
+            'viTri'=> $request->input('viTri'),
+        ]);
+        $phanquyen->save();
+        return Redirect::route('phanquyen.index');
     }
 
     /**
@@ -84,6 +114,7 @@ class PhanQuyenController extends Controller
      */
     public function destroy(PhanQuyen $phanQuyen)
     {
-        //
+        $phanquyen->delete();
+        return Redirect::route('phanquyen.index',);
     }
 }

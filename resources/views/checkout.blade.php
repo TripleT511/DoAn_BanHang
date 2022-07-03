@@ -82,7 +82,7 @@
 								</span>
 							</div>
 							<div class="form-group">
-								<input type="text" class="form-control" name="diaChi_billing" placeholder="Địa chỉ">
+								<input type="text" class="form-control" name="diaChi_billing" placeholder="Địa chỉ" value="{{ $user->diaChi }}">
 								<span class="text-validate" id="validate-sdt">
 									@if($errors->has('diaChi_billing')) 
 										{{ $errors->first('diaChi_billing') }}

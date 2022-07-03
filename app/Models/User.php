@@ -26,6 +26,9 @@ class User extends Authenticatable
         'anhDaiDien',
         'soDienThoai',
         'phan_quyen_id',
+        'social_id',
+        'social_type',
+        'diaChi'
     ];
 
     /**
