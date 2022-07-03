@@ -36,7 +36,10 @@ class TaiKhoanController extends Controller
         $lstTaiKhoan = User::with('phanquyen')->paginate(3);
         if($request->block) {
             $lstTaiKhoan =  User::with('phanquyen')->onlyTrashed()->paginate(3);
+        }elseif($request->phan_quyen_id){
+            $lstTaiKhoan =  User::with('phanquyen')->where('phan_quyen_id', '=',$request->phan_quyen_id)->paginate(3);
         }
+
 
         foreach ($lstTaiKhoan as $item) {
             $this->fixImage($item);
@@ -200,6 +203,34 @@ class TaiKhoanController extends Controller
         }
          $user->save();
          return Redirect::route('user.index');
+    }
+
+    public function changepass(User $user)
+    {
+        return View('admin.taikhoan.change-password-taikhoan',['user' => $user]);
+    } 
+
+    public function doimatkhau(Request $request, User $user)
+    {  
+       
+        $request->validate([
+            'password' => 'required|string|min:6|max:16',
+            'newpassword'=>'required',
+        ], [
+            'password.min'=>'Mật khẩu tối thiểu 6 ký tự',
+            'password.max'=>'Mật khẩu tối đa 16 ký tự',
+            'password.required' => 'Mật khẩu không được bỏ trống',
+            'newpassword.required' => 'Xác nhận mật khẩu không được bỏ trống',
+        ]);
+        if(strcmp($request->password,$request->newpassword)==0){
+        $user->fill([
+            'password'=>Hash::make($request->password),
+        ]);
+        $user->save();
+        return Redirect::route('user.index');
+        }
+        return View('admin.taikhoan.change-password-taikhoan',['user' => $user]);
+        
     }
 
     /**

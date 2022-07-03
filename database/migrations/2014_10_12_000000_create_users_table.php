@@ -21,9 +21,12 @@ return new class extends Migration
             $table->string('password');
             $table->string('soDienThoai');
             $table->text('anhDaiDien');
+            $table->string('diaChi');            
             $table->tinyInteger('phan_quyen_id')->default(2);
             $table->foreign('phan_quyen_id')->references('viTri')->on('phan_quyens')->onUpdate('cascade')->onDelete('cascade');
             $table->rememberToken();
+            $table->string('social_id')->nullable();
+            $table->string('social_type')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

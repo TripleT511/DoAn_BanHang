@@ -80,6 +80,9 @@
                             <a class="btn btn-success" href="{{ route('user.edit', ['user' => $item]) }}">
                               <i class="bx bx-edit-alt me-1"></i>Sửa
                             </a>
+                            <a class="btn btn-success" href="{{ route('changepass', ['user' => $item]) }}">
+                              <i class="bx bx-edit-alt me-1"></i>Sửa
+                            </a>
                             <form class="d-inline-block" method="post" action="{{ route('user.destroy',['user'=>$item]) }}">
                               @csrf
                               @method("DELETE")

@@ -28,17 +28,14 @@
                           <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $item->tenViTri }}</strong></td>
                           <td><i class="fab fa-angular fa-lg text-danger me-3"></i> {{ $item->viTri }}</td>
                           <td>
-                            <div class="dropdown">
-                              <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                <i class="bx bx-dots-vertical-rounded"></i>
-                              </button>
-                              <div class="dropdown-menu">
-                                <a class="dropdown-item" href="javascript:void(0);"
-                                  ><i class="bx bx-edit-alt me-1"></i>Sửa</a>
-                                <a class="dropdown-item" href="javascript:void(0);"
-                                  ><i class="bx bx-trash me-1"></i> Xoá</a>
-                              </div>
-                            </div>
+                            <a class="btn btn-success" href="{{ route('phanquyen.edit', ['phanquyen' => $item]) }}">
+                              <i class="bx bx-edit-alt me-1"></i>Sửa
+                            </a>
+                            <form class="d-inline-block" method="post" action="{{ route('phanquyen.destroy', ['phanquyen'=>$item]) }}">
+                              @csrf
+                              @method("DELETE")
+                              <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
+                            </form>
                           </td>
                       </tr>
                       @endforeach

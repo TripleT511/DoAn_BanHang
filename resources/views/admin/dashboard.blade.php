@@ -117,6 +117,56 @@
                     </div>
                   </div>
                 </div>
+                <!--/ Luot Tim kiem -->
+                <div class="col-md-6 col-lg-4 order-2 mb-4">
+                  <div class="card h-100">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                      <h5 class="card-title m-0 me-2">Top 10 từ khoá được tìm kiếm </h5>
+                      <div class="dropdown">
+                        <button
+                          class="btn p-0"
+                          type="button"
+                          id="transactionID"
+                          data-bs-toggle="dropdown"
+                          aria-haspopup="true"
+                          aria-expanded="false"
+                        >
+                          <i class="bx bx-dots-vertical-rounded"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="transactionID">
+                          <a class="dropdown-item" href="javascript:void(0);">Theo ngày</a>
+                          <a class="dropdown-item" href="javascript:void(0);">Theo Tháng</a>
+                          <a class="dropdown-item" href="javascript:void(0);">Theo Năm</a>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <ul class="p-0 m-0">
+                          <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                            <div class="me-2">
+                              <h6 class="text-muted d-block mb-1">từ Khoá</h6>
+                            </div>
+                            <div class="me-2">
+                              <h6 class="text-muted d-block mb-1">Số lượng</h6>
+                            </div>
+                          </div>
+                      </ul>
+                      @foreach ($lstLuotTimKiem as $item)
+                      <ul class="p-0 m-0">
+                        <li class="d-flex mb-4 pb-1">
+                          <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                              <h6 class="mb-0">{{$item->tuKhoa}}</h6>
+                            <div class="me-4">
+                              <h6 class="mb-0">{{$item->soLuong}}</h6>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                      @endforeach
+                    </div>
+                  </div>
+                </div>
+                 <!--/ Luot Tim kiem -->
                 <!--/ Total Revenue -->
                 <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
                   <div class="row">

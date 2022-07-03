@@ -7,16 +7,15 @@ use App\Models\HinhAnh;
 use App\Models\SanPham;
 use App\Models\User;
 use App\Models\Slider;
-
+use App\Models\LuotTimKiem;
+use App\Jobs\SendMail2;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-
-
-
+use Illuminate\Auth\Events\Registered;
 
 class HomeController extends Controller
 {
@@ -138,6 +137,21 @@ class HomeController extends Controller
     {
         $lstSanPham = SanPham::where('tenSanPham', 'LIKE', '%' . $request->keyword . '%')->with('hinhanhs')->with('danhmuc')->paginate(8);
         $soluong = Count(SanPham::where('tenSanPham', 'LIKE', '%' . $request->keyword . '%')->with('hinhanhs')->with('danhmuc')->get());
+        if(empty($request->keyword)){}
+        elseif($request->keyword== ' '){}
+        else{
+        $kt = LuotTimKiem::where('tuKhoa','=',$request->keyword)->first(); 
+        if($kt){
+            $kt->fill([
+                'soLuong'=> $kt->soLuong+1,
+            ]);$kt->save();
+        }else{
+                $luottimkiem=LuotTimKiem::create([
+                'tuKhoa'=>$request->keyword,
+                'soLuong'=> '1',
+                ]);
+            }
+        }
         return view('search', ['lstSanPham' => $lstSanPham, 'keyword' => $request->keyword, 'soluong' => $soluong]);
     }
     /**
@@ -163,11 +177,13 @@ class HomeController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
             'soDienThoai' => 'required|string|max:10|min:10',
+            'g-recaptcha-response' => 'required|captcha',
         ], [
             'email.required' => 'Email không được bỏ trống',
             'email.unique' => 'Email đã tồn tại',
             'password.required' => 'Mật khẩu không được bỏ trống',
             'soDienThoai.required' => 'Số điện thoại không được bỏ trống',
+            'g-recaptcha-response.required'=>'chua nhan kiem tra',
         ]);
         $user = new User();
         $user->fill([
