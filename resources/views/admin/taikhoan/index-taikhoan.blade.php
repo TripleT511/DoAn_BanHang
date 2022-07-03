@@ -34,6 +34,11 @@
                   Tài khoản bị khoá
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="{{ route('user.index', ['phan_quyen_id' => '2']) }}" class="btn btn-info">
+                  Tài khoản Khách hàng
+                </a>
+              </li>
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">
