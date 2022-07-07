@@ -16,13 +16,14 @@ use App\Models\NhaCungCap;
 use App\Models\SanPham;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-
+use PDF;
 
 use function GuzzleHttp\Promise\all;
 
@@ -393,7 +394,7 @@ class PhieuKhoController extends Controller
 
 
         // Xoa Session
-        Session::flush('lstSanPham');
+        Session::forget('lstSanPham');
 
         return Redirect::route('phieukho.index');
     }
@@ -550,7 +551,26 @@ class PhieuKhoController extends Controller
                         </div>
                     </div>
                     ';
+        Session::put('pdfPhieuKho', $output);
         return
-            response()->json($output);
+            response()->json([
+                'data' => $output,
+            ]);
+    }
+
+    public function createPDF(Request $request) 
+    {
+        //$data = Session::get('pdfPhieuKho');
+        // $pdf = App::make('dompdf.wrapper');
+        // $pdf->loadHTML($data);
+        $madonhang = 'a';
+        $data = [
+            'madonhang'     => $madonhang,
+        ];
+        $pdf=PDF::loadView('admin.pdf.kho',$data);
+        
+        return $pdf->stream();
+
+       
     }
 }

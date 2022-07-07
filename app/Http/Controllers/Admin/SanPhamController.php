@@ -12,6 +12,7 @@ use App\Http\Requests\StoreSanPhamRequest;
 use App\Http\Requests\UpdateSanPhamRequest;
 use App\Models\ThuocTinh;
 use App\Models\TuyChonThuocTinh;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -45,7 +46,21 @@ class SanPhamController extends Controller
         return View('admin.sanpham.index-sanpham', ['lstSanPham' => $lstSanPham]);
     }
 
-
+    public function searchSanPham(Request $request)
+    {
+        $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->paginate(5);
+        if ($request->keyword != "") {
+            $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')
+            ->where('tenSanPham', 'LIKE', '%' . $request->input('keyword') . '%')
+            ->orWhere('sku', 'LIKE', '%' . $request->input('keyword') . '%')->paginate(5);
+            foreach ($lstSanPham as $key => $item) {
+                foreach ($item->hinhanhs as $item2) {
+                    $this->fixImage($item2);
+                }
+            }
+        }
+        return View('admin.sanpham.index-sanpham', ['lstSanPham' => $lstSanPham]);
+    }
 
     /**
      * Show the form for creating a new resource.

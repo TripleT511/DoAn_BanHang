@@ -22,6 +22,15 @@
     </style>
 @endsection
 @section('content')
+<div class="bs-toast toast toast-placement-ex m-2 fade bg-danger top-50 start-50 translate-middle " role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+  <div class="toast-header">
+      <i class="bx bx-bell me-2"></i>
+      <div class="me-auto fw-semibold">Thông báo</div>
+      <small>1 second ago</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+  <div class="toast-body">Lỗi</div>
+</div>
 <div class="container-xxl flex-grow-1 container-p-y">
             <h4 class="fw-bold py-3">Tài khoản</h4>
             <ul class="nav nav-pills flex-column flex-md-row mb-3">
@@ -36,10 +45,18 @@
               </li>
               <li class="nav-item">
                 <a href="{{ route('user.index', ['phan_quyen_id' => '2']) }}" class="btn btn-info">
-                  Tài khoản Khách hàng
+                  <i class='bx bxs-group'></i>
+                 Khách hàng
                 </a>
               </li>
+              <li class="nav-item "  style="margin-left: 10px;">
+                <form action="{{ route('searchTaiKhoan') }}" method="GET" class="form-search-custom">
+                    <input type="text" class="form-control" style="width: 300px;" name="keyword" id="searchDanhMuc" placeholder="Từ khoá ..."  >
+                    <button type="submit" class="btn btn-success"><i class='bx bx-search'></i></button>
+                </form>
+            </li>
             </ul>
+           
               <!-- Basic Bootstrap Table -->
               <div class="card">
                
@@ -83,19 +100,19 @@
                           <td>
                             @if($item->deleted_at == null)
                             <a class="btn btn-success" href="{{ route('user.edit', ['user' => $item]) }}">
-                              <i class="bx bx-edit-alt me-1"></i>Sửa
+                              <i class="bx bx-edit-alt me-1"></i>
                             </a>
-                            <a class="btn btn-success" href="{{ route('changepass', ['user' => $item]) }}">
-                              <i class="bx bx-edit-alt me-1"></i>Sửa
+                            <a class="btn btn-primary btn-change-password" data-bs-toggle="modal" data-bs-target="#modalCenter"  data-id="{{ $item->id }}" href="#">
+                              <i class='bx bxs-key'></i>
                             </a>
                             <form class="d-inline-block" method="post" action="{{ route('user.destroy',['user'=>$item]) }}">
                               @csrf
                               @method("DELETE")
-                              <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class='bx bx-lock' ></i> Khoá</button>
+                              <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class='bx bx-lock' ></i></button>
                             </form>
                             @elseif($item->deleted_at != null) 
                             <a class="btn btn-success" href="{{ route('mokhoa',['user'=>$item]) }}">
-                              <i class='bx bx-lock-open-alt'></i></i>Mở khoá
+                              <i class='bx bx-lock-open-alt'></i></i>
                             </a>
                             @endif
                           </td>
@@ -115,106 +132,130 @@
               
               <!--/ Responsive Table -->
             </div>
+            <div class="modal fade" id="modalCenter" tabindex="-1"  aria-modal="true" role="dialog">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                  <h5 class="modal-title" id="modalCenterTitle">Đổi mật khẩu</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  
+                  <div class="modal-body">
+                      <form method="post" action="javascript:void(0)" id="form_changepassword" enctype="multipart/form-data">
+                          <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
+                          <div class="mb-3 form-password-toggle">
+                            <div class="d-flex justify-content-between">
+                              <label class="form-label" for="newpassword">Mật khẩu mới</label>
+                            </div>
+                            <div class="input-group input-group-merge">
+                              <input type="password" id="newpassword" class="form-control" name="newpassword"
+                                placeholder="Mật khẩu mới.........."
+                                aria-describedby="password" />
+                              <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                            </div>
+                          </div>
+                           <div class="mb-3 form-password-toggle">
+                            <div class="d-flex justify-content-between">
+                              <label for="confirm_password" class="form-label">Xác nhận mật khẩu</label>
+                            </div>
+                            <div class="input-group input-group-merge">
+                              <input type="password" id="confirm_password" class="form-control" name="confirm_password"
+                                placeholder="Nhập lại mật khẩu........"
+                                aria-describedby="password" />
+                              <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                            </div>
+                          </div>
+                          <input type="hidden" id="user_id" >
+                          <button type="submit" class="btn btn-primary btn-change">Đổi mật khẩu</button>
+                      </form>
+                  </div>
+                  <div class="modal-footer">
+                  <button type="button" id="closeModel" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                      Đóng
+                  </button>
+                  </div>
+              </div>
+              </div>
+          </div>
+<div class="modal-backdrop fade "></div>
 @endsection
 @section('js')
 <script>
-    $(function() {
-      let lstRemoveProduct = document.querySelectorAll(".table-product tr");
-        let lstSP = document.querySelectorAll(".product-search-item");
-        let lstBtnDelete = document.querySelectorAll(".btn-xoa");
-        let lstBtnUpdate = document.querySelectorAll(".btn-update");
+  $(function() {
+    let lstRemoveProduct = document.querySelectorAll(".table-product tr");
+    let lstSP = document.querySelectorAll(".product-search-item");
+    let lstBtnDelete = document.querySelectorAll(".btn-xoa");
+    let lstBtnUpdate = document.querySelectorAll(".btn-update");
+    let lstBtnChangePassword = document.querySelectorAll(".btn-change-password");
+    let btnChangePass = document.querySelector(".btn-change");
 
-            
-            //Search DiaDanh
-            $('#search-form').on('submit', function() {
-                var val = $('#searchInput').val();
-                if(val != "") {
-                    $.ajax({
-                    type: "get",
-                    url: "/admin/taikhoan/timkiem",
-                    data: {
-                        txtSearch: val
-                    },
-                    dataType: "json",
-                    success: function (response) {
-                      $("#lstTaiKhoan").html(response.data);
-                      $(".pagination").html(response.pagination);
-                    }
-                });
-                }
-                
-            });
+    //Đổi mật khẩu
+    lstBtnChangePassword.forEach(item => item.addEventListener('click', function(e) {
+      e.preventDefault();
+      $("#user_id").val(item.dataset.id);
+      btnChangePass.addEventListener('click', function() 
+      {
+        console.log("a");
+        $.ajax({
+          type: "POST",
+          url: "/admin/doi-mat-khau",
+          data: {
+              _token: $("#token").val(),
+             newpassword: $("#newpassword").val(),
+             user_id: $("#user_id").val(),
+             confirm_password: $("#confirm_password").val()
+          },
+          dataType: "json",
+          success: function (response) {
+            if(response.error) {
+              document.querySelector(".bs-toast").classList.add("bg-danger");
+              document.querySelector(".bs-toast").classList.remove("bg-success");
+              document.querySelector(".toast-body").innerHTML = response.error;
+              document.querySelector(".bs-toast").classList.add("show");
+              setTimeout(() => {
+                  document.querySelector(".bs-toast").classList.remove("show");
+              }, 2000);
+              return;
+            }
+            let btnShowModel = document.querySelector("#closeModel");
+            btnShowModel.click();
 
-           
+            document.querySelector(".bs-toast").classList.add("bg-success");
+            document.querySelector(".bs-toast").classList.remove("bg-danger");
+            document.querySelector(".toast-body").innerHTML = response.success;
+            document.querySelector(".bs-toast").classList.add("show");
+            setTimeout(() => {
+                document.querySelector(".bs-toast").classList.remove("show");
+            }, 2000);
+          }
+        });
 
+      });
+      
+    }));
           
+          //Search DiaDanh
+        $('#searchInput').on('keyup', function() {
+              var val = $('#searchInput').val();
+              if(val != "") {
+                  $.ajax({
+                  type: "get",
+                  url: "/admin/taikhoan/timkiem",
+                  data: {
+                      txtSearch: val
+                  },
+                  dataType: "json",
+                  success: function (response) {
+                    $("#lstTaiKhoan").html(response);
+                  }
+              });
+              }
+              
+          });
 
-            // function renderUI() {
-            //     $("#searchSlider").val('');
-            //     $.ajax({
-            //         type: "get",
-            //         url: "/admin/slideshow/xem-chi-tiet",
-            //         dataType: "json",
-            //         success: function (response) {
-            //             $(".table-product").html(response);
-            //             lstBtnDelete = document.querySelectorAll(".btn-xoa");
-            //             lstBtnUpdate = document.querySelectorAll(".btn-update");
-            //             let lstSoLuong = document.querySelectorAll(".input-sl");
-            //             let lstGia = document.querySelectorAll(".input-gia");
 
-            //              // Xoá chi tiết phiếu kho
-            //             lstBtnDelete.forEach(item => item.addEventListener('click', function () {
-            //                     $.ajax({
-            //                         type: "get",
-            //                         url: "/admin/kho/xoa-chi-tiet",
-            //                         dataType: "json",
-            //                         data: {
-            //                             id: item.dataset.id
-            //                         },
-            //                         success: function (response) {
-            //                            renderUI();
-            //                         }
-            //                     });
-            //             }));
+        
 
-            //             // Cập nhật chi tiết phiếu kho
-            //             lstBtnUpdate.forEach((item, index) => item.addEventListener('click', function () {
-            //                 if(lstSoLuong[index].value <= 0 || isNaN(lstSoLuong[index].value) || isNaN(lstGia[index].value) || lstGia[index].value <= 0) {
-            //                     document.querySelector(".bs-toast").classList.add("bg-danger");
-            //                     document.querySelector(".bs-toast").classList.remove("bg-success");
-            //                     document.querySelector(".toast-body").innerText = "Lỗi";
-            //                     document.querySelector(".bs-toast").classList.add("show");
-            //                     setTimeout(() => {
-            //                         document.querySelector(".bs-toast").classList.remove("show");
-            //                     }, 2000);
-            //                 } else {
-            //                     $.ajax({
-            //                         type: "get",
-            //                         url: "/admin/kho/cap-nhat-chi-tiet",
-            //                         dataType: "json",
-            //                         data: {
-            //                             id: item.dataset.id,
-            //                             soluong: lstSoLuong[index].value,
-            //                             gia: lstGia[index].value
-            //                         },
-            //                         success: function (response) {
-            //                             document.querySelector(".bs-toast").classList.remove("bg-danger");
-            //                             document.querySelector(".bs-toast").classList.add("bg-success");
-            //                             document.querySelector(".toast-body").innerText = "Cập nhật thành công";
-
-            //                             document.querySelector(".bs-toast").classList.add("show");
-            //                             setTimeout(() => {
-            //                                 document.querySelector(".bs-toast").classList.remove("show");
-            //                             }, 2000);
-            //                            renderUI();
-            //                         }
-            //                     });
-            //                 }
-                                
-            //             }))
-            //         }
-            //     });
-            // }  
     });
 
 

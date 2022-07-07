@@ -91,7 +91,18 @@
 								
 							</a>
 						</figure>
-						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
+						<div class="rating">
+							@php
+								$starActive = round($item->danhgias->avg('xepHang'));
+								$starNonActive = 5 - $starActive;
+							@endphp
+							@for ($i = 0; $i < $starActive; $i++)
+								<i class="icon-star voted"></i>
+							@endfor
+							@for ($i = 0; $i < $starNonActive; $i++)
+								<i class="icon-star"></i>
+							@endfor
+						</div>
 						<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
 							<h3>{{ $item->tenSanPham }}</h3>
 						</a>
@@ -166,7 +177,18 @@
                             @endforeach
 							</a>
 						</figure>
-						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
+						<div class="rating">
+							@php
+								$starActive = round($item->danhgias->avg('xepHang'));
+								$starNonActive = 5 - $starActive;
+							@endphp
+							@for ($i = 0; $i < $starActive; $i++)
+								<i class="icon-star voted"></i>
+							@endfor
+							@for ($i = 0; $i < $starNonActive; $i++)
+								<i class="icon-star"></i>
+							@endfor
+						</div>						
 						<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
 							<h3>{{ $item->tenSanPham }}</h3>
 						</a>

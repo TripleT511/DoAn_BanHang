@@ -8,7 +8,6 @@ use App\Models\NhaCungCap;
 use App\Http\Requests\StoreNhaCungCapRequest;
 use App\Http\Requests\UpdateNhaCungCapRequest;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 
@@ -27,32 +26,16 @@ class NhaCungCapController extends Controller
 
     public function searchNCC(Request $request)
     {
-        $output = "";
-
-        if ($request->input('txtSearch') != "") {
-            $lstNCC = NhacungCap::where('tenNhaCungCap', 'LIKE', '%' . $request->input('txtSearch') . '%')->get();
-            foreach ($lstNCC as $key => $item) {
-                $output .= '
-                <tr>
-                 <td><strong>' . $item->tenNhaCungCap . '</strong></td>
-                 <td> ' . $item->soDienThoai . ' </td>
-                 <td>  ' . $item->email . ' </td>
-                 <td> ' . $item->diaChi . '</td>
-                 <td>
-                  <a class="btn btn-success" href="' . route('nhacungcap.edit', ['nhacungcap' => $item]) . '">
-                    <i class="bx bx-edit-alt me-1"></i>Sửa
-                  </a>
-                 <form class="d-inline-block" method="post" action="' . route('nhacungcap.destroy', ['nhacungcap' => $item]) . '">
-                    <input type="hidden" name="_method" value="DELETE">
-                    <input type="hidden" name="_token" value="' . csrf_token() . '">
-                    <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
-                 </form>
-                 </td>
-                </tr> 
-                ';
-            }
+       
+        if ($request->input('keyword') != "") {
+            $lstNCC = NhacungCap::where('tenNhaCungCap', 'LIKE', '%' . $request->input('keyword') . '%')
+            ->orWhere('email', 'LIKE', '%' . $request->input('keyword') . '%')
+            ->orWhere('soDienThoai', '=',  $request->input('keyword'))
+            ->orWhere('diaChi', 'LIKE', '%' . $request->input('keyword') . '%')
+            ->paginate(5);
         }
-        return response()->json($output);
+        return View('admin.nhacungcap.index-nhacungcap', ['lstNCC' => $lstNCC]);
+
     }
     /**
      * Show the form for creating a new resource.

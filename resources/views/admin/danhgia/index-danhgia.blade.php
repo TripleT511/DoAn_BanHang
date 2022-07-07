@@ -6,6 +6,12 @@
 <div class="container-xxl flex-grow-1 container-p-y">
               <h4 class="fw-bold py-3">Đánh giá</h4>
             <ul class="nav nav-pills flex-column flex-md-row mb-3">
+              <li class="nav-item "  style="margin-left: 10px;">
+                <form action="{{ route('searchDanhGia') }}" method="GET" class="form-search-custom">
+                    <input type="text" class="form-control" name="keyword" id="searchDanhMuc" placeholder="Từ khoá ..."  >
+                    <button type="submit" class="btn btn-success"><i class='bx bx-search'></i></button>
+                </form>
+            </li>
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">

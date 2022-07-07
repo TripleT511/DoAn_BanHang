@@ -20,7 +20,7 @@ class UserFactory extends Factory
         return [
             'hoTen' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
-            'anhDaiDien' => 'images/user-default.jpg',
+            'anhDaiDien' => '',
             'soDienThoai' => '0323456789',
             'diaChi'=>'1',
             'phan_quyen_id' => 0,
