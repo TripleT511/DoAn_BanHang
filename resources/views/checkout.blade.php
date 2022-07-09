@@ -44,9 +44,14 @@
 		<h1>Thanh toán</h1>
 			
 	</div>
-	<!-- /page_header -->
+	@if($errors->any()) 
+		@foreach ($errors->all() as $err)
+		<p class="card-description" style="color: #fc424a;">{{ $err }}</p>
+		@endforeach
+	@endif
 			<div class="row">
 				<div class="col-lg-4 col-md-6">
+					
 				<form action="{{ route('thanhtoanDefault') }}" id="form-checkout" method="POST">
 					@csrf
 					<div class="step first">
@@ -145,6 +150,8 @@
 							</ul>
 							<div class="total clearfix">Tổng tiền <span>{{ number_format($newTotal, 0, '', ',') }} ₫</span></div>
 							<input type="hidden" name="tongTien" value="{{ $total }}">
+							<input type="hidden" name="giamGia" value="{{ $discount }}">
+							<input type="hidden" name="tongThanhTien" value="{{ $newTotal }}">
 							<button type="submit" id="payment" class="btn_1 full-width">Thanh toán</button>
 						</div>
 						<!-- /box_general -->
@@ -169,10 +176,42 @@
 			dataType: "json",
 			success: function (response) {
 				$("#lstItemCart").html(response.newCart);
-				document.querySelector(".total_drop div span").innerHTML = `${response.total} ₫`;
+				document.querySelector(".total_drop div span").innerHTML = response.total;
 				document.querySelector(".dropdown-cart a strong").innerHTML = response.numberCart;
+				abc();
+
 			}
 		});
+
+		function abc() {
+			let lstBtnDelete = document.querySelectorAll(".btn-trash");
+		// Xoá giỏ hàng //
+		lstBtnDelete.forEach(item => item.addEventListener('click', function() {
+			$.ajax({
+			type: "POST",
+			url: "/remove-cart",
+			dataType: "json",
+			data: {
+				_token: "{{ csrf_token() }}",
+				sanphamId: this.dataset.id
+			},
+			success: function (response) {
+				$.ajax({
+				type: "GET",
+				url: "/render-cart",
+				dataType: "json",
+				success: function (response) {
+					$("#lstItemCart").html(response.newCart);
+					document.querySelector(".total_drop div span").innerHTML = response.total;
+					document.querySelector(".dropdown-cart a strong").innerHTML = response.numberCart;
+					abc();
+
+				}
+			});
+			}
+			});
+		}));
+		}
 	})
 		let txtSoDienThoai = document.querySelector("#soDienThoai");
 		let txtEmail = document.querySelector("#email");

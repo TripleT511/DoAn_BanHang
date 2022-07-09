@@ -180,7 +180,7 @@
                       </div>
                     </div>
                     <div class="action">
-                      <a class="btn btn-success" href="{{ route('discount.destroy', ['discount' => $item]) }}">
+                      <a class="btn btn-success" href="{{ route('discount.edit', ['discount' => $item]) }}">
                             <i class="bx bx-edit-alt me-1"></i>Sửa
                           </a>
                           <form class="d-inline-block" method="post" action="{{ route('discount.destroy', ['discount'=>$item]) }}">

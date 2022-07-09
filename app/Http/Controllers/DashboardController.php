@@ -7,6 +7,7 @@ use App\Models\LuotTimKiem;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -20,8 +21,16 @@ class DashboardController extends Controller
 
     public function index()
     {
-        $lstLuotTimKiem = LuotTimKiem::orderBy('soLuong','desc')->limit(10)->get();
-        return View('admin.dashboard', ['lstLuotTimKiem' => $lstLuotTimKiem]);
+        $lstLuotTimKiem = LuotTimKiem::orderBy('soLuong', 'desc')->limit(10)->get();
+        $tongDoanhThu = DB::table("hoa_dons")->where([
+            'trangThai' => 4,
+            'trangThaiThanhToan' => 1
+        ])->get()->sum("tongTien");
+        $tongSanPham = DB::table('san_phams')->get()->count();
+        $tongHoaDon = DB::table('hoa_dons')->get()->count();
+        $tongKhachHang = DB::table('users')->where('phan_quyen_id', 2)->whereNotNull('email_verified_at')->get()->count();
+
+        return View('admin.dashboard', ['lstLuotTimKiem' => $lstLuotTimKiem, 'tongDoanhThu' => $tongDoanhThu, 'tongSanPham' => $tongSanPham, 'tongDonHang' => $tongHoaDon, 'tongKhachHang' => $tongKhachHang]);
     }
 
     public function thongKeDoanhThu(Request $request)
@@ -29,7 +38,10 @@ class DashboardController extends Controller
         $doanhThu = [];
         $month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
         foreach ($month as $value) {
-            $hoadon = HoaDon::whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', $value)->sum('tongTien');
+            $hoadon = HoaDon::where([
+                'trangThai' => 4,
+                'trangThaiThanhToan' => 1
+            ])->whereYear('created_at', Carbon::now()->year)->whereMonth('created_at', $value)->sum('tongTien');
             array_push($doanhThu, $hoadon);
         }
         return response()->json($doanhThu);

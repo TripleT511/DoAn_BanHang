@@ -54,11 +54,8 @@ class SanPhamController extends Controller
      */
     public function create()
     {
-        $lstThuocTinh = ThuocTinh::all();
-        $lstTuyChonThuocTinh = TuyChonThuocTinh::all();
-        Session::forget("lstThuocTinh");
         $lstDanhMucCha = DanhMuc::where('idDanhMucCha', null)->get();
-        return View('admin.sanpham.create-sanpham', ['lstDanhMuc' => $lstDanhMucCha, 'lstThuocTinh' => $lstThuocTinh, 'lstTuyChonThuocTinh' => $lstTuyChonThuocTinh]);
+        return View('admin.sanpham.create-sanpham', ['lstDanhMuc' => $lstDanhMucCha]);
     }
 
     /**
@@ -70,16 +67,38 @@ class SanPhamController extends Controller
     public function store(StoreSanPhamRequest $request)
     {
 
-        dd($request);
+
+
         $request->validate([
             'tenSanPham' => 'required|unique:san_phams',
-            'maSKU' => 'required'
+            'maSKU' => 'required|unique:san_phams,sku',
+            'danhmucid' => 'required',
         ], [
             'tenSanPham.required' => "Tên sản phẩm không được bỏ trống",
             'tenSanPham.unique' => "Tên sản phẩm bị trùng",
-            'maSKU.required' => "Mã sản phẩm không được bỏ trống"
+            'maSKU.required' => "Mã sản phẩm không được bỏ trống",
+            'maSKU.unique' => "Mã sản phẩm đã tồn tại",
+            'danhmucid.required' => "Bắt buộc chọn danh mục"
         ]);
 
+
+        if ($request->filled('giaKhuyenMai')) {
+            $gia = $request->filled('gia') ? $request->gia : 0;
+            $request->validate([
+                'giaKhuyenMai' => "integer|max:$gia",
+            ], [
+                "giaKhuyenMai.integer" => "Giá khuyến mãi phải là số",
+                'giaKhuyenMai.max' => "Giá khuyến mãi không được lớn hơn giá gốc",
+            ]);
+        }
+
+        if ($request->filled('gia')) {
+            $request->validate([
+                'gia' => 'integer',
+            ], [
+                'gia.integer' => "Giá phải là số",
+            ]);
+        }
 
         // === Thêm sản phẩm === //
         $slug = '';
@@ -122,9 +141,8 @@ class SanPhamController extends Controller
 
         Session::flush("lstThuocTinh");
 
-        $lstSanPham = SanPham::all();
 
-        return View('admin.sanpham.index-sanpham')->with('lstSanPham', $lstSanPham);
+        return Redirect::route('sanpham.index');
     }
 
     /**
@@ -166,11 +184,31 @@ class SanPhamController extends Controller
     {
         $request->validate([
             'tenSanPham' => 'required',
-            'maSKU' => 'required'
+            'maSKU' => 'required',
+            'danhmucid' => 'required'
         ], [
             'tenSanPham.required' => "Tên sản phẩm không được bỏ trống",
-            'maSKU.required' => "Mã sản phẩm không được bỏ trống"
+            'maSKU.required' => "Mã sản phẩm không được bỏ trống",
+            'danhmucid.required' => "Danhg mục sản phẩm không được bỏ trống"
         ]);
+
+        if ($request->filled('giaKhuyenMai')) {
+            $gia = $request->filled('gia') ? $request->gia : 0;
+            $request->validate([
+                'giaKhuyenMai' => "integer|max:$gia",
+            ], [
+                "giaKhuyenMai.integer" => "Giá khuyến mãi phải là số",
+                'giaKhuyenMai.max' => "Giá khuyến mãi không được lớn hơn giá gốc",
+            ]);
+        }
+
+        if ($request->filled('gia')) {
+            $request->validate([
+                'gia' => 'integer',
+            ], [
+                'gia.integer' => "Giá phải là số",
+            ]);
+        }
 
         $sanpham->fill([
             'sku' => $request->input('maSKU'),
@@ -226,5 +264,7 @@ class SanPhamController extends Controller
         }
 
         $sanpham->delete();
+
+        return Redirect::back();
     }
 }

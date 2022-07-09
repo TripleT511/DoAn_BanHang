@@ -19,6 +19,7 @@ use Illuminate\Bus\Dispatcher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
@@ -53,7 +54,7 @@ class GioHangController extends Controller
                             ' . number_format($item['gia'], 0, '', ',') . ' ₫
                         </strong>
                     </a>
-                    <a href="#0" class="action"><i class="ti-trash"></i></a>
+                    <a href="#" class="btn-trash action" data-id="' . $item['id'] . '"><i class="ti-trash"></i></a>
                 </li>
             ';
             }
@@ -65,25 +66,12 @@ class GioHangController extends Controller
     }
     public function themgiohang(Request $request)
     {
+        $lstCart = Session::get('Cart');
         $idSanPham = $request->sanphamId;
         $sanpham = SanPham::whereId($idSanPham)->first();
+        $countProductinCart = isset($lstCart[$idSanPham]) ? $lstCart[$idSanPham]['soluong'] : 0;
 
-        // Số lượng tồn kho
-        $soLuongNhap = ChiTietPhieuKho::with('phieukho')->whereHas('phieukho', function ($query) {
-            $query->where([
-                'trangThai' => 1,
-                'loaiPhieu' => 0
-            ]);
-        })->where('san_pham_id', $sanpham->id)->where('soLuong', ">", 0)->sum('soLuong');
-
-        $soLuongXuat = ChiTietPhieuKho::with('phieukho')->whereHas('phieukho', function ($query) {
-            $query->where([
-                'trangThai' => 1,
-                'loaiPhieu' => 1
-            ]);
-        })->where('san_pham_id', $sanpham->id)->where('soLuong', ">", 0)->sum('soLuong');
-
-        $soLuongTon = $soLuongNhap - $soLuongXuat;
+        $soLuongTon = $sanpham->tonKho - $countProductinCart;
 
         if ($request->soLuong > $soLuongTon) {
             return response()->json([
@@ -91,7 +79,6 @@ class GioHangController extends Controller
             ]);
         }
 
-        $lstCart = Session::get('Cart');
         if ($lstCart) {
             if (isset($lstCart[$idSanPham])) {
                 $lstCart[$idSanPham]['soluong'] = (int)$lstCart[$idSanPham]['soluong'] +  $request->soLuong;
@@ -104,7 +91,7 @@ class GioHangController extends Controller
                     "hinhAnh" => $sanpham->hinhanhs->first()->hinhAnh,
                     "sku" => $sanpham->sku,
                     "soluong" => $request->soLuong,
-                    "gia" => $sanpham->gia,
+                    "gia" => $sanpham->giaKhuyenMai != 0 ?  $sanpham->giaKhuyenMai : $sanpham->gia,
                     "tongTien" => 0
                 );
 
@@ -119,7 +106,7 @@ class GioHangController extends Controller
                 "hinhAnh" => $sanpham->hinhanhs->first()->hinhAnh,
                 "sku" => $sanpham->sku,
                 "soluong" => $request->soLuong,
-                "gia" => $sanpham->gia,
+                "gia" => $sanpham->giaKhuyenMai != 0 ?  $sanpham->giaKhuyenMai : $sanpham->gia,
                 "tongTien" => 0
             );
             $lstCart[$idSanPham]['tongTien'] = (int)$lstCart[$idSanPham]['soluong'] *  (float)$lstCart[$idSanPham]['gia'];
@@ -144,7 +131,7 @@ class GioHangController extends Controller
                             ' . number_format($item['gia'], 0, '', ',') . ' ₫
                         </strong>
                     </a>
-                    <a href="#0" class="action" data-id="' . $item['id'] . '"><i class="ti-trash"></i></a>
+                    <a href="#" class="btn-trash action" data-id="' . $item['id'] . '"><i class="ti-trash"></i></a>
                 </li>
             ';
             }
@@ -159,39 +146,33 @@ class GioHangController extends Controller
 
     public function capNhatGioHang(Request $request)
     {
+        $lstCart = Session::get('Cart');
         $idSanPham = $request->sanphamId;
+        $sanpham = SanPham::whereId($idSanPham)->first();
 
+        if ($request->type == "incre") {
+            $countProductinCart = isset($lstCart[$idSanPham]) ? $lstCart[$idSanPham]['soluong'] : 0;
+            // Số lượng tồn kho
+            $soLuongTon = $sanpham->tonKho - $countProductinCart;
 
-        // Số lượng tồn kho
-        $soLuongNhap = ChiTietPhieuKho::with('phieukho')->whereHas('phieukho', function ($query) {
-            $query->where([
-                'trangThai' => 1,
-                'loaiPhieu' => 0
-            ]);
-        })->where('san_pham_id', $idSanPham)->where('soLuong', ">", 0)->sum('soLuong');
-
-        $soLuongXuat = ChiTietPhieuKho::with('phieukho')->whereHas('phieukho', function ($query) {
-            $query->where([
-                'trangThai' => 1,
-                'loaiPhieu' => 1
-            ]);
-        })->where('san_pham_id', $idSanPham)->where('soLuong', ">", 0)->sum('soLuong');
-
-        $soLuongTon = $soLuongNhap - $soLuongXuat;
-
-        if ($request->soLuong > $soLuongTon) {
-            $stringError = "Sản phẩm " . SanPham::find($idSanPham)->tenSanPham . " hiện chỉ còn " . $soLuongTon . " sản phẩm";
-            return $this->renderCartTemplate($stringError);
+            if ($request->soLuong > $soLuongTon) {
+                $stringError = "Sản phẩm " . SanPham::find($idSanPham)->tenSanPham . " hiện chỉ còn " . $soLuongTon . " sản phẩm";
+                return $this->renderCartTemplate($stringError);
+            }
         }
 
-        $lstCart = Session::get('Cart');
         if ($request->soLuong > 0) {
-            $lstCart[$idSanPham]['soluong'] = (int)$request->soLuong;
-            $lstCart[$idSanPham]['tongTien'] = (int)$request->soLuong *  (float)$lstCart[$idSanPham]['gia'];
-            Session::put("Cart", $lstCart);
+            if ($request->type == "incre") {
+                $lstCart[$idSanPham]['soluong'] += (int)$request->soLuong;
+                $lstCart[$idSanPham]['tongTien'] = (int)$lstCart[$idSanPham]['soluong'] *  (float)$lstCart[$idSanPham]['gia'];
+            } else if ($request->type == "decre") {
+                $lstCart[$idSanPham]['soluong'] = (int)$lstCart[$idSanPham]['soluong'] - (int)$request->soLuong;
+                $lstCart[$idSanPham]['tongTien'] = (int)$lstCart[$idSanPham]['soluong'] *  (float)$lstCart[$idSanPham]['gia'];
+            }
         } else {
             unset($lstCart[$idSanPham]);
         }
+        Session::put("Cart", $lstCart);
         return $this->renderCartTemplate();
     }
 
@@ -219,7 +200,7 @@ class GioHangController extends Controller
                             ' . $item['gia'] . ' ₫
                         </strong>
                     </a>
-                    <a href="#0" class="action"><i class="ti-trash"></i></a>
+                    <a href="#"  class="btn-trash action" data-id="' . $item['id'] . '"><i class="ti-trash"></i></a>
                 </li>
                 ';
                 $outputMain .= '
@@ -326,11 +307,14 @@ class GioHangController extends Controller
     public function index(Request $request)
     {
         $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
-        $discountCode = Session::forget("DiscountCode");
+        $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
+
+        Session::forget("DiscountCode");
         $Cart = Session::get('Cart');
         $countCart = $Cart ? count($Cart) : 0;
         $total = 0;
-        $lstDiscount = MaGiamGia::all();
+        $lstDiscount = MaGiamGia::where('ngayKetThuc', '>=', date('Y-m-d H:i:s'))->where('ngayBatDau', '<=', date('Y-m-d H:i:s'))->where('soLuong', '>', 0)->orWhereNull('soLuong')->get();
+
         if ($Cart)
             foreach ($Cart as $item) {
                 $total += (float)$item['gia'] * (int)$item['soluong'];
@@ -342,6 +326,7 @@ class GioHangController extends Controller
             'total' => $total,
             'lstDiscount' => $lstDiscount,
             'lstDanhMuc' => $lstDanhMuc,
+            'lstDanhMucHeader' => $lstDanhMucHeader
         ]);
     }
 
@@ -349,22 +334,25 @@ class GioHangController extends Controller
     {
         if (Auth::check() && Auth::user()->phan_quyen_id == 2) {
             $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+            $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
             $Cart = Session::get('Cart');
+            if (!$Cart) {
+                return Redirect::back();
+            }
             $discountCode = Session::get('DiscountCode');
             $countCart = $Cart ? count($Cart) : 0;
             $total = 0;
-            $newTotal = 0;
+
             if ($Cart)
                 foreach ($Cart as $item) {
                     $total += (float)$item['gia'] * (int)$item['soluong'];
                 }
-
+            $newTotal = $total;
             $valueDiscount = 0;
             if ($discountCode) {
                 $loaiKhuyenMai = $discountCode['type'];
                 $value =  $discountCode['value'];
                 $maxValue = $discountCode['max_value'];
-                $newTotal = $total;
                 if ($loaiKhuyenMai == 0) {
                     $newTotal = $total - $value;
                     $valueDiscount = $total - $newTotal;
@@ -390,7 +378,8 @@ class GioHangController extends Controller
                 'newTotal' => $newTotal,
                 'discount' =>
                 number_format($valueDiscount != 0 ? -$valueDiscount : $valueDiscount, 0, '', ','),
-                'lstDanhMuc' => $lstDanhMuc
+                'lstDanhMuc' => $lstDanhMuc,
+                'lstDanhMucHeader' => $lstDanhMucHeader
             ]);
         }
 
@@ -416,83 +405,92 @@ class GioHangController extends Controller
         if (!$Cart) {
             return redirect()->route('gio-hang');
         }
-        $discountCode = Session::get('DiscountCode');
-        $user = Auth::user();
-        $total = 0;
+
+        DB::beginTransaction();
+
+        try {
+            $discountCode = Session::get('DiscountCode');
+            $user = Auth::user();
+            $total = 0;
 
 
-        $hoadon = new HoaDon();
-        $hoadon->fill([
-            'nhan_vien_id' => null,
-            'khach_hang_id' => $user->id,
-            'hoTen' => $request->hoTen_billing,
-            'email' => $request->email_billing,
-            'diaChi' => $request->diaChi_billing,
-            'soDienThoai' => $request->soDienThoai_billing,
-            'ngayXuatHD' => date('Y-m-d H:i:s'),
-            'tongTien' => 0,
-            'ghiChu' => $request->ghiChu_billing,
-            'trangThai' => 0,
-        ]);
-        $hoadon->save();
-
-        $newArray = [];
-
-        //Thêm phiếu xuất
-        $phieuXuat = new PhieuKho();
-        $phieuXuat->fill([
-            'maDonHang' => "PX" . Str::random(30),
-            'nha_cung_cap_id' => null,
-            'user_id' => null,
-            'ngayTao' => Carbon::now(),
-            'ghiChu' => "",
-            'loaiPhieu' => 1,
-            'trangThai' => 0
-        ]);
-        $phieuXuat->save();
-
-        foreach ($Cart as $item) {
-            array_push($newArray, [
-                'tenSanPham' => $item['tenSanPham'],
-                'soLuong' => $item['soluong'],
-                'donGia' => $item['gia'],
-                'tongTien' => $item['gia'] * $item['soluong'],
+            $hoadon = new HoaDon();
+            $hoadon->fill([
+                'nhan_vien_id' => null,
+                'khach_hang_id' => $user->id,
+                'hoTen' => $request->hoTen_billing,
+                'email' => $request->email_billing,
+                'diaChi' => $request->diaChi_billing,
+                'soDienThoai' => $request->soDienThoai_billing,
+                'ngayXuatHD' => date('Y-m-d H:i:s'),
+                'tongTien' => 0,
+                'ghiChu' => $request->ghiChu_billing,
+                'trangThai' => 0,
             ]);
-            // Thêm chi tiết hoá đơn
-            $chiTietHoaDon = new ChiTietHoaDon();
-            $chiTietHoaDon->fill([
-                'hoa_don_id' => $hoadon->id,
-                'san_pham_id' => $item['id'],
-                'soLuong' => $item['soluong'],
-                'donGia' => $item['gia'],
-                'tongTien' => $item['gia'] * $item['soluong'],
-            ]);
-            $chiTietHoaDon->save();
+            $hoadon->save();
 
-            // Thêm giỏ hàng
-            $gioHang = new GioHang();
-            $gioHang->fill([
-                'san_pham_id' => $item['id'],
-                'user_id' => $user->id,
-                'soLuong' => $item['soluong'],
-            ]);
-            $gioHang->save();
+            $newArray = [];
 
-            //Chi tiết phiếu xuất
-            $chiTietPhieuKho = new ChiTietPhieuKho();
-            $chiTietPhieuKho->fill([
-                'phieu_kho_id' => $phieuXuat->id,
-                'san_pham_id' => $item['id'],
-                'sku' => $item['sku'],
-                'donVi' => 'Cái',
-                'soLuong' => $item['soluong'],
-                'gia' => $item['gia'],
-                'tongTien' => $item['gia'] * $item['soluong']
-            ]);
-            $chiTietPhieuKho->save();
+            foreach ($Cart as $item) {
+                array_push($newArray, [
+                    'tenSanPham' => $item['tenSanPham'],
+                    'soLuong' => $item['soluong'],
+                    'donGia' => $item['gia'],
+                    'tongTien' => $item['gia'] * $item['soluong'],
+                ]);
 
-            $total += (int)$item['soluong'] * (float)$item['gia'];
+                // Sản phẩm
+                $sanpham = SanPham::whereId($item['id'])->where('tonKho', '>', 0)->first();
+                $sanpham->tonKho = $sanpham->tonKho - $item['soluong'];
+                $sanpham->save();
+                // Thêm chi tiết hoá đơn
+                $chiTietHoaDon = new ChiTietHoaDon();
+                $chiTietHoaDon->fill([
+                    'hoa_don_id' => $hoadon->id,
+                    'san_pham_id' => $item['id'],
+                    'soLuong' => $item['soluong'],
+                    'donGia' => $item['gia'],
+                    'tongTien' => $item['gia'] * $item['soluong'],
+                ]);
+                $chiTietHoaDon->save();
+
+                // Thêm giỏ hàng
+                $gioHang = new GioHang();
+                $gioHang->fill([
+                    'san_pham_id' => $item['id'],
+                    'user_id' => $user->id,
+                    'soLuong' => $item['soluong'],
+                ]);
+                $gioHang->save();
+
+
+
+                $total += (int)$item['soluong'] * (float)$item['gia'];
+            }
+
+            $hoadon->tongTien = $total;
+            $hoadon->giamGia = 0;
+            $hoadon->tongThanhTien = $total;
+            $hoadon->save();
+
+            DB::commit();
+            // all good
+        } catch (\Exception $e) {
+            DB::rollback();
+            $lstSanPhamHetHang = "";
+            foreach ($Cart as $item) {
+                $sanpham = SanPham::whereId($item['id'])->first();
+                if ($sanpham->tonKho = 0) {
+                    $lstSanPhamHetHang .= $sanpham->tenSanPham;
+                }
+            }
+            return
+                back()->withErrors([
+                    'error' => 'Đã xảy ra lỗi. Chúng tôi thành thật xin lỗi vì điều này !',
+                    'lstSanPhamHetHang' => $lstSanPhamHetHang . "đã hết hàng",
+                ]);
         }
+
 
         $valueDiscount = 0;
         $infoPayMent = array(
@@ -527,7 +525,8 @@ class GioHangController extends Controller
             }
         }
 
-        $hoadon->tongTien = $total;
+        $hoadon->giamGia = $valueDiscount;
+        $hoadon->tongThanhTien = $total;
         $hoadon->save();
 
         $infoPayMent["giamGia"] = number_format($valueDiscount, 0, '', ',') . " đ";
@@ -537,11 +536,18 @@ class GioHangController extends Controller
 
         Session::put("Cart", []);
         // Trừ số lượng mã
-        $maGiamGia = MaGiamGia::whereId($discountCode["id"])->first();
-        $maGiamGia->soLuong = $maGiamGia->soLuong - 1;
-        $maGiamGia->save();
+        if ($discountCode) {
+            $maGiamGia = MaGiamGia::whereId($discountCode["id"])->first();
+            if ($maGiamGia->soLuong != null) {
+
+                $maGiamGia->soLuong = $maGiamGia->soLuong - 1;
+                $maGiamGia->save();
+            }
+        }
         Session::forget("DiscountCode");
-        return view('confirm-checkout');
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
+        return view('confirm-checkout', ['lstDanhMuc' => $lstDanhMuc, 'lstDanhMucHeader' => $lstDanhMucHeader]);
     }
 
     public function addDiscountCode(Request $request)
@@ -585,7 +591,7 @@ class GioHangController extends Controller
             ]);
         }
 
-        if ($code->soLuong == 0 && $code->soLuong != null) {
+        if ($code->soLuong <= 0 && $code->soLuong != null && $code->soLuong) {
             return response()->json(['error' => 'Lượt sử dụng mã đã hết, vui lòng sử dụng mã khác']);
         }
 

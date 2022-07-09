@@ -71,7 +71,7 @@
 				<p>Những sản phẩm bán chạy nhất</p>
 			</div>
 			<div class="row small-gutters">
-				@foreach ($lstSanPhamNoiBat as $key => $item)
+				@foreach ($lstSanPhamBanChay as $key => $item)
 				<div class="col-6 col-md-4 col-xl-3">
 					<div class="grid_item">
 						<figure>
@@ -79,7 +79,7 @@
 								<span class="ribbon off">-{{ round((($item->gia-$item->giaKhuyenMai) /$item->gia) * 100) }}%</span>
 							@else
 								@if($item->dacTrung == 1)
-									<span class="ribbon new">New</span>
+									<span class="ribbon new">Bán chạy</span>
 									@elseif($item->dacTrung == 2)
 									<span class="ribbon hot">Hot</span>
 								@endif
@@ -91,7 +91,18 @@
 								
 							</a>
 						</figure>
-						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
+						<div class="rating">
+							@php
+								$starActive = round($item->danhgias->avg('xepHang'));
+								$starNonActive = 5 - $starActive;
+							@endphp
+							@for ($i = 0; $i < $starActive; $i++)
+								<i class="icon-star voted"></i>
+							@endfor
+							@for ($i = 0; $i < $starNonActive; $i++)
+								<i class="icon-star"></i>
+							@endfor
+						</div>
 						<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
 							<h3>{{ $item->tenSanPham }}</h3>
 						</a>
@@ -103,9 +114,6 @@
 							<span class="old_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
 							@endif
 						</div>
-						<ul>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Thêm vào giỏ hàng"><i class="ti-shopping-cart"></i><span>Thêm vào giỏ hàng</span></a></li>
-						</ul>
 					</div>
 					<!-- /grid_item -->
 				</div>
@@ -140,19 +148,19 @@
 
 		<div class="container margin_60_35">
 			<div class="main_title">
-				<h2>Đánh giá Cao</h2>
-				<span>Đánh giá Cao</span>
-				<p>Cum doctus civibus efficiantur in imperdiet deterruisset</p>
+				<h2>Sản phẩm nổi bật</h2>
+				<span>Products</span>
+				<p>Những sản phẩm hot của shop</p>
 			</div>
 			<div class="owl-carousel owl-theme products_carousel">
-				@foreach ($lstSanPham as $key=>$item)
+				@foreach ($lstSanPhamNoiBat as $key=>$item)
 				<div class="item">
 					<div class="grid_item">
 						@if($item->giaKhuyenMai != 0)
 								<span class="ribbon off">-{{ round((($item->gia-$item->giaKhuyenMai) /$item->gia) * 100) }}%</span>
 							@else
 								@if($item->dacTrung == 1)
-									<span class="ribbon new">New</span>
+									<span class="ribbon new">Bán chạy</span>
 									@elseif($item->dacTrung == 2)
 									<span class="ribbon hot">Hot</span>
 								@endif
@@ -166,7 +174,18 @@
                             @endforeach
 							</a>
 						</figure>
-						<div class="rating"><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star voted"></i><i class="icon-star"></i></div>
+						<div class="rating">
+							@php
+								$starActive = round($item->danhgias->avg('xepHang'));
+								$starNonActive = 5 - $starActive;
+							@endphp
+							@for ($i = 0; $i < $starActive; $i++)
+								<i class="icon-star voted"></i>
+							@endfor
+							@for ($i = 0; $i < $starNonActive; $i++)
+								<i class="icon-star"></i>
+							@endfor
+						</div>
 						<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
 							<h3>{{ $item->tenSanPham }}</h3>
 						</a>
@@ -178,9 +197,7 @@
 							<span class="old_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
 							@endif
 						</div>
-						<ul>
-							<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Thêm vào giỏ hàng"><i class="ti-shopping-cart"></i><span>Thêm vào giỏ hàng</span></a></li>
-						</ul>
+						
 					</div>
 					<!-- /grid_item -->
 				</div>
@@ -302,9 +319,42 @@
 					$("#lstItemCart").html(response.newCart);
 					document.querySelector(".total_drop div span").innerHTML = response.total;
 					document.querySelector(".dropdown-cart a strong").innerHTML = response.numberCart;
+					abc();
+
 				}
 			});
 		});
+
+		function abc() {
+			let lstBtnDelete = document.querySelectorAll(".btn-trash");
+		// Xoá giỏ hàng //
+		lstBtnDelete.forEach(item => item.addEventListener('click', function() {
+			console.log("a");
+			$.ajax({
+			type: "POST",
+			url: "/remove-cart",
+			dataType: "json",
+			data: {
+				_token: "{{ csrf_token() }}",
+				sanphamId: this.dataset.id
+			},
+			success: function (response) {
+				$.ajax({
+				type: "GET",
+				url: "/render-cart",
+				dataType: "json",
+				success: function (response) {
+					$("#lstItemCart").html(response.newCart);
+					document.querySelector(".total_drop div span").innerHTML = response.total;
+					document.querySelector(".dropdown-cart a strong").innerHTML = response.numberCart;
+					abc();
+
+				}
+			});
+			}
+			});
+		}));
+		}
 		
 	</script>
 @endsection

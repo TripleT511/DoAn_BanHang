@@ -32,7 +32,9 @@ class LoginSocialiteController extends Controller
 
                 return redirect()->intended('/');
             } else {
-                $newUser = User::create([
+                $newUser = new User();
+
+                $newUser->fill([
                     'hoTen' => $user->name,
                     'email' => $user->email,
                     'social_id' => $user->id,
@@ -43,7 +45,11 @@ class LoginSocialiteController extends Controller
                     'anhDaiDien' => $user->avatar,
                     'diaChi' => '',
                 ]);
+                $newUser->save();
 
+
+                $newUser->email_verified_at = now();
+                $newUser->save();
                 Auth::login($newUser);
 
                 return redirect()->intended('/');

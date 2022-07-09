@@ -171,3 +171,52 @@
 	</main>
 
 @endsection
+@section('js')
+    <script>
+      $(document).ready(function(){
+			$.ajax({
+				type: "GET",
+				url: "/render-cart",
+				dataType: "json",
+				success: function (response) {
+					$("#lstItemCart").html(response.newCart);
+					document.querySelector(".total_drop div span").innerHTML = response.total;
+					document.querySelector(".dropdown-cart a strong").innerHTML = response.numberCart;
+					abc();
+
+				}
+			});
+		});
+
+		function abc() {
+			let lstBtnDelete = document.querySelectorAll(".btn-trash");
+		// Xoá giỏ hàng //
+		lstBtnDelete.forEach(item => item.addEventListener('click', function() {
+			console.log("a");
+			$.ajax({
+			type: "POST",
+			url: "/remove-cart",
+			dataType: "json",
+			data: {
+				_token: "{{ csrf_token() }}",
+				sanphamId: this.dataset.id
+			},
+			success: function (response) {
+				$.ajax({
+				type: "GET",
+				url: "/render-cart",
+				dataType: "json",
+				success: function (response) {
+					$("#lstItemCart").html(response.newCart);
+					document.querySelector(".total_drop div span").innerHTML = response.total;
+					document.querySelector(".dropdown-cart a strong").innerHTML = response.numberCart;
+					abc();
+
+				}
+			});
+			}
+			});
+		}));
+		}
+    </script>
+@endsection

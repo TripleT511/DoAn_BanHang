@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('soDienThoai');
             $table->dateTime('ngayXuatHD');
             $table->double('tongTien');
+            $table->double('giamGia')->default(0);
+            $table->double('tongThanhTien')->default(0);
             $table->string('ghiChu')->nullable();
             $table->integer('trangThaiThanhToan')->default(0);
             $table->integer('trangThai')->default(0);

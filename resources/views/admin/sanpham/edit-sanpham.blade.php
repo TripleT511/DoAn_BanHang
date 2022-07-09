@@ -72,8 +72,8 @@
                     <label for="defaultSelect" class="form-label">Đặc trưng</label>
                     <select id="defaultSelect" name="dacTrung" class="form-select">
                         <option value="0">Chọn đặc trưng</option>
-                        <option value="1">Sản phẩm mới</option>
-                        <option value="2">Sản phẩm hot</option>
+                        <option value="1" @if ($sanpham->dacTrung == 1) selected @endif>Sản phẩm bán chạy</option>
+                        <option value="2" @if ($sanpham->dacTrung == 2) selected @endif>Sản phẩm hot</option>
                     </select>
                 </div>
                 <div class="mb-3">
@@ -93,7 +93,7 @@
                 <div class="mb-3">
                     <label for="defaultSelect" class="form-label">Danh mục sản phẩm</label>
                     <select id="defaultSelect" name="danhmucid" class="form-select">
-                        <option value="0">Chọn danh mục sản phẩm</option>
+                        <option value="">Chọn danh mục sản phẩm</option>
                         @foreach($lstDanhMuc as $dm)
                         <option value="{{$dm->id}}" {{ $sanpham->danh_muc_id == $dm->id ? 'selected' : '' }} >{{$dm->tenDanhMuc}}</option>
                         @endforeach

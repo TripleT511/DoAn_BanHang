@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\TaiKhoanController;
 use App\Http\Controllers\Admin\ThuocTinhController;
 use App\Http\Controllers\Admin\HoaDonController;
 use App\Http\Controllers\Admin\MaGiamGiaController;
-
+use App\Http\Controllers\Admin\ThongKeController;
 use App\Http\Controllers\GioHangController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LuotTimKiemController;
@@ -22,7 +22,10 @@ use App\Models\DanhMuc;
 use Faker\Provider\ar_EG\Payment;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginSocialiteController;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -44,8 +47,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 //
 
 Route::get('/email/verify/{id}/{hash}', function (Request $request) {
-
-    return $request;
+    $user = User::find($request->id);
+    $user->email_verified_at = now();
+    $user->save();
+    return Redirect::route('user.login')->with('message', 'Xác nhận tài khoản thành công, vui lòng đăng nhập để tiếp tục');
 })->name('verification.verify');
 
 Route::get('/mail', function () {
@@ -64,12 +69,14 @@ Route::post('/remove-cart', [GioHangController::class, 'xoaGioHang'])->name('rem
 
 Route::get('/login', function () {
     $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
-    return view('user.login', ['lstDanhMuc' => $lstDanhMuc]);
+    $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
+    return view('user.login', ['lstDanhMuc' => $lstDanhMuc, 'lstDanhMucHeader' => $lstDanhMucHeader]);
 })->name('user.login');
 
 Route::get('/register', function () {
     $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
-    return view('user.register', ['lstDanhMuc' => $lstDanhMuc]);
+    $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
+    return view('user.register', ['lstDanhMuc' => $lstDanhMuc, 'lstDanhMucHeader' => $lstDanhMucHeader]);
 })->name('user.register');
 
 Route::get('/user-logout', [HomeController::class, 'logoutUser'])->name('user.logout');
@@ -108,13 +115,21 @@ Route::middleware(['isGuest'])->group(function () {
 
     Route::get('/thong-tin-ca-nhan', [HomeController::class, 'xemThongTin'])->name('xem-thong-in-ca-nhan');
 
+    Route::get('/don-hang-cua-toi', [HomeController::class, 'myOrder'])->name('myOrder');
+
+    Route::post('/huy-dat-hang', [HomeController::class, 'huyDatHang'])->name('huyDatHang');
+
+    Route::get('/loc-don-hang', [HomeController::class, 'locDonHang'])->name('locDonHang');
+
+    Route::post('/da-nhan-hang', [HomeController::class, 'nhanHangThanhCong'])->name('nhanHangThanhCong');
+
     Route::post('/review', [DanhGiaController::class, 'store']);
 
     Route::post('/thanh-toan', [GioHangController::class, 'checkout'])->name('thanhtoanDefault');
 
     Route::post('/thanh-toan-vnpay', [PayMentOnlineController::class, 'paymentVNPay'])->name('paymentVNPay');
 
-    Route::get('/thanh-toan-thanh-cong', [PayMentOnlineController::class, 'checkoutSuccess'])->name('confirm-checkout');
+    Route::get('/thanh-toan-thanh-cong/', [PayMentOnlineController::class, 'checkoutSuccess'])->name('confirm-checkout');
 });
 
 
@@ -123,7 +138,24 @@ Route::prefix('admin')->group(function () {
     Route::get('/thong-ke', [DashboardController::class, 'thongKeDoanhThu']);
 
     Route::middleware(['isAdmin'])->group(function () {
+
+        // Quyền administrator
+        Route::middleware(['isRoot'])->group(function () {
+        });
+
+
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        // *** Thống Kê *** //
+        Route::get('/bao-cao-thong-ke', [ThongKeController::class, 'index'])->name('admin.thongke');
+
+        Route::get('/thong-ke-doanh-thu-after-7-days', [ThongKeController::class, 'doanhThuAfter7Days'])->name('admin.doanhThuAfter7Days');
+
+        Route::get('/thong-ke-khoang-thoi-gian', [ThongKeController::class, 'khoangThoiGian']);
+
+        Route::get('/thong-ke-san-pham-ban-chay', [ThongKeController::class, 'thongKeTopSanPhamBanChay']);
+
+        // *** Thống Kê *** //
 
         Route::resource('user', TaiKhoanController::class);
         Route::resource('phanquyen', PhanQuyenController::class);
@@ -136,6 +168,13 @@ Route::prefix('admin')->group(function () {
         Route::resource('nhacungcap', NhaCungCapController::class);
         Route::resource('hoadon', HoaDonController::class);
         Route::resource('discount', MaGiamGiaController::class);
+
+        // Lọc đơn hàng
+        Route::get('/hoa-don/loc-don-hang', [HoaDonController::class, 'locDonHang'])->name('admin.locDonHang');
+        // Tìm kiếm đơn hàng
+        Route::get('/hoa-don/search', [HoaDonController::class, 'searchDonHang'])->name('admin.timKiemHoaDon');
+        // Xem đơn hàng
+        Route::get('/hoa-don/xem-don-hang', [HoaDonController::class, 'xemDonHang'])->name('xemDonHang');
 
         // Mã giảm giá hết hạn
         Route::get('/discount-het-han', [MaGiamGiaController::class, 'indexDie'])->name('maHetHan');
@@ -185,6 +224,11 @@ Route::prefix('admin')->group(function () {
         // Xem phiếu kho
         Route::get('/kho/xem-phieu-kho', [PhieuKhoController::class, 'xemPhieuKho'])->name('xemPhieuKho');
 
+        // Tìm kiếm phiếu kho
+        Route::get('/phieu-kho/search', [PhieuKhoController::class, 'searchPhieuKho'])->name('admin.timKiemPhieuNhap');
+
+        // Lọc phiếu kho
+        Route::get('/phieu-kho/loc-phieu-kho', [PhieuKhoController::class, 'locPhieuKho'])->name('admin.locPhieuNhap');
 
 
         // Thêm Thuộc Tính

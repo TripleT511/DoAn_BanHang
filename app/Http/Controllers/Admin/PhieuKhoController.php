@@ -43,9 +43,71 @@ class PhieuKhoController extends Controller
     }
     public function index()
     {
-        $lstPhieuKho = PhieuKho::with('nhacungcap')->with('user')->paginate(7);
+        $lstPhieuKho = PhieuKho::with('nhacungcap')->with('user')->orderBy('created_at', 'desc')->paginate(7);
 
         return View('admin.kho.index-kho')->with('lstPhieuKho', $lstPhieuKho);
+    }
+
+    public function searchPhieuKho(Request $request)
+    {
+        $stringSearch = $request->keyword;
+        $lstPhieuKho = PhieuKho::with('nhacungcap')->with('user')->whereHas('nhacungcap', function ($query) use ($stringSearch) {
+            $query->where(
+                'tenNhaCungCap',
+                'LIKE',
+                '%' . $stringSearch . '%'
+            );
+        })->orWhereHas('user', function ($query) use ($stringSearch) {
+            $query->where(
+                'hoTen',
+                'LIKE',
+                '%' . $stringSearch . '%'
+            );
+        })->orWhere('id', $stringSearch)->orWhere(
+            'maDonHang',
+            'LIKE',
+            '%' . $stringSearch . '%'
+        )->orderBy('created_at', 'desc')->paginate(7);
+
+
+        return view('admin.kho.index-kho')->with('lstPhieuKho', $lstPhieuKho);
+    }
+
+    public function locPhieuKho(Request $request)
+    {
+        $lstPhieuKho = "";
+        if ($request->trangThai == 0) {
+            $lstPhieuKho =
+                PhieuKho::with('nhacungcap')->with('user')->where('trangThai', 0)->orderBy('created_at', 'desc')->paginate(7);
+            return view('admin.kho.index-kho')->with('lstPhieuKho', $lstPhieuKho);
+        }
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'ngayBatDau'    => 'required|date',
+                'ngayKetThuc' => 'required|date|after_or_equal:ngayBatDau',
+            ],
+            [
+
+                'ngayBatDau.required' => "Ngày bắt đầu bắt buộc chọn",
+                'ngayBatDau.date' => "Ngày bắt đầu không hợp lệ",
+                'ngayKetThuc.required' => "Ngày kết thúc bắt buộc chọn",
+                'ngayKetThuc.date' => "Ngày không hợp lệ",
+                'ngayKetThuc.after_or_equal' => "Ngày kết thúc không thể nhỏ hơn ngày bắt đầu",
+            ]
+        );
+
+
+        if ($validator->fails()) {
+            $error = '';
+            foreach ($validator->errors()->all() as $item) {
+                $error .= '
+                    <li class="card-description" style="color: #fff;">' . $item . '</li>
+                ';
+            }
+            return back()->withErrors('error', $error);
+        }
     }
 
     public function themSanPham(Request $request)
@@ -55,21 +117,64 @@ class PhieuKhoController extends Controller
             [
                 'tenSanPham' => 'required|unique:san_phams',
                 'sku' => 'unique:san_phams,sku',
-                'noiDung' => 'required',
                 'danhmucid' => 'required',
-                'moTa' => 'required',
                 'hinhAnh' => 'required'
             ],
             [
                 'tenSanPham.required' => "Tên sản phẩm không được bỏ trống",
                 'tenSanPham.unique' => "Tên sản phẩm bị trùng",
-                'sku.unique' => "Mã sản phẩm không được trùng",
-                'noiDung.required' => "Nội dung không được bỏ trống",
-                'moTa.required' => "Mô tả không được bỏ trống",
+                'sku.unique' => "Mã sản phẩm bị trùng",
                 'danhmucid.required' => "Danh mục bắt buộc chọn",
                 'hinhAnh.required' => "Hình ảnh bắt buộc chọn",
             ]
         );
+
+        if ($request->filled('gia')) {
+            $validator2 = Validator::make(
+                $request->all(),
+                [
+                    'gia' => 'integer',
+                ],
+                [
+                    'gia.integer' => "Giá phải là số",
+                ]
+            );
+            if ($validator2->fails()) {
+                $error = '';
+                foreach ($validator2->errors()->all() as $item) {
+                    $error .= '
+                    <li class="card-description" style="color: #fff;">' . $item . '</li>
+                ';
+                }
+                return response()->json(['error' => $error]);
+            }
+        }
+
+        if ($request->filled('giaKhuyenMai')) {
+            $gia = $request->filled('gia') ? $request->gia : 0;
+            $validator2 = Validator::make(
+                $request->all(),
+                [
+                    'giaKhuyenMai' => "integer|max:$gia",
+                ],
+                [
+                    "giaKhuyenMai.integer" => "Giá khuyến mãi phải là số",
+                    'giaKhuyenMai.max' => "Giá khuyến mãi không được lớn hơn giá gốc",
+                ]
+            );
+
+            if ($validator2->fails()) {
+                $error = '';
+                foreach ($validator2->errors()->all() as $item) {
+                    $error .= '
+                    <li class="card-description" style="color: #fff;">' . $item . '</li>
+                ';
+                }
+                return response()->json(['error' => $error]);
+            }
+        }
+
+
 
         if ($validator->fails()) {
             $error = '';
@@ -142,7 +247,6 @@ class PhieuKhoController extends Controller
                     "id" => $idSanPham,
                     "tenSanPham" => $sanpham->tenSanPham,
                     "sku" => $sanpham->sku,
-                    "donViTinh" => "Cái",
                     "soluong" => 1,
                     "gia" => 0,
                     "giaBan" => $sanpham->gia,
@@ -155,7 +259,6 @@ class PhieuKhoController extends Controller
                 "id" => $idSanPham,
                 "tenSanPham" => $sanpham->tenSanPham,
                 "sku" => $sanpham->sku,
-                "donViTinh" => "Cái",
                 "soluong" => 1,
                 "gia" => 0,
                 "giaBan" => $sanpham->gia,
@@ -163,7 +266,7 @@ class PhieuKhoController extends Controller
             );
             Session::put("lstSanPham", $lstSP);
         }
-        return response()->json(['success' => "Thêm sản phẩm thành công"]);
+        return response()->json(['success' => "Thêm sản phẩm thành công", "error" => null]);
     }
 
     public function themChiTietPhieuKho(Request $request)
@@ -182,7 +285,6 @@ class PhieuKhoController extends Controller
                     "id" => $idSanPham,
                     "tenSanPham" => $sanpham->tenSanPham,
                     "sku" => $sanpham->sku,
-                    "donViTinh" => "Cái",
                     "soluong" => 1,
                     "gia" => 0,
                     "giaBan" => $sanpham->gia,
@@ -195,7 +297,6 @@ class PhieuKhoController extends Controller
                 "id" => $idSanPham,
                 "tenSanPham" => $sanpham->tenSanPham,
                 "sku" => $sanpham->sku,
-                "donViTinh" => "Cái",
                 "soluong" => 1,
                 "gia" => 0,
                 "giaBan" => $sanpham->gia,
@@ -248,7 +349,6 @@ class PhieuKhoController extends Controller
                 <tr>
                     <td>' . $item['sku'] . '</td>
                     <td class="name">' . $item['tenSanPham'] . '</td>
-                    <td>' . $item['donViTinh'] . '</td>
                     <td><input type="text" name="soLuongSP" value="' . $item['soluong'] . '" class="form-control input-sl"  placeholder="Nhập số lượng" /></td>
                     <td><input type="text" name="soLuongSP" value="' . $item['gia'] . '" class="form-control input-gia"  placeholder="Nhập giá" />
                     <input type="hidden" name="giaBan" value="' . $item['giaBan'] . '" class="form-control" />
@@ -364,7 +464,6 @@ class PhieuKhoController extends Controller
             'user_id' => Auth::user()->id,
             'ngayTao' => Carbon::now(),
             'ghiChu' => $request->input('ghiChu'),
-            'loaiPhieu' => 0,
             'trangThai' => 0
         ]);
         $phieukho->save();
@@ -377,7 +476,6 @@ class PhieuKhoController extends Controller
                     'phieu_kho_id' => $phieukho->id,
                     'san_pham_id' => $value['id'],
                     'sku' => $value['sku'],
-                    'donVi' => $value['donViTinh'],
                     'soLuong' => $value['soluong'],
                     'gia' => $value['gia'],
                     'tongTien' => $value['tongTien']
@@ -435,6 +533,13 @@ class PhieuKhoController extends Controller
 
 
             $phieukho->save();
+
+            $chitietpk = ChiTietPhieuKho::where('phieu_kho_id', $phieukho->id)->get();
+            foreach ($chitietpk as $item) {
+                $sanpham = SanPham::whereId($item->san_pham_id)->first();
+                $sanpham->tonKho = $item->soLuong;
+                $sanpham->save();
+            }
         }
 
         return Redirect::route('phieukho.index');
@@ -473,7 +578,7 @@ class PhieuKhoController extends Controller
                         <dd class="col-sm-3" id="maDonHang">' . $phieuKho->maDonHang . '</dd>
                         <dt class="col-sm-3">Nhà cung cấp:</dt>
                         <dd class="col-sm-3" id="nhaCungCap">
-                          ' . $phieuKho->nhacungcap->tenNhaCungCap . '
+                          ' . ($phieuKho->nha_cung_cap_id ? $phieuKho->nhacungcap->tenNhaCungCap : '') . '
                         </dd>
                         <dt class="col-sm-3 text-truncate">Thời gian</dt>
                         <dd class="col-sm-3" id="ngayTao">
@@ -481,7 +586,7 @@ class PhieuKhoController extends Controller
                         </dd>
                         <dt class="col-sm-3">Người tạo:</dt>
                         <dd class="col-sm-3" id="nguoiNhap">
-                          ' . $phieuKho->user->hoTen . '
+                          ' . ($phieuKho->user ? $phieuKho->user->hoTen : '') . '
                         </dd>
                         <dt class="col-sm-3">Trạng thái:</dt>
                         <dd class="col-sm-3" id="trangThai">

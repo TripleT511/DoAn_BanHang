@@ -34,6 +34,7 @@
                         <th>Danh mục</th></th>
                         <th>Giá</th>
                         <th>Giá khuyến mãi</th>
+                        <th>Trạng thái</th>
                         <th>Hành động</th>              
                       </tr>
                     </thead>
@@ -49,24 +50,35 @@
                           </div>
                           
                         </td>
-                        <td><strong>{{ $item->tenSanPham }}</strong></td>
+                        <td><strong>
+                          <a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}" target="_blank">
+                          {{ $item->tenSanPham }}
+                        </a>  
+                        </strong></td>
                         <td>
                           {{ $item->danhmuc->tenDanhMuc }}
                         </td>
                         <td>
-                          {{ $item->gia }}
+                          {{ number_format($item->gia, 0, '', ',') }} ₫
                         </td>
                         <td>
-                          {{ $item->giaKhuyenMai }}
+                          {{ number_format($item->giaKhuyenMai, 0, '', ',') }} ₫
+                        </td>
+                        <td>
+                          @if($item->tonKho > 0) 
+                            <span class="badge bg-label-success">Còn hàng</span>
+                          @else
+                            <span class="badge bg-label-danger">Hết hàng</span>
+                          @endif
                         </td>
                         <td>
                           <a class="btn btn-success" href="{{ route('sanpham.edit', ['sanpham' => $item]) }}">
-                            <i class="bx bx-edit-alt me-1"></i>Sửa
+                            <i class="bx bx-edit-alt me-1"></i>
                           </a>
                           <form class="d-inline-block" method="post" action="{{ route('sanpham.destroy', ['sanpham'=>$item]) }}">
                             @csrf
                             @method("DELETE")
-                            <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
+                            <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i></button>
                           </form>
                         </td>
                       </tr>

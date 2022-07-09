@@ -128,6 +128,27 @@ class DanhGiaController extends Controller
 
         $lstDanhGia = DanhGia::with('sanpham')->with('taikhoan')->where('san_pham_id', $request->sanphamId)->orderBy('created_at', 'desc')->get();
 
+        $countDanhGia = $lstDanhGia->count();
+        $avgDanhGia = round($lstDanhGia->avg('xepHang'));
+
+        $outputMain1 = "";
+        $outputMain2 = "";
+
+        $starActive = round($avgDanhGia);
+        $starNonActive = 5 - $starActive;
+        for ($i = 0; $i < $starActive; $i++) {
+            $outputMain1 .= ' <i class="icon-star voted"></i>';
+            $outputMain2 .= ' <i class="icon-star"></i>';
+        }
+        for ($i = 0; $i < $starNonActive; $i++) {
+            $outputMain1 .= '<i class="icon-star"></i>';
+            $outputMain2 .= ' <i class="icon-star empty"></i>';
+        }
+
+
+
+
+
         foreach ($lstDanhGia as $key => $item) {
             $starActive = $item->xepHang;
             $starNonActive = 5 - $item->xepHang;
@@ -153,12 +174,20 @@ class DanhGiaController extends Controller
                         </div>
                         <h4>' . $item->taikhoan->hoTen . '</h4>
                         <p>' . $item->noiDung . '</p>
+                        ' . Auth()->user()->id == $item->user_id ? '<a href="" class="btn btn-danger" data-id="' . $item->id . '</a>Xoá</a>' : '' . '
                     </div>
                 </div>
             ';
         }
 
-        return response()->json(['success' => "Đánh giá sản phẩm thành công", 'output' => $output]);
+        return response()->json([
+            'success' => "Đánh giá sản phẩm thành công",
+            'output' => $output,
+            'outputMain1' => $outputMain1,
+            'outputMain2' => $outputMain2,
+            'avg' => $avgDanhGia,
+            'count' => $countDanhGia
+        ]);
     }
 
     /**

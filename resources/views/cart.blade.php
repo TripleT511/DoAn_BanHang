@@ -567,8 +567,9 @@
 			dataType: "json",
 			data: {
 				_token: "{{ csrf_token() }}",
-				soLuong: soLuong,
-				sanphamId: lstBtnDelete[index].getAttribute("data-id")
+				soLuong: 1,
+				sanphamId: lstBtnDelete[index].getAttribute("data-id"),
+				type: 'incre'
 			},
 			success: function (response) {
 				let toast = document.querySelector(".toast");
@@ -603,8 +604,9 @@
 			dataType: "json",
 			data: {
 				_token: "{{ csrf_token() }}",
-				soLuong: soLuong,
-				sanphamId: lstBtnDelete[index].getAttribute("data-id")
+				soLuong: lstBtnQty[index].value > 0 ? 1 : 0,
+				sanphamId: lstBtnDelete[index].getAttribute("data-id"),
+				type: 'decre'
 			},
 			success: function (response) {
 				
@@ -704,8 +706,9 @@
 					dataType: "json",
 					data: {
 						_token: "{{ csrf_token() }}",
-						soLuong: soLuong,
-						sanphamId: lstBtnDelete[index].getAttribute("data-id")
+						soLuong: 1,
+						sanphamId: lstBtnDelete[index].getAttribute("data-id"),
+						type: 'incre'
 					},
 					success: function (response) {
 						if(response.error) {
@@ -756,8 +759,9 @@
 					dataType: "json",
 					data: {
 						_token: "{{ csrf_token() }}",
-						soLuong: soLuong,
-						sanphamId: lstBtnDelete[index].getAttribute("data-id")
+						soLuong: lstBtnQty[index].value > 0 ? 1 : 0,
+						sanphamId: lstBtnDelete[index].getAttribute("data-id"),
+						type: 'decre'
 					},
 					success: function (response) {
 						if(response.error) {

@@ -32,7 +32,6 @@
     <link href="{{ asset('css/home_1.css') }}" rel="stylesheet">
     <!-- YOUR CUSTOM CSS -->
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
-
 	<style>
 		.toast {
 				position: fixed;
@@ -282,53 +281,41 @@
 								<li>
 									<a href="{{ route('san-pham') }}" >Sản phẩm</a>
 								</li>
-								<li class="megamenu submenu">
-									<a href="javascript:void(0);" class="show-submenu-mega">Đồ nam</a>
+<?php 
+function renderChildHeader($item)
+{ 
+	foreach($item as $value) { ?>
+		<li>
+			<a href="{{ route('danhmucsanpham', ['slug' => $value->slug]) }}">{{ $value->tenDanhMuc }}</a>
+		</li>
+<?php } 
+}	
+?>
+								@foreach($lstDanhMucHeader as $item)
+									<li class="megamenu submenu">
+										<a href="{{ route('danhmucsanpham', ['slug' => $item->slug]) }}" class="show-submenu-mega">{{ $item->tenDanhMuc }}</a>
+									
+									@if(isset($item->childs) && count($item->childs) > 0)
 									<div class="menu-wrapper">
 										<div class="row small-gutters">
-											<div class="col-lg-3">
-												<h3>Áo thun</h3>
-												<ul>
-													<li><a href="listing-grid-1-full.html">Áo Thun Form Tiêu Chuẩn</a></li>
-													<li><a href="listing-grid-2-full.html">Áo Thun Form Rộng</a></li>
-													<li><a href="listing-grid-3.html">Áo thun 3 Lỗ</a></li>
-													<li><a href="listing-grid-4-sidebar-left.html">Áo Thun Cổ Trụ</a></li>
-													<li><a href="listing-grid-5-sidebar-right.html">Áo Thun Sweater</a></li>
-													<li><a href="listing-grid-6-sidebar-left.html">Áo thun Tối Giản</a></li>
-												</ul>
-											</div>
-											<div class="col-lg-3">
-												<h3>ÁO KHOÁC</h3>
-												<ul>
-													<li><a href="listing-row-1-sidebar-left.html">Áo khoác có nón</a></li>
-													<li><a href="listing-row-2-sidebar-right.html">Áo khoác Thiết Kế</a></li>
-													<li><a href="listing-row-3-sidebar-left.html">Áo khoác Đơn Giản</a></li>
-													<li><a href="listing-row-4-sidebar-extended.html">Áo khoác Thể Thao</a></li>
-													<li><a href="product-detail-1.html">Áo Hoodie</a></li>
-													<li><a href="product-detail-2.html">Áo khoác Tối Giản</a></li>
-												</ul>
-											</div>
-											<div class="col-lg-3">
-												<h3>ÁO SƠ MI</h3>
-												<ul>
-													<li><a href="cart.html">Áo sơ mi tay dài</a></li>
-													<li><a href="checkout.html">Áo sơ mi tay ngắn</a></li>
-												</ul>
-											</div>
-											<div class="col-lg-3">
-												<h3>QUẦN DÀI</h3>
-												<ul>
-													<li><a href="cart.html">Quần Jogger</a></li>
-													<li><a href="checkout.html">Quần Tây</a></li>
-													<li><a href="checkout.html">Quần Ống Rộng</a></li>
-												</ul>
-											</div>
+											@foreach($item->childs as $child)
+												<div class="col-lg-3">
+													<h3>{{ $child->tenDanhMuc }}</h3>
+													@if(isset($child->childs) && count($child->childs) > 0)
+													<ul>
+														<?php renderChildHeader($child->childs); ?>
+													</ul>
+													@endif
+												</div>
+											@endforeach
 											
 										</div>
-										<!-- /row -->
+									<!-- /row -->
 									</div>
-									<!-- /menu-wrapper -->
-								</li>
+										
+									@endif
+									</li>
+								@endforeach
 								<li>
 									<a href="blog.html">Tin tức</a>
 								</li>
@@ -423,7 +410,7 @@ function renderChild($item)
 								<!-- /dropdown-cart-->
 							</li>
 							<li>
-								<a href="#0" class="wishlist"><span>Wishlist</span></a>
+								<a href="#0" class="wishlist"><span>Sản phẩm yêu thích</span></a>
 							</li>
 							<li>
 								<div class="dropdown dropdown-access">
@@ -458,7 +445,7 @@ function renderChild($item)
 											</li>
 											@auth
 											<li>
-												<a href="account.html"><i class="ti-package"></i>Đơn hàng của tôi</a>
+												<a href="{{ route('myOrder') }}"><i class="ti-package"></i>Đơn hàng của tôi</a>
 											</li>
 											<li>
 												<a href="{{ route('xem-thong-in-ca-nhan') }}"><i class="ti-user"></i>Thông tin cá nhân</a>
@@ -473,7 +460,7 @@ function renderChild($item)
 								<!-- /dropdown-access-->
 							</li>
 							<li>
-								<a href="javascript:void(0);" class="btn_search_mob"><span>Search</span></a>
+								<a href="javascript:void(0);" class="btn_search_mob"><span>Tìm kiếm</span></a>
 							</li>
 							<li>
 								<a href="#menu" class="btn_cat_mob">
@@ -482,7 +469,7 @@ function renderChild($item)
 											<div class="hamburger-inner"></div>
 										</div>
 									</div>
-									Categories
+									Danh mục
 								</a>
 							</li>
 						</ul>
@@ -491,7 +478,7 @@ function renderChild($item)
 				<!-- /row -->
 			</div>
 			<div class="search_mob_wp">
-				<input type="text" class="form-control" placeholder="Search over 10.000 products">
+				<input type="text" class="form-control" placeholder="Nhập từ khoá...">
 				<input type="submit" class="btn_1 full-width" value="Search">
 			</div>
 			<!-- /search_mobile -->

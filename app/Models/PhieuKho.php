@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Models\NhaCungCap;
 use App\Models\User;
-use App\Models\ChiTietPhieuKho;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +19,6 @@ class PhieuKho extends Model
         'user_id',
         'ngayTao',
         'ghiChu',
-        'loaiPhieu',
         'trangThai'
     ];
 

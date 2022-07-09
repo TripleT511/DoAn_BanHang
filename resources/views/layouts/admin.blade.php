@@ -147,8 +147,8 @@
 
           <ul class="menu-inner py-1">
             <!-- Dashboard -->
-            <li class="menu-item {{ (request()->is('admin/')) ? 'active' : '' }}">
-              <a href="" class="menu-link">
+            <li class="menu-item {{ (request()->routeIs('dashboard')) ? 'active' : '' }}">
+              <a href="{{ route('dashboard') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-dashboard"></i>
                 <div data-i18n="Analytics">Dashboard</div>
               </a>
@@ -156,7 +156,7 @@
             <li class="menu-item {{  request()->routeIs('phieukho.*') ? 'active' : '' }}">
               <a href="{{ route('phieukho.index') }}" class="menu-link">
                 <i class='menu-icon tf-icons bx bxs-store-alt' ></i>
-                <div data-i18n="Layouts">Kho hàng</div>
+                <div data-i18n="Layouts">Nhập kho</div>
               </a>
             </li>
             <li class="menu-item {{  request()->routeIs('taikhoan.*') ? 'active' : '' }}">
@@ -180,11 +180,6 @@
                 <li class="menu-item {{  request()->routeIs('danhmuc.*') ? 'active' : '' }}">
                   <a href="{{ route('danhmuc.index') }}" class="menu-link">
                     <div data-i18n="Layouts">Danh mục</div>
-                  </a>
-                </li>
-                <li class="menu-item {{  request()->routeIs('thuoctinh.*') ? 'active' : '' }}">
-                  <a href="{{ route('thuoctinh.index') }}" class="menu-link">
-                    <div data-i18n="Layouts">Thuộc tính</div>
                   </a>
                 </li>
               </ul>
@@ -223,6 +218,12 @@
               <a href="{{ route('discount.index') }}" class="menu-link ">
                 <i class="menu-icon tf-icons bx bxs-discount"></i>
                 <div data-i18n="Layouts">Mã giảm giá</div>
+              </a>
+            </li>
+            <li class="menu-item {{  request()->routeIs('admin.thongke') ? 'active' : '' }}">
+              <a href="{{ route('admin.thongke') }}" class="menu-link ">
+                <i class="menu-icon tf-icons bx bxs-bar-chart-square"></i>
+                <div data-i18n="Layouts">Báo cáo</div>
               </a>
             </li>
           </ul>
@@ -298,20 +299,20 @@
                     <li>
                       <a class="dropdown-item" href="#">
                         <i class="bx bx-user me-2"></i>
-                        <span class="align-middle">My Profile</span>
+                        <span class="align-middle">Trang cá nhân</span>
                       </a>
                     </li>
                     <li>
                       <a class="dropdown-item" href="#">
                         <i class="bx bx-cog me-2"></i>
-                        <span class="align-middle">Settings</span>
+                        <span class="align-middle">Cài đặt</span>
                       </a>
                     </li>
                     <li>
                       <a class="dropdown-item" href="#">
                         <span class="d-flex align-items-center align-middle">
                           <i class="flex-shrink-0 bx bx-credit-card me-2"></i>
-                          <span class="flex-grow-1 align-middle">Billing</span>
+                          <span class="flex-grow-1 align-middle">Thanh toán</span>
                           <span class="flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20">4</span>
                         </span>
                       </a>
@@ -322,7 +323,7 @@
                     <li>
                       <a class="dropdown-item" href="{{ route('admin.logout') }}">
                         <i class="bx bx-power-off me-2"></i>
-                        <span class="align-middle">Log Out</span>
+                        <span class="align-middle">Đăng xuất</span>
                       </a>
                     </li>
                   </ul>

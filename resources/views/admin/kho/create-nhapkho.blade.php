@@ -124,14 +124,6 @@
                 <form method="post" id="themPhieuKho" action="{{ route('phieukho.store') }}">
                     @csrf
                     <fieldset>
-                {{-- <div class="mb-3">
-                    <label for="loaiPhieu" class="form-label">Loại Phiếu</label>
-                    <select id="loaiPhieu" name="loaiPhieu" class="form-select">
-                        <option value="0">Phiếu nhập</option>
-                        <option value="1">Phiếu xuất</option>
-                    </select>
-                </div>
-             --}}
                 <div class="mb-3">
                     <label class="form-label" for="maDonHang">Mã đơn hàng</label>
                     <div class="input-group">
@@ -182,7 +174,6 @@
                       <tr>
                         <th>Mã hàng</th>
                         <th>Tên Sản Phẩm</th>
-                        <th>Đơn vị tính</th>
                         <th>Số lượng</th>
                         <th>Giá</th>
                         <th>Thành tiền</th>
@@ -195,8 +186,6 @@
                   </table>
                 </div>
                 </div>
-                   
-                <input type="text" name="loaiPhieu" value="1" hidden/>
                 <button type="submit" class="btn btn-primary">Thêm</button>
                 <button type="submit" class="btn btn-primary">Cancel</button>
                 </form>
@@ -255,7 +244,7 @@
                     <label for="dacTrung" class="form-label">Đặc trưng</label>
                     <select id="dacTrung" name="dacTrung" class="form-select">
                         <option value="0">Chọn đặc trưng</option>
-                        <option value="1">Sản phẩm mới</option>
+                        <option value="1">Sản phẩm bán chạy</option>
                         <option value="2">Sản phẩm hot</option>
                     </select>
                 </div>
@@ -385,6 +374,7 @@
                                 document.querySelector(".bs-toast").classList.remove("show");
                             }, 1000);
                             renderUI();
+                            return ;
                         }
                     }
                 });
@@ -447,6 +437,7 @@
                                     },
                                     success: function (response) {
                                         renderUI();
+                                        return ;
                                     }
                                 });
                         }));
@@ -527,6 +518,7 @@
                                     },
                                     success: function (response) {
                                        renderUI();
+                                       return ;
                                     }
                                 });
                         }));
@@ -573,6 +565,7 @@
                                             document.querySelector(".bs-toast").classList.remove("show");
                                         }, 2000);
                                        renderUI();
+                                       return ;
                                     }
                                 });
                             }
@@ -580,23 +573,62 @@
                         }))
                     }
                 });
+
             }
             // === CK Editor === // 
-        // === wysiwyg Editor === // 
+        // === CK Editor === // 
         tinymce.init({
             selector: '#moTa',
-            plugins: 'lists advlist anchor autolink autoresize autosave charactermap code codesample colorpicker contextmenu directionality emoticons fullscreen help hr image imagetools importcss insertdatetime legacyoutput link lists media nonbreaking noneditable pagebreak paste preview quicktoolbars print save searchreplace spellchecker tabfocus table template textcolor textpattern visualblocks visualchars wordcount',
-            toolbar: 'a11ycheck addcomment showcomments casechange checklist code export formatpainter image editimage pageembed permanentpen table tableofcontents',
-            tinycomments_mode: 'embedded',
-            tinycomments_author: 'Author name',
+            plugins: 'a11ychecker advcode casechange export formatpainter image  editimage linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tableofcontents tinymcespellchecker',
+            toolbar: 'a11ycheck addcomment showcomments casechange checklist code export formatpainter image editimage pageembed permanentpen table insertfile tableofcontents undo redo link',
+            image_title: true,
+            automatic_uploads: true,
+            file_picker_callback: function (callback, value, meta) {
+                let x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth;
+                let y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight;
+
+                let type = 'image' === meta.filetype ? 'Images' : 'Files',
+                    url  = '/laravel-filemanager?editor=tinymce5&type=' + type;
+
+                tinymce.activeEditor.windowManager.openUrl({
+                    url : url,
+                    title : 'Filemanager',
+                    width : x * 0.8,
+                    height : y * 0.8,
+                    onMessage: (api, message) => {
+                        callback(message.content);
+                    }
+                });
+            },
+            toolbar_mode: 'floating',
             language: 'vi'
-            });
+        });
         tinymce.init({
             selector: '#noiDung',
-            plugins: 'lists advlist anchor autolink autoresize autosave charactermap code codesample colorpicker contextmenu directionality emoticons fullscreen help hr image imagetools importcss insertdatetime legacyoutput link lists media nonbreaking noneditable pagebreak paste preview quicktoolbars print save searchreplace spellchecker tabfocus table template textcolor textpattern visualblocks visualchars wordcount',
-            toolbar: 'a11ycheck addcomment showcomments casechange checklist code export formatpainter image editimage pageembed permanentpen table tableofcontents',
+            plugins: 'a11ychecker advcode casechange export formatpainter image  editimage linkchecker autolink lists checklist media mediaembed pageembed permanentpen powerpaste table advtable tableofcontents tinymcespellchecker',
+            toolbar: 'a11ycheck addcomment showcomments casechange checklist code export formatpainter image editimage pageembed permanentpen table insertfile tableofcontents undo redo link',
+            image_title: true,
+            automatic_uploads: true,
+            file_picker_callback: function (callback, value, meta) {
+                let x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth;
+                let y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight;
+
+                let type = 'image' === meta.filetype ? 'Images' : 'Files',
+                    url  = '/laravel-filemanager?editor=tinymce5&type=' + type;
+
+                tinymce.activeEditor.windowManager.openUrl({
+                    url : url,
+                    title : 'Filemanager',
+                    width : x * 0.8,
+                    height : y * 0.8,
+                    onMessage: (api, message) => {
+                        callback(message.content);
+                    }
+                });
+            },
+            toolbar_mode: 'floating',
             language: 'vi'
-            });    
+        });  
           
     });
 

@@ -47,4 +47,9 @@ class SanPham extends Model
     {
         return $this->hasMany(DanhGia::class, 'san_pham_id', 'id');
     }
+
+    public function chitiethoadons()
+    {
+        return $this->hasMany(ChiTietHoaDon::class, 'san_pham_id', 'id');
+    }
 }

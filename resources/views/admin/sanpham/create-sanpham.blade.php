@@ -85,7 +85,7 @@
                                 <li class="card-description" style="color: #fc424a;">{{ $err }}</li>
                             @endforeach
                         @endif
-                        
+                            @method('POST')
                             @csrf
                         <div class="mb-3">
                             <label class="form-label" for="basic-default-fullname">Tên Sản Phẩm</label>
@@ -109,7 +109,7 @@
                             <label for="defaultSelect" class="form-label">Đặc trưng</label>
                             <select id="defaultSelect" name="dacTrung" class="form-select">
                                 <option value="0">Chọn đặc trưng</option>
-                                <option value="1">Sản phẩm mới</option>
+                                <option value="1">Sản phẩm bán chạy</option>
                                 <option value="2">Sản phẩm hot</option>
                             </select>
                         </div>
@@ -128,7 +128,7 @@
                         <div class="mb-3">
                             <label for="defaultSelect" class="form-label">Danh mục sản phẩm</label>
                             <select id="defaultSelect" name="danhmucid" class="form-select">
-                                <option value="0">Chọn danh mục sản phẩm</option>
+                                <option value="">Chọn danh mục sản phẩm</option>
                                 @foreach($lstDanhMuc as $dm)
                                 <option value="{{$dm->id}}">{{$dm->tenDanhMuc}}</option>
                                 @endforeach
@@ -149,58 +149,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <div class="nav-align-top mb-4">
-                                <ul class="nav nav-tabs" role="tablist">
-                                <li class="nav-item">
-                                    <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-top-home" aria-controls="navs-top-home" aria-selected="true">
-                                    Thuộc tính
-                                    </button>
-                                </li>
-                                <li class="nav-item">
-                                    <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-top-profile" aria-controls="navs-top-profile" aria-selected="false">
-                                    Biến thể
-                                    </button>
-                                </li>
-                                </ul>
-                                <div class="tab-content">
-                                <div class="tab-pane fade show active" id="navs-top-home" role="tabpanel">
-                                    <div class="lstOption">
-
-                                    </div>
-                                    <div class="lstOptionValue">
-
-                                    </div>
-                                    <div class="mb-3">
-                                            <label for="option" class="form-label">Thuộc tính</label>
-                                            <select id="option" name="thuoctinh" class="form-select">
-                                                <option value="">Chọn thuộc tính</option>
-                                                @foreach($lstThuocTinh as $tt)
-                                                <option value="{{$tt->id}}">{{$tt->tenThuocTinh}}</option>
-                                                @endforeach
-                                            </select>
-                                            @foreach($lstThuocTinh as $tt)
-                                                <div class="attr-item align-items-center d-none lst-option-{{ $tt->id }}">
-                                                    <div class="tag-input tag-input-{{ $tt->id }}">
-                                                        <select id="valueOptions-{{ $tt->id }}" data-id="{{ $tt->id }}" name="valueOptions" class="form-select  form-select-value form-select-{{ $tt->id }}">
-                                                            <option value="">Chọn giá trị thuộc tính</option>
-                                                            @foreach($lstTuyChonThuocTinh as $item)
-                                                                @if($item->thuoc_tinh_id != $tt->id) @continue @endif
-                                                                <option value="{{$item->id}}">{{$item->tieuDe}}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    <button type="button" data-optionid="{{$tt->id}}" class="btn btn-outline-danger d-flex align-items-center btn-delete-option" style="gap: 5px"><i class="bx bx-trash"></i> Xoá</button>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane fade" id="navs-top-profile" role="tabpanel">
-                                    
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        
                         
                     </div>
                 </div>
@@ -214,86 +163,7 @@
 @section('js')
     <script>
 
-        // === Attribute Option  === //
-       let lstOption = document.querySelectorAll("#option");
-       let lstThuocTinh = document.querySelector("#lstThuocTinh");
-       let lstBtnDelete = document.querySelectorAll(".btn-delete-option");
-       let arrayOptionsLabel = [];
-
-       lstBtnDelete.forEach(item => item.addEventListener("click", function() {
-            let currentActive = document.querySelector(`.lst-option-${item.dataset.optionid}`);
-             currentActive.classList.add("d-none");
-            currentActive.classList.remove("d-flex");
-       }))
-
-       lstOption.forEach(item => item.addEventListener('change',function(e) {
-        console.log(item);
-            let currentActive = document.querySelector(`.lst-option-${e.target.value}`);
-            if (currentActive !== null) {
-                
-                currentActive.classList.add("d-flex");
-                currentActive.classList.remove("d-none");
-                let existOption = document.querySelector(`.option-${e.target.value}`);
-                if (existOption) {
-                    return;
-                } else {
-                    var option = document.createElement("input");
-                    option.setAttribute("type", "hidden");
-                    option.setAttribute("name", "thuocTinhSP[]");
-                    option.setAttribute("value", e.target.value);
-                    document.querySelector(".lstOption").appendChild(option);
-                }
-            }
-
-            item.value = "";
-        })); 
-
-        let lstSelect = document.querySelectorAll(".form-select-value");
-
-        lstSelect.forEach(item => item.addEventListener('change', function (e) {
-            let issetTag = document.querySelector(`.tag-item-${e.target.value}`);
-            if(issetTag) {
-                item.value = "";
-                return;
-            }
-            var tag = document.createElement("span");
-            var tagClose = document.createElement("i");
-            tagClose.classList.add("bx", "bx-x", "btn-del-value");
-            tagClose.setAttribute('data-valueid', e.target.value);
-            
-            tag.classList.add("tag-item","bg-info",`tag-item-${e.target.value}`,`tag-option-${item.dataset.id}`);
-            var text = document.createTextNode($(`#valueOptions-${item.dataset.id} option:selected`).text());
-            tag.appendChild(text);
-            tag.appendChild(tagClose);
-
-            
-            $(tag).insertBefore(`#valueOptions-${item.dataset.id}`);
-            var optionValue = document.createElement("input");
-            optionValue.setAttribute("type", "hidden");
-            optionValue.setAttribute("name", "giaTriThuocTinh[]");
-            optionValue.setAttribute("id", `giaTriThuocTinh-${e.target.value}`);
-            optionValue.setAttribute("value", e.target.value);
-            document.querySelector(".lstOptionValue").appendChild(optionValue);
-            removeOptionValue();
-            item.value = "";
-
-        }));
-
-        function removeOptionValue() {
-            // Remove Value Option
-            let lstBtnDelValue = document.querySelectorAll(".btn-del-value");
-            lstBtnDelValue.forEach(item => item.addEventListener("click", function(e) {
-                    const valueOptionItem = document.querySelector(`.tag-item-${item.dataset.valueid}`);
-                    const inputValue = document.querySelector(`#giaTriThuocTinh-${item.dataset.valueid}`);
-                    if(valueOptionItem && inputValue) {
-                        valueOptionItem.remove();
-                        inputValue.remove();
-                    }
-            }));
-        }
        
-
-     
         // === Preview Image === // 
        
         $("#hinhAnh").on("change", function (e) {

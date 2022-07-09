@@ -1,9 +1,9 @@
 @component('mail::message')
 <h4 style="color: #0f146d; text-align: center; font-size:23px;">Cảm ơn <strong> {{ $user->hoTen }}</strong> đã đặt hàng tại TripleT Shop!</h4>
 <p style="color: #202020;">Xin chào {{ $user->hoTen }},</p>
-<p style="color: #202020;">Shop đã nhận được yêu cầu đặt hàng của bạn và đang xử lý nhé. Bạn sẽ nhận được thông báo tiếp theo khi đơn hàng đã sẵn sàng được giao.</p>
+<p style="color: #202020;">Shop đã nhận được yêu cầu đặt hàng của bạn và đang xử lý nhé.</p>
 
-<p style="color: #202020;"><strong>*Lưu ý nhỏ cho bạn: </strong>Bạn chỉ nên nhận hàng khi trạng thái đơn hàng là “Đang giao hàng” và nhớ kiểm tra Mã đơn hàng, Thông tin người gửi và Mã vận đơn để nhận đúng kiện hàng nhé.</p>
+<p style="color: #202020;"><strong>*Lưu ý nhỏ cho bạn: </strong>Bạn chỉ nên nhận hàng khi trạng thái đơn hàng là “Đang giao hàng” và nhớ kiểm tra Mã đơn hàng, Thông tin người gửi để nhận đúng kiện hàng nhé.</p>
 
 @component('mail::table')
 | <p style="color: #202020; font-size: 18px; text-align: left; margin: 0;">Thông tin thanh toán </p>|            |

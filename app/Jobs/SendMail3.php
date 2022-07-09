@@ -2,9 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Mail\OrderMail;
+use App\Mail\OrderCancel;
 use App\Models\HoaDon;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,27 +12,19 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 
-class SendMail implements ShouldQueue
+class SendMail3 implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    protected $user;
     protected $hoadon;
-    protected $data;
-    protected $infoPayMent;
-
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $user, HoaDon $hoadon, $data, $infoPayMent)
+    public function __construct(HoaDon $hoaDon)
     {
-        $this->user = $user;
-        $this->hoadon = $hoadon;
-        $this->data = $data;
-        $this->infoPayMent = $infoPayMent;
+        $this->hoadon = $hoaDon;
     }
-
 
     /**
      * Execute the job.
@@ -42,9 +33,7 @@ class SendMail implements ShouldQueue
      */
     public function handle()
     {
-        $data = $this->data;
-        $infoPayMent = $this->infoPayMent;
-        $mail = new OrderMail($this->user, $this->hoadon, $data, $infoPayMent);
+        $mail = new OrderCancel($this->hoadon);
         Mail::to($this->hoadon->email)->send($mail);
     }
 }

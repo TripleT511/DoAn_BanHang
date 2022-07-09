@@ -22,7 +22,6 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->dateTime('ngayTao');
             $table->string('ghiChu')->nullable();
-            $table->tinyInteger('loaiPhieu');
             $table->tinyInteger('trangThai');
             $table->softDeletes();
             $table->timestamps();

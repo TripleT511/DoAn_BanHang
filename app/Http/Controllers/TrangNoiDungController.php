@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\LuotTimKiem;
-use App\Http\Requests\StoreLuotTimKiemRequest;
-use App\Http\Requests\UpdateLuotTimKiemRequest;
+use App\Models\TrangNoiDung;
+use App\Http\Requests\StoreTrangNoiDungRequest;
+use App\Http\Requests\UpdateTrangNoiDungRequest;
 
-class LuotTimKiemController extends Controller
+class TrangNoiDungController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -31,10 +31,10 @@ class LuotTimKiemController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreLuotTimKiemRequest  $request
+     * @param  \App\Http\Requests\StoreTrangNoiDungRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreLuotTimKiemRequest $request)
+    public function store(StoreTrangNoiDungRequest $request)
     {
         //
     }
@@ -42,10 +42,10 @@ class LuotTimKiemController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\LuotTimKiem  $luotTimKiem
+     * @param  \App\Models\TrangNoiDung  $trangNoiDung
      * @return \Illuminate\Http\Response
      */
-    public function show(LuotTimKiem $luotTimKiem)
+    public function show(TrangNoiDung $trangNoiDung)
     {
         //
     }
@@ -53,10 +53,10 @@ class LuotTimKiemController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\LuotTimKiem  $luotTimKiem
+     * @param  \App\Models\TrangNoiDung  $trangNoiDung
      * @return \Illuminate\Http\Response
      */
-    public function edit(LuotTimKiem $luotTimKiem)
+    public function edit(TrangNoiDung $trangNoiDung)
     {
         //
     }
@@ -64,11 +64,11 @@ class LuotTimKiemController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateLuotTimKiemRequest  $request
-     * @param  \App\Models\LuotTimKiem  $luotTimKiem
+     * @param  \App\Http\Requests\UpdateTrangNoiDungRequest  $request
+     * @param  \App\Models\TrangNoiDung  $trangNoiDung
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateLuotTimKiemRequest $request, LuotTimKiem $luotTimKiem)
+    public function update(UpdateTrangNoiDungRequest $request, TrangNoiDung $trangNoiDung)
     {
         //
     }
@@ -76,10 +76,10 @@ class LuotTimKiemController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\LuotTimKiem  $luotTimKiem
+     * @param  \App\Models\TrangNoiDung  $trangNoiDung
      * @return \Illuminate\Http\Response
      */
-    public function destroy(LuotTimKiem $luotTimKiem)
+    public function destroy(TrangNoiDung $trangNoiDung)
     {
         //
     }

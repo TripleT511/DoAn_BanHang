@@ -34,7 +34,7 @@
                             @endforeach
                             @endif
                             @if(session('message')) 
-                            <label class="text-success" >{{ session('message') }}</label>
+                            <label class="text-success mb-2" style="color: #71dd37;">{{ session('message') }}</label>
                             @endif
                             <div class="row no-gutters">
                                 <div class="col-lg-6 pr-lg-1">

@@ -218,7 +218,7 @@
 								<span class="ribbon off">-{{ round((($item->gia-$item->giaKhuyenMai) /$item->gia) * 100) }}%</span>
 								@else
 									@if($item->dacTrung == 1)
-										<span class="ribbon new">New</span>
+										<span class="ribbon new">Bán chạy</span>
 										@elseif($item->dacTrung == 2)
 										<span class="ribbon hot">Hot</span>
 									@endif
@@ -230,6 +230,18 @@
 									@endforeach
 								</a>
 							</figure>
+							<div class="rating">
+								@php
+									$starActive = round($item->danhgias->avg('xepHang'));
+									$starNonActive = 5 - $starActive;
+								@endphp
+								@for ($i = 0; $i < $starActive; $i++)
+									<i class="icon-star voted"></i>
+								@endfor
+								@for ($i = 0; $i < $starNonActive; $i++)
+									<i class="icon-star"></i>
+								@endfor
+							</div>
 							<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
 								<h3>{{$item->tenSanPham}}</h3>
 							</a>
@@ -241,11 +253,7 @@
 								<span class="old_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
 								@endif
 							</div>
-							<ul>
-								{{-- <li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to favorites"><i class="ti-heart"></i><span>Add to favorites</span></a></li>
-								<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Add to compare"><i class="ti-control-shuffle"></i><span>Add to compare</span></a></li> --}}
-								<li><a href="#0" class="tooltip-1" data-toggle="tooltip" data-placement="left" title="Thêm vào giỏ hàng"><i class="ti-shopping-cart"></i><span>thêm vào giỏ hàng</span></a></li>
-							</ul>
+							
 						</div>
 						<!-- /grid_item -->
 					</div>
@@ -287,27 +295,51 @@
 <script>
     $(function() {
             
-            //Search
-            $('#searchInput').on('keyup', function() {
-                var val = $('#searchInput').val();
-                if(val != "") {
-                    $.ajax({
-                    type: "get",
-                    url: "/search/timkiem",
-                    data: {
-                        txtSearch: val
-                    },
-                    dataType: "json",
-                    success: function (response) {
-                      $("#searchSP").html(response);
-                    }
-                });
-                }
-                
-            });
-		});
+			$.ajax({
+				type: "GET",
+				url: "/render-cart",
+				dataType: "json",
+				success: function (response) {
+					$("#lstItemCart").html(response.newCart);
+					document.querySelector(".total_drop div span").innerHTML = response.total;
+					document.querySelector(".dropdown-cart a strong").innerHTML = response.numberCart;
+					abc();
 
+				}
+			});
 
+		function abc() {
+			let lstBtnDelete = document.querySelectorAll(".btn-trash");
+		// Xoá giỏ hàng //
+		lstBtnDelete.forEach(item => item.addEventListener('click', function() {
+			console.log("a");
+			$.ajax({
+			type: "POST",
+			url: "/remove-cart",
+			dataType: "json",
+			data: {
+				_token: "{{ csrf_token() }}",
+				sanphamId: this.dataset.id
+			},
+			success: function (response) {
+				$.ajax({
+				type: "GET",
+				url: "/render-cart",
+				dataType: "json",
+				success: function (response) {
+					$("#lstItemCart").html(response.newCart);
+					document.querySelector(".total_drop div span").innerHTML = response.total;
+					document.querySelector(".dropdown-cart a strong").innerHTML = response.numberCart;
+					abc();
+
+				}
+			});
+			}
+			});
+		}));
+		}
+	});
+		
 </script>
 
 @endsection

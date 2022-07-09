@@ -5,10 +5,50 @@
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-            <h4 class="fw-bold py-3">Kho hàng</h4>
-            <ul class="nav nav-pills flex-column flex-md-row mb-3">
-              <li class="nav-item">
+            <h4 class="fw-bold ">Nhập kho</h4>
+            <ul class="nav nav-pills mb-2">
+              <li class="nav-item" >
                   <a class="nav-link active" href="{{ route('phieukho.create') }}"><i class="bx bx-plus"></i> Thêm mới</a>
+              </li>
+            </ul>
+            <ul class="nav nav-pills align-items-end flex-column flex-md-row mb-3">
+              <li class="nav-item" style="margin-left: 10px;">
+                <form action="{{ route('admin.locPhieuNhap') }}" method="GET" >
+                  @if($errors->any()) 
+                        @foreach ($errors->all() as $err)
+                            <li class="card-description" style="color: #fc424a;">{{ $err }}</li>
+                        @endforeach
+                    @endif    
+                  <div class="header-right d-flex align-items-end gap-2">
+                      <div class="header-right-item d-flex align-items-start flex-column text-left gap-1">
+                          <span class="d-block">Ngày bắt đầu</span>
+                          <input class="form-control" name="ngayBatDau" type="date"  id="startDate">
+                      </div>
+                      <div class="header-right-item d-flex align-items-start flex-column text-left gap-1">
+                          <span class="d-block">Ngày kết thúc</span>
+                          <input class="form-control" name="ngayKetThuc" type="date"  id="endDate">
+                      </div>
+                      <div class="header-right-item">
+                          <button type="submit" class="btn btn-primary">
+                              <i class='bx bxs-filter-alt'></i>
+                              Lọc
+                          </button>
+                      </div>
+                  </div>
+                </form>
+              </li>
+              <li class="nav-item "  style="margin-left: 10px;">
+                <form action="{{ route('admin.locPhieuNhap') }}" method="GET" class="form-search-custom">
+                      <input type="hidden" name="trangThai"  value="0">
+                      <button type="submit" class="btn btn-info"><i class='bx bxs-notepad'></i>Phiếu chờ duyệt</button>
+                  </form>
+                  
+              </li>
+              <li class="nav-item d-flex align-items-end"  style="margin-left: 15px">
+                  <form action="{{ route('admin.timKiemPhieuNhap') }}" method="GET" class="form-search-custom">
+                      <input type="text" class="form-control" name="keyword"  placeholder="Tìm kiếm theo mã đơn nhập hàng, tên nhà cung cấp..."  style="width: 400px;">
+                      <button type="submit" class="btn btn-success"><i class='bx bx-search'></i></button>
+                  </form>
               </li>
             </ul>
               <!-- Basic Bootstrap Table -->
@@ -18,7 +58,7 @@
                   <table class="table">
                     <thead>
                       <tr>
-                        <th>Phiếu</th>
+                        <th>Mã</th>
                         <th>Ngày</th>
                         <th>Mã phiếu</th>
                         <th>Người tạo</th>
@@ -30,7 +70,7 @@
                       @foreach ($lstPhieuKho as $item)
                       <tr>
                         <td>
-                          <strong>{{ ($item->loaiPhieu == 0 ? "Phiếu Nhập" : "Phiếu Xuất") }}</strong>
+                          <strong>#{{ $item->id }}</strong>
                         </td>
                         <td>
                           {{ $item->ngayTao }}
@@ -39,7 +79,11 @@
                           {{ $item->maDonHang }}
                         </td>
                         <td>
-                          {{ $item->user->hoTen }}
+                          @if($item->user_id)
+                          {{ 
+                            $item->user->hoTen
+                            }}
+                            @endif
                         </td>
                         <td>
                          
@@ -55,19 +99,19 @@
                         <td>
                           
                           <a class="btn btn-primary btn-show-phieu-kho" data-bs-toggle="modal" data-bs-target="#modalCenter" data-id="{{ $item->id }}" href="#">
-                            <i class='bx bxs-show'></i> Xem
+                            <i class='bx bxs-show'></i> 
                           </a>
                           @if($item->trangThai != 1)
                             <form class="d-inline-block" method="post" action="{{ route('phieukho.update', ['phieukho' => $item, 'trangThai' => $item->trangThai ]) }}">
                               @csrf
                               @method("PATCH")
-                              <button style="outline: none; border: none" class="btn btn-info" type="submit"><i class='bx bxs-check-circle'></i> Duyệt</button>
+                              <button style="outline: none; border: none" class="btn btn-info" type="submit"><i class='bx bxs-check-circle'></i> </button>
                             </form>
                           @endif
                           <form class="d-inline-block" method="post" action="{{ route('phieukho.destroy', ['phieukho'=>$item]) }}">
                             @csrf
                             @method("DELETE")
-                            <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
+                            <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> </button>
                           </form>
                         </td>
                       </tr>
@@ -103,7 +147,7 @@
                   <div class="modal-footer">
                     <button type="button" class="btn btn-primary">Print</button>
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-                      Close
+                      Đóng
                     </button>
                   </div>
                 </div>

@@ -17,15 +17,17 @@ class SendMail2 implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     protected $user;
     protected $hash;
+    protected $mail;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(User $user, $hash)
+    public function __construct(User $user, $hash, $mail)
     {
         $this->user = $user;
         $this->hash = $hash;
+        $this->mail = $mail;
     }
 
     /**
@@ -36,6 +38,6 @@ class SendMail2 implements ShouldQueue
     public function handle()
     {
         $mail = new VeryEmail($this->user, $this->hash);
-        Mail::to('nguyenslimz@gmail.com')->send($mail);
+        Mail::to($this->mail)->send($mail);
     }
 }

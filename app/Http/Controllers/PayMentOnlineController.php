@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendMail;
 use App\Models\ChiTietHoaDon;
+use App\Models\DanhMuc;
 use App\Models\GioHang;
 use App\Models\HoaDon;
 use App\Models\MaGiamGia;
+use App\Models\SanPham;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
@@ -18,6 +22,10 @@ class PayMentOnlineController extends Controller
 {
     public function paymentVNPay(Request $request)
     {
+        $Cart = Session::get('Cart');
+        if (!$Cart) {
+            return redirect()->route('gio-hang');
+        }
 
         $request->validate([
             'hoTen_billing' => 'required',
@@ -33,10 +41,8 @@ class PayMentOnlineController extends Controller
         ]);
 
         $user = Auth::user();
-        $Cart = Session::get('Cart');
-        if (!$Cart) {
-            return redirect()->route('gio-hang');
-        }
+
+
 
         $total = 0;
 
@@ -45,6 +51,7 @@ class PayMentOnlineController extends Controller
         }
 
         $discountCode = Session::get('DiscountCode');
+        $oldTotal = $total;
         $valueDiscount = 0;
         $infoPayMent = array(
             "thanhTien" => number_format($total, 0, '', ',') . " đ",
@@ -82,11 +89,12 @@ class PayMentOnlineController extends Controller
         $infoPayMent["tongCong"] = number_format($total, 0, '', ',') . " đ";
         Session::put("infoPayMent", $infoPayMent);
 
+
         //  Thanh toán VN PAY
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        $vnp_Returnurl = "http://127.0.0.1:8000/thanh-toan-thanh-cong";
-        $vnp_TmnCode = "D0D9N7LY"; //Mã website tại VNPAY 
-        $vnp_HashSecret = "MQWFQOJLSODQKYSYZEWXEFXDKIJGSEQN"; //Chuỗi bí mật
+        $vnp_Returnurl = "http://127.0.0.1:8000/thanh-toan-thanh-cong/?khach_hang_id=$user->id&hoTen=$request->hoTen_billing&email=$request->email_billing&diaChi=$request->diaChi_billing&soDienThoai=$request->soDienThoai_billing&ghiChu=$request->ghiChu_billing&thanhtien=$oldTotal&giamgia=$valueDiscount";
+        $vnp_TmnCode = ""; //Mã website tại VNPAY 
+        $vnp_HashSecret = ""; //Chuỗi bí mật
 
         $vnp_TxnRef = Str::random(30); //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
         $vnp_OrderInfo = 'Thanh toán đơn hàng qua VNPAY';
@@ -112,12 +120,6 @@ class PayMentOnlineController extends Controller
             "vnp_OrderType" => $vnp_OrderType,
             "vnp_ReturnUrl" => $vnp_Returnurl,
             "vnp_TxnRef" => $vnp_TxnRef,
-            "khach_hang_id" => $user->id,
-            "hoTen" => $request->hoTen_billing,
-            "email" => $request->email_billing,
-            "diaChi" => $request->diaChi_billing,
-            "soDienThoai" => $request->soDienThoai_billing,
-            "ghiChu" => $request->ghiChu_billing,
         );
 
         if (isset($vnp_BankCode) && $vnp_BankCode != "") {
@@ -151,6 +153,7 @@ class PayMentOnlineController extends Controller
             'code' => '00', 'message' => 'success', 'data' => $vnp_Url
         );
         if (isset($_POST['redirect'])) {
+
             header('Location: ' . $vnp_Url);
             die();
         } else {
@@ -160,70 +163,110 @@ class PayMentOnlineController extends Controller
 
     public function checkoutSuccess(Request $request)
     {
-
         if ($request->has('vnp_Amount')) {
-            $Cart = Session::get('Cart');
-            $user = Auth::user();
-            $total = $request->vnp_Amount / 100;
+            DB::beginTransaction();
 
-            $hoadon = new HoaDon();
-            $hoadon->fill([
-                'nhan_vien_id' => null,
-                'khach_hang_id' => $user->id,
-                'hoTen' => $request->hoTen,
-                'email' => $request->email,
-                'diaChi' => $request->diaChi,
-                'soDienThoai' => $request->soDienThoai,
-                'ngayXuatHD' => date('Y-m-d H:i:s'),
-                'tongTien' => $total,
-                'ghiChu' => $request->ghiChu,
-                'trangThaiThanhToan' => 1,
-                'trangThai' => 4,
-            ]);
-            $hoadon->save();
+            try {
+                $Cart = Session::get('Cart');
+                $user = Auth::user();
+                $total = $request->vnp_Amount / 100;
 
-            $newArray = [];
-
-            foreach ($Cart as $item) {
-                array_push($newArray, [
-                    'tenSanPham' => $item['tenSanPham'],
-                    'soLuong' => $item['soluong'],
-                    'donGia' => $item['gia'],
-                    'tongTien' => $item['gia'] * $item['soluong'],
+                $hoadon = new HoaDon();
+                $hoadon->fill([
+                    'nhan_vien_id' => null,
+                    'khach_hang_id' => $user->id,
+                    'hoTen' => $request->hoTen,
+                    'email' => $request->email,
+                    'diaChi' => $request->diaChi,
+                    'soDienThoai' => $request->soDienThoai,
+                    'ngayXuatHD' => date('Y-m-d H:i:s'),
+                    'tongTien' => $request->thanhtien,
+                    'giamGia' => $request->giamgia,
+                    'tongThanhTien' => $total,
+                    'ghiChu' => $request->ghiChu,
+                    'trangThaiThanhToan' => 1,
+                    'trangThai' => 0,
                 ]);
-                // Thêm chi tiết hoá đơn
-                $chiTietHoaDon = new ChiTietHoaDon();
-                $chiTietHoaDon->fill([
-                    'hoa_don_id' => $hoadon->id,
-                    'san_pham_id' => $item['id'],
-                    'soLuong' => $item['soluong'],
-                    'donGia' => $item['gia'],
-                    'tongTien' => $item['gia'] * $item['soluong'],
-                ]);
-                $chiTietHoaDon->save();
 
-                // Thêm giỏ hàng
-                $gioHang = new GioHang();
-                $gioHang->fill([
-                    'san_pham_id' => $item['id'],
-                    'user_id' => $user->id,
-                    'soLuong' => $item['soluong'],
+                $hoadon->save();
+
+                $hoadon->giamGia = $request->giamgia;
+                $hoadon->tongThanhTien =
+                    $request->vnp_Amount / 100;
+                $hoadon->save();
+
+
+                $newArray = [];
+
+                foreach ($Cart as $item) {
+                    array_push($newArray, [
+                        'tenSanPham' => $item['tenSanPham'],
+                        'soLuong' => $item['soluong'],
+                        'donGia' => $item['gia'],
+                        'tongTien' => $item['gia'] * $item['soluong'],
+                    ]);
+                    // Sản phẩm
+                    $sanpham = SanPham::whereId($item['id'])->where('tonKho', '>', 0)->first();
+                    $sanpham->tonKho = $sanpham->tonKho - $item['soluong'];
+                    $sanpham->save();
+                    // Thêm chi tiết hoá đơn
+                    $chiTietHoaDon = new ChiTietHoaDon();
+                    $chiTietHoaDon->fill([
+                        'hoa_don_id' => $hoadon->id,
+                        'san_pham_id' => $item['id'],
+                        'soLuong' => $item['soluong'],
+                        'donGia' => $item['gia'],
+                        'tongTien' => $item['gia'] * $item['soluong'],
+                    ]);
+                    $chiTietHoaDon->save();
+
+                    // Thêm giỏ hàng
+                    $gioHang = new GioHang();
+                    $gioHang->fill([
+                        'san_pham_id' => $item['id'],
+                        'user_id' => $user->id,
+                        'soLuong' => $item['soluong'],
+                    ]);
+                    $gioHang->save();
+                }
+
+                DB::commit();
+                // all good
+            } catch (\Exception $e) {
+                DB::rollback();
+
+                return Redirect::route('checkout')->withErrors([
+                    'error' => 'Đã xảy ra lỗi. Một vài sản phẩm bạn đang mua hiện đã hết hàng. 
+                    Chúng tôi thành thật xin lỗi vì điều này !.',
                 ]);
-                $gioHang->save();
             }
 
 
-            $infoPayMent = Session::get('infoPayMent');
+            $infoPayMent = array(
+                "thanhTien" => number_format($request->thanhtien, 0, '', ',') . " đ",
+                "vanChuyen" => number_format(0, 0, '', ',') . " đ",
+                "giamGia" => number_format($request->giamgia, 0, '', ',') . " đ",
+                "tongCong" => number_format($request->vnp_Amount / 100, 0, '', ',') . " đ",
+                "hinhThuc" => "Thanh toán qua VNPAY"
+            );
 
             $this->dispatch(new SendMail($user, $hoadon, $newArray, $infoPayMent));
             $code = Session::get('DiscountCode');
-            $maGiamGia = MaGiamGia::whereId($code["id"])->first();
-            $maGiamGia->soLuong = $maGiamGia->soLuong - 1;
-            $maGiamGia->save();
+            if ($code) {
+                $maGiamGia = MaGiamGia::whereId($code["id"])->first();
+                if ($maGiamGia->soLuong != null) {
+
+                    $maGiamGia->soLuong = $maGiamGia->soLuong - 1;
+                    $maGiamGia->save();
+                }
+            }
+
             Session::forget("Cart");
             Session::forget("DiscountCode");
         }
 
-        return view('confirm-checkout');
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', 0)->with('childs')->orderBy('id')->take(1)->get();
+        return view('confirm-checkout', ['lstDanhMuc' => $lstDanhMuc, 'lstDanhMucHeader' => $lstDanhMucHeader]);
     }
 }

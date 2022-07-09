@@ -8,7 +8,7 @@
 </p>
 
 <div style="text-align: center;">
-    <a href="{{ url('/email/verify/' .  $user["id"] . $hash ) }}" style="display: inline-block; padding: 10px 15px; background-color: #004dda; color: #fff; border-radius: 7px; text-decoration: none;">Xác nhận tài khoản</a>
+    <a href="{{ route('verification.verify', ['id' => $user["id"] , 'hash' => $hash]) }}" style="display: inline-block; padding: 10px 15px; background-color: #004dda; color: #fff; border-radius: 7px; text-decoration: none;">Xác nhận tài khoản</a>
 </div>
 
 @endcomponent

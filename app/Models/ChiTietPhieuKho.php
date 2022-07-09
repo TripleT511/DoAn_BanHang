@@ -16,7 +16,6 @@ class ChiTietPhieuKho extends Model
         'phieu_kho_id',
         'san_pham_id',
         'sku',
-        'donVi',
         'soLuong',
         'gia',
         'tongTien'

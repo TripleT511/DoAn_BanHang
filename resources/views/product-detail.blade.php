@@ -47,6 +47,15 @@
 	.product-rating-overview i.empty {
     	background-color: #ccc;
 	}
+
+	.het-hang {
+		padding: 5px 15px;
+		background: #fff;
+		border: 2px dashed red;
+		color: red;
+		width: fit-content;
+		margin-left: 15px;
+	}
 </style>
 @endsection
 @section('content')
@@ -100,84 +109,62 @@
 	                <!-- /page_header -->
 	                <div class="prod_info">
 	                    <h1>{{ $sanpham->tenSanPham }}</h1>
-	                    <span class="rating">
+	                    <span class="rating top-rating">
 							@for ($i = 0; $i < $starActive; $i++)
 								<i class="icon-star voted"></i>
 							@endfor
 							@for ($i = 0; $i < $starNonActive; $i++)
 								<i class="icon-star"></i>
 							@endfor
-							<em>( {{ $countRating }} đánh giá )</em>
+							
 						</span>
+						<em class="count-rating rating">( {{ $countRating }} đánh giá )</em>
+						@if($sanpham->sku != null)
 	                    <p><small>SKU: {{ $sanpham->sku }}</small><br>{!! $sanpham->moTa !!}</p>
+						@endif
 	                    <div class="prod_options">
 	                        <div class="row">
-	                            <label class="col-xl-5 col-lg-5  col-md-6 col-6 pt-0"><strong>Màu</strong></label>
-	                            <div class="col-xl-4 col-lg-5 col-md-6 col-6 colors">
-	                                <ul>
-	                                    <li><a href="#0" class="color color_1 active"></a></li>
-	                                    <li><a href="#0" class="color color_2"></a></li>
-	                                    <li><a href="#0" class="color color_3"></a></li>
-	                                    <li><a href="#0" class="color color_4"></a></li>
-	                                </ul>
-	                            </div>
-	                        </div>
-	                        <div class="row">
-	                            <label class="col-xl-5 col-lg-5 col-md-6 col-6"><strong>Kích thước</strong> - Size Guide <a href="#0" data-toggle="modal" data-target="#size-modal"><i class="ti-help-alt"></i></a></label>
-	                            <div class="col-xl-4 col-lg-5 col-md-6 col-6">
-	                                <div class="custom-select-form">
-	                                    <select class="wide">
-	                                        <option value="" selected>Small (S)</option>
-	                                        <option value="">M</option>
-	                                        <option value=" ">L</option>
-	                                        <option value=" ">XL</option>
-	                                    </select>
-	                                </div>
-	                            </div>
-	                        </div>
-	                        <div class="row">
-								
+								@if($sanpham->tonKho > 0)
 	                            <label class="col-xl-5 col-lg-5  col-md-6 col-6"><strong>Số lượng</strong></label>
 	                            <div class="col-xl-4 col-lg-5 col-md-6 col-6">
 	                                <div class="numbers-row">
 	                                    <input type="text" value="1" id="quantity_1" class="qty2" name="quantity_1">
 	                                </div>
 	                            </div>
+								@else
+								<div class="het-hang" >
+									Hết hàng
+								</div>
+								@endif
 	                        </div>
 	                    </div>
 	                    <div class="row">
 	                        <div class="col-lg-5 col-md-6">
 	                            <div class="price_main">
+									@if($sanpham->giaKhuyenMai == 0)
 									<span class="new_price">{{ number_format($sanpham->gia, 0, '', ',') }} đ
 									</span>
-									@if($sanpham->giaKhuyenMai != 0)
+									@elseif($sanpham->giaKhuyenMai != 0)
+									<span class="new_price">{{ number_format($sanpham->giaKhuyenMai, 0, '', ',') }} đ
+									</span>
 									<span class="percentage">
 									-{{ round((($sanpham->gia - $sanpham->giaKhuyenMai) / $sanpham->gia) * 100) }}%
 									</span>
 									<span class="old_price">
-										{{ number_format($sanpham->giaKhuyenMai, 0, '', ',') }} đ
+										{{ number_format($sanpham->gia, 0, '', ',') }} đ
 									</span>
 									@endif
 								</div>
 								
 	                        </div>
+							@if($sanpham->tonKho > 0)
 	                        <div class="col-lg-4 col-md-6">
 								<a href="javascript:void(0)" id="add-cart" class="btn_1">Thêm vào giỏ hàng</a>
 	                        </div>
+							@endif
 	                    </div>
 	                </div>
 	                <!-- /prod_info -->
-	                <div class="product_actions">
-	                    <ul>
-	                        <li>
-	                            <a href="#"><i class="ti-heart"></i><span>Add to Wishlist</span></a>
-	                        </li>
-	                        <li>
-	                            <a href="#"><i class="ti-control-shuffle"></i><span>Add to Compare</span></a>
-	                        </li>
-	                    </ul>
-	                </div>
-	                <!-- /product_actions -->
 	            </div>
 	        </div>
 	        <!-- /row -->
@@ -211,34 +198,8 @@
 	                    <div id="collapse-A" class="collapse" role="tabpanel" aria-labelledby="heading-A">
 	                        <div class="card-body">
 	                            <div class="row justify-content-between">
-	                                <div class="col-lg-6">
+	                                <div class="col-lg-12">
 	                                   {!! $sanpham->noiDung !!}
-	                                </div>
-	                                <div class="col-lg-5">
-	                                    <h3>Thông số</h3>
-	                                    <div class="table-responsive">
-	                                        <table class="table table-sm table-striped">
-	                                            <tbody>
-	                                                <tr>
-	                                                    <td><strong>Màu</strong></td>
-	                                                    <td>xanh dương, tím</td>
-	                                                </tr>
-	                                                <tr>
-	                                                    <td><strong>Kích thước</strong></td>
-	                                                    <td>150x100x100</td>
-	                                                </tr>
-	                                                <tr>
-	                                                    <td><strong>cân nặng</strong></td>
-	                                                    <td>0.6kg</td>
-	                                                </tr>
-	                                                <tr>
-	                                                    <td><strong>nhà sản xuất</strong></td>
-	                                                    <td>Manifacturer</td>
-	                                                </tr>
-	                                            </tbody>
-	                                        </table>
-	                                    </div>
-	                                    <!-- /table-responsive -->
 	                                </div>
 	                            </div>
 	                        </div>
@@ -260,7 +221,7 @@
 										<div class="product-rating-overview">
 											<div class="overview-top">
 
-												<p><b>{{ $starActive }} / 5</b></p>
+												<p><b class="avg-start">{{ $starActive }} / 5</b></p>
 											</div>
 											<div class="overview-bottom">
 											@for ($i = 0; $i < $starActive; $i++)
@@ -332,6 +293,9 @@
 											</div>
 											<h4>{{  $item->taikhoan->hoTen }}</h4>
 											<p>{{  $item->noiDung }}</p>
+											@if(Auth()->user()->id == $item->user_id) 
+												<a href="" class="btn btn-delete" data-id="$item->id">Xoá</a>
+											@endif
 										</div>
 									</div>
 								   @endforeach
@@ -353,7 +317,7 @@
 	    <div class="container margin_60_35">
 	        <div class="main_title">
 	            <h2>Sản Phẩm Liên Quan</h2>
-	            <span>Sản Phẩm Liên Quan</span>
+	            <span>Products</span>
 	           
 	        </div>
 	        <div class="owl-carousel owl-theme products_carousel">
@@ -364,7 +328,7 @@
 								<span class="ribbon off">-{{ round((($item->gia-$item->giaKhuyenMai) /$item->gia) * 100) }}%</span>
 							@else
 								@if($item->dacTrung == 1)
-									<span class="ribbon new">New</span>
+									<span class="ribbon new">Bán chạy</span>
 									@elseif($item->dacTrung == 2)
 									<span class="ribbon hot">Hot</span>
 								@endif
@@ -401,9 +365,6 @@
 							<span class="old_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
 							@endif
 	                    </div>
-	                    <ul>
-	                        <li><a href="#add-to-cart-now" class="add-to-cart-now" data-id="{{ $item->id }}" data-toggle="tooltip" data-placement="left" title="Thêm vào giỏ hàng"><i class="ti-shopping-cart"></i><span>Thêm vào giỏ hàng</span></a></li>
-	                    </ul>
 	                </div>
 	                <!-- /grid_item -->
 	            </div>
@@ -457,6 +418,7 @@
 @section('js')
  <script  src="{{ asset('js/carousel_with_thumbs.js') }}"></script>
  <script>
+
 	let btnAddCart = document.getElementById('add-cart');
 	let closeToast = document.querySelector(".close-toast");
 	let btnReview = document.querySelector("#review_btn");
@@ -476,10 +438,42 @@
 			dataType: "json",
 			success: function (response) {
 				$("#lstItemCart").html(response.newCart);
-				document.querySelector(".total_drop div span").innerHTML = `${response.total} ₫`;
+				document.querySelector(".total_drop div span").innerHTML = response.total;
 				document.querySelector(".dropdown-cart a strong").innerHTML = response.numberCart;
+				abc();
+
 			}
 		});
+
+		function abc() {
+			let lstBtnDelete = document.querySelectorAll(".btn-trash");
+		// Xoá giỏ hàng //
+		lstBtnDelete.forEach(item => item.addEventListener('click', function() {
+			$.ajax({
+			type: "POST",
+			url: "/remove-cart",
+			dataType: "json",
+			data: {
+				_token: "{{ csrf_token() }}",
+				sanphamId: this.dataset.id
+			},
+			success: function (response) {
+				$.ajax({
+				type: "GET",
+				url: "/render-cart",
+				dataType: "json",
+				success: function (response) {
+					$("#lstItemCart").html(response.newCart);
+					document.querySelector(".total_drop div span").innerHTML = response.total;
+					document.querySelector(".dropdown-cart a strong").innerHTML = response.numberCart;
+					abc();
+
+				}
+			});
+			}
+			});
+		}));
+		}
 	});
 
 	//Thêm giỏ hàng
@@ -569,6 +563,10 @@
 								toast.classList.remove("show");
                                 }, 2000);
                            $("#lstReview").html(response.output);
+						   $(".avg-start").html(response.avg + " / 5");
+						   $(".count-rating").html(response.count);
+						   $(".overview-bottom").html(response.outputMain2);
+						   $(".top-rating").html(response.outputMain1);
                         }
                     }
                 });
