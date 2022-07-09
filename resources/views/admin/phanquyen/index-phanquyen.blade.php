@@ -3,12 +3,27 @@
 @section('title','Quản lý phân quyền')
 
 @section('content')
+<div class="bs-toast toast toast-placement-ex m-2 fade bg-danger top-50 start-50 translate-middle " role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+  <div class="toast-header">
+      <i class="bx bx-bell me-2"></i>
+      <div class="me-auto fw-semibold">Thông báo</div>
+      <small>1 second ago</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+  <div class="toast-body">Lỗi</div>
+</div>
 <div class="container-xxl flex-grow-1 container-p-y">
               <h4 class="fw-bold py-3">Phân quyền</h4>
             <ul class="nav nav-pills flex-column flex-md-row mb-3">
               <li class="nav-item">
                   <a class="nav-link active" href="{{ route('phanquyen.create') }}"><i class="bx bx-plus"></i> Thêm mới</a>
               </li>
+              <li class="nav-item "  style="margin-left: 10px;">
+                <form action="{{ route('searchPhanQuyen') }}" method="GET" class="form-search-custom">
+                    <input type="text" class="form-control" name="keyword" id="searchDanhMuc" placeholder="Từ khoá ..."  >
+                    <button type="submit" class="btn btn-success"><i class='bx bx-search'></i></button>
+                </form>
+            </li>
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">
@@ -28,8 +43,8 @@
                           <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $item->tenViTri }}</strong></td>
                           <td><i class="fab fa-angular fa-lg text-danger me-3"></i> {{ $item->viTri }}</td>
                           <td>
-                            <a class="btn btn-success" href="{{ route('phanquyen.edit', ['phanquyen' => $item]) }}">
-                              <i class="bx bx-edit-alt me-1"></i>Sửa
+                            <a class="btn btn-success btn-change-tenvitri" data-bs-toggle="modal" data-bs-target="#modalCenter"  data-id="{{ $item->id }}" href="#">
+                              <i class='bx bx-edit-alt me-1'></i>
                             </a>
                             <form class="d-inline-block" method="post" action="{{ route('phanquyen.destroy', ['phanquyen'=>$item]) }}">
                               @csrf
@@ -45,7 +60,98 @@
               </div>
               <!--/ Basic Bootstrap Table -->
 
-              
+              <div class="pagination__wrapper">
+                <ul class="pagination">
+                  {!!$lstPhanQuyen->withQueryString()->links() !!}
+                </ul>
+              </div>
               <!--/ Responsive Table -->
             </div>
+            <div class="modal fade" id="modalCenter" tabindex="-1"  aria-modal="true" role="dialog">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                  <h5 class="modal-title" id="modalCenterTitle">Đổi tên vị trí</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  
+                  <div class="modal-body">
+                      <form method="post" action="javascript:void(0)" id="form_changetenvitri" enctype="multipart/form-data">
+                          <input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
+                          <div class="mb-3">
+                            <label class="form-label" for="tenViTri">Tên vị trí</label>
+                            <input type="text" name="tenViTri" class="form-control" id="tenViTri"  placeholder="Nhập tên vị trí" />
+                        </div>
+                                  
+                          <input type="hidden" id="phanquyen_id" >
+                          <button type="submit" class="btn btn-primary btn-change">Đổi</button>
+                      </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" id="closeModel" class="btn btn-outline-primary" data-bs-dismiss="modal">
+                        Đóng
+                    </button>
+                  </div>
+              </div>
+              </div>
+          </div>
+<div class="modal-backdrop fade "></div>
+@endsection
+@section('js')
+<script>
+  $(function() {
+    let lstRemoveProduct = document.querySelectorAll(".table-product tr");
+    let lstSP = document.querySelectorAll(".product-search-item");
+    let lstBtnDelete = document.querySelectorAll(".btn-xoa");
+    let lstBtnUpdate = document.querySelectorAll(".btn-update");
+    let lstBtnChangeTenViTri = document.querySelectorAll(".btn-change-tenvitri");
+    let btnChange = document.querySelector(".btn-change");
+
+    //Đổi mật khẩu
+    lstBtnChangeTenViTri.forEach(item => item.addEventListener('click', function(e) {
+      e.preventDefault();
+      $("#phanquyen_id").val(item.dataset.id);
+      btnChange.addEventListener('click', function() 
+      {
+        console.log("a");
+        $.ajax({
+          type: "POST",
+          url: "/admin/doi-ten-vi-tri",
+          data: {
+              _token: $("#token").val(),
+              tenViTri: $("#tenViTri").val(),
+              phanquyen_id: $("#phanquyen_id").val(),
+          },
+          dataType: "json",
+          success: function (response) {
+            if(response.error) {
+              document.querySelector(".bs-toast").classList.add("bg-danger");
+              document.querySelector(".bs-toast").classList.remove("bg-success");
+              document.querySelector(".toast-body").innerHTML = response.error;
+              document.querySelector(".bs-toast").classList.add("show");
+              setTimeout(() => {
+                  document.querySelector(".bs-toast").classList.remove("show");
+              }, 2000);
+              return;
+            }
+            let btnShowModel = document.querySelector("#closeModel");
+            btnShowModel.click();
+
+            document.querySelector(".bs-toast").classList.add("bg-success");
+            document.querySelector(".bs-toast").classList.remove("bg-danger");
+            document.querySelector(".toast-body").innerHTML = response.success;
+            document.querySelector(".bs-toast").classList.add("show");
+            setTimeout(() => {
+                document.querySelector(".bs-toast").classList.remove("show");
+            }, 2000);
+          }
+        });
+
+      });
+      
+    }));
+  });
+          
+</script>
+
 @endsection

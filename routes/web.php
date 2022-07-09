@@ -122,6 +122,11 @@ Route::middleware(['isGuest'])->group(function () {
     Route::get('/loc-don-hang', [HomeController::class, 'locDonHang'])->name('locDonHang');
 
     Route::post('/da-nhan-hang', [HomeController::class, 'nhanHangThanhCong'])->name('nhanHangThanhCong');
+    Route::post('/thong-tin-ca-nhan/update', [HomeController::class, 'update'])->name('update');
+
+    Route::get('/thong-tin-ca-nhan/doi-mat-khau', [HomeController::class, 'changepass'])->name('changepass');
+
+    Route::post('/thong-tin-ca-nhan/doimatkhau', [HomeController::class, 'doimatkhau'])->name('doimatkhau');
 
     Route::post('/review', [DanhGiaController::class, 'store']);
 
@@ -158,6 +163,7 @@ Route::prefix('admin')->group(function () {
         // *** Thống Kê *** //
 
         Route::resource('user', TaiKhoanController::class);
+        Route::get('/taikhoan/mokhoa{user}', [TaiKhoanController::class, 'moKhoa'])->name('mokhoa');
         Route::resource('phanquyen', PhanQuyenController::class);
         Route::resource('sanpham', SanPhamController::class);
         Route::resource('danhgia', DanhGiaController::class);
@@ -179,25 +185,24 @@ Route::prefix('admin')->group(function () {
         // Mã giảm giá hết hạn
         Route::get('/discount-het-han', [MaGiamGiaController::class, 'indexDie'])->name('maHetHan');
 
-
         // *** Tìm kiếm *** //
-        Route::get('/slideshow/timkiem', [SliderController::class, 'searchSlider']);
-        Route::get('/ncungcap/timkiem', [NhaCungCapController::class, 'searchNCC']);
-        Route::get('/binhluan/timkiem', [DanhGiaController::class, 'searchBinhLuan']);
-        Route::get('/taikhoan/timkiem', [TaiKhoanController::class, 'searchTaiKhoan']);
-        Route::get('/taikhoan/mokhoa{user}', [TaiKhoanController::class, 'moKhoa'])->name('mokhoa');
-
         Route::get('search/danhmuc', [DanhMucController::class, 'searchDanhMuc'])->name('searchDanhMuc');
-
+        Route::get('search/taikhoan', [TaiKhoanController::class, 'searchTaiKhoan'])->name('searchTaiKhoan');
+        Route::get('search/danhgia', [DanhGiaController::class, 'searchDanhGia'])->name('searchDanhGia');
+        Route::get('search/nhacungcap', [NhaCungCapController::class, 'searchNCC'])->name('searchNhaCungCap');
+        Route::get('search/sanpham', [SanPhamController::class, 'searchSanPham'])->name('searchSanPham');
+        Route::get('search/slideshow', [SliderController::class, 'searchSlider'])->name('searchSlideShow');
+        Route::get('search/thuoctinh', [ThuocTinhController::class, 'searchThuocTinh'])->name('searchThuocTinh');
+        Route::get('search/phanquyen', [PhanQuyenController::class, 'searchPhanQuyen'])->name('searchPhanQuyen');
 
         Route::post('/upload-image', [MaGiamGiaController::class, 'upLoadImageEditor'])->name('upLoadImageEditor');
-
-
         // *** Tìm kiếm *** //
 
         //Đổi mật khẩu
-        Route::get('/user/{user}/doimatkhau', [TaiKhoanController::class, 'changepass'])->name('changepass');
-        Route::post('/user/{user}/doimatkhau', [TaiKhoanController::class, 'doimatkhau'])->name('doimatkhau');
+        Route::post('/doi-mat-khau', [TaiKhoanController::class, 'doimatkhau'])->name('changePassword');
+
+        //Đổi tên vị Trí
+        Route::post('/doi-ten-vi-tri', [PhanQuyenController::class, 'update'])->name('changeTenViTri');
 
 
         // Search sản phẩm ( tạo phiếu kho )
@@ -229,6 +234,7 @@ Route::prefix('admin')->group(function () {
 
         // Lọc phiếu kho
         Route::get('/phieu-kho/loc-phieu-kho', [PhieuKhoController::class, 'locPhieuKho'])->name('admin.locPhieuNhap');
+        Route::get('/phieukho-pdf', [PhieuKhoController::class, 'createPDF'])->name('PDF');
 
 
         // Thêm Thuộc Tính

@@ -52,6 +52,9 @@
     <script src="{{ asset('ad/assets/js/config.js') }}"></script>
    
     <style>
+      #search-form {
+        display: none;
+      }
         .text-right {
           text-align: right !important;
         }
@@ -65,6 +68,14 @@
           display: flex;
           align-items: center;
           gap: 10px;
+        }
+
+        .modal-backdrop.fade {
+            display: none;
+        } 
+        .modal-backdrop.show {
+            z-index: 1089;
+            display: block;
         }
     </style>
    
@@ -147,7 +158,7 @@
 
           <ul class="menu-inner py-1">
             <!-- Dashboard -->
-            <li class="menu-item {{ (request()->routeIs('dashboard')) ? 'active' : '' }}">
+            <li class="menu-item {{ (request()->is('admin/dashboard')) ? 'active' : '' }}">
               <a href="{{ route('dashboard') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-dashboard"></i>
                 <div data-i18n="Analytics">Dashboard</div>

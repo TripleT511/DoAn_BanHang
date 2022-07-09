@@ -44,9 +44,9 @@ class LoginSocialiteController extends Controller
                     'phan_quyen_id' => '2',
                     'anhDaiDien' => $user->avatar,
                     'diaChi' => '',
+                    'email_verified_at' => now(),
                 ]);
                 $newUser->save();
-
 
                 $newUser->email_verified_at = now();
                 $newUser->save();

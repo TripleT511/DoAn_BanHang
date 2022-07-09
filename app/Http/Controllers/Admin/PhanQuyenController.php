@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Models\PhanQuyen;
 use App\Http\Requests\StorePhanQuyenRequest;
 use App\Http\Requests\UpdatePhanQuyenRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 
 class PhanQuyenController extends Controller
 {
@@ -17,10 +20,18 @@ class PhanQuyenController extends Controller
      */
     public function index()
     {
-        $listPhanQuyen = PhanQuyen::all();
+        $listPhanQuyen = PhanQuyen::paginate(5)->withQueryString();
         return view('admin.phanquyen.index-phanquyen', ['lstPhanQuyen' => $listPhanQuyen]);
     }
 
+    public function searchPhanQuyen(Request $request)
+    {
+
+        if ($request->input('keyword') != "") {
+            $listPhanQuyen = PhanQuyen::where('tenViTri', 'LIKE', '%' . $request->input('keyword') . '%')->paginate(5);
+        }
+        return view('admin.phanquyen.index-phanquyen', ['lstPhanQuyen' => $listPhanQuyen]);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -77,9 +88,9 @@ class PhanQuyenController extends Controller
      * @param  \App\Models\PhanQuyen  $phanQuyen
      * @return \Illuminate\Http\Response
      */
-    public function edit(PhanQuyen $phanQuyen)
+    public function edit(PhanQuyen $phanquyen)
     {
-        return view('admin.phanquyen.edit-phanquyen', ['phanquyen' => $phanquyen]);
+        // return view('admin.phanquyen.edit-phanquyen', ['phanquyen' => $phanquyen]);
     }
 
     /**
@@ -89,21 +100,31 @@ class PhanQuyenController extends Controller
      * @param  \App\Models\PhanQuyen  $phanQuyen
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePhanQuyenRequest $request, PhanQuyen $phanQuyen)
+    public function update(UpdatePhanQuyenRequest $request)
     {
-        $request->validate([
+        $validator = Validator::make(
+            $request->all(),
+             [
             'tenViTri' => 'required',
-            'viTri' => 'required',  
         ], [
-            'tenViTri.required' => "Tên vị trí không được bỏ trống",
-            'viTri.required' => "Mã vị trí không được bỏ trống",
+            'tenViTri.required' => "Tên Vị Trí không được bỏ trống",
         ]);
+
+        if ($validator->fails()) {
+            $error = "";
+            foreach ($validator->errors()->all() as $item) {
+                $error .= '
+                    <li class="card-description" style="color: #fff;">' . $item . '</li>
+                ';
+            }
+            return response()->json(['error' => $error]);
+        }
+        $phanquyen = PhanQuyen::whereId($request->phanquyen_id)->first();
         $phanquyen->fill([
             'tenViTri'=> $request->input('tenViTri'),
-            'viTri'=> $request->input('viTri'),
         ]);
         $phanquyen->save();
-        return Redirect::route('phanquyen.index');
+        return response()->json(["success" => "Đổi mật khẩu thành công"]);
     }
 
     /**
@@ -112,7 +133,7 @@ class PhanQuyenController extends Controller
      * @param  \App\Models\PhanQuyen  $phanQuyen
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PhanQuyen $phanQuyen)
+    public function destroy(PhanQuyen $phanquyen)
     {
         $phanquyen->delete();
         return Redirect::route('phanquyen.index',);

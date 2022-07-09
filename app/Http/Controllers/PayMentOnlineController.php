@@ -89,10 +89,12 @@ class PayMentOnlineController extends Controller
         $infoPayMent["tongCong"] = number_format($total, 0, '', ',') . " đ";
         Session::put("infoPayMent", $infoPayMent);
 
-
         //  Thanh toán VN PAY
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
         $vnp_Returnurl = "http://127.0.0.1:8000/thanh-toan-thanh-cong/?khach_hang_id=$user->id&hoTen=$request->hoTen_billing&email=$request->email_billing&diaChi=$request->diaChi_billing&soDienThoai=$request->soDienThoai_billing&ghiChu=$request->ghiChu_billing&thanhtien=$oldTotal&giamgia=$valueDiscount";
+        if ($request->socialite != null) {
+            $vnp_Returnurl = "http://localhost:8000/thanh-toan-thanh-cong/?khach_hang_id=$user->id&hoTen=$request->hoTen_billing&email=$request->email_billing&diaChi=$request->diaChi_billing&soDienThoai=$request->soDienThoai_billing&ghiChu=$request->ghiChu_billing&thanhtien=$oldTotal&giamgia=$valueDiscount";
+        }
         $vnp_TmnCode = ""; //Mã website tại VNPAY 
         $vnp_HashSecret = ""; //Chuỗi bí mật
 
@@ -164,6 +166,7 @@ class PayMentOnlineController extends Controller
     public function checkoutSuccess(Request $request)
     {
         if ($request->has('vnp_Amount')) {
+
             DB::beginTransaction();
 
             try {

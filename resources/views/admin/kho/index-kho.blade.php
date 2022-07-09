@@ -145,7 +145,8 @@
                    
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Print</button>
+                    <input type="hidden" id="dataPDF">
+                    <a type="button" href="{{ route('PDF') }}" class="btn btn-primary">Print</a>
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
                       Đóng
                     </button>
@@ -176,7 +177,7 @@
         let lstBtnPhieuKho = document.querySelectorAll(".btn-show-phieu-kho");
         lstBtnPhieuKho.forEach(item => item.addEventListener('click', function(e) {
           e.preventDefault();
-          console.log("a");
+          
           $.ajax({
             type: "get",
             url: "/admin/kho/xem-phieu-kho",
@@ -185,8 +186,7 @@
                 id: item.dataset.id
             },
             success: function (response) {
-                console.log(response);
-                $(".modal-body").html(response);
+                $(".modal-body").html(response.data);
             }
         });
         }) );

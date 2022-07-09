@@ -54,7 +54,7 @@
                 <div class="mb-3">
                     <label class="form-label" for="noiDung">Nội Dung</label>
                     <textarea name="noiDung" id="noiDung" class="form-control noidung">
-                        {!! $slider->noiDung !!}
+                        {{ $slider->noiDung }}
                     </textarea>
                 </div>
                 <div class="mb-3">

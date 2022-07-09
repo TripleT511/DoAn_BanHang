@@ -30,7 +30,7 @@ class SliderController extends Controller
     }
     public function index()
     {
-        $lstSlider = Slider::paginate(2)->withQueryString();
+        $lstSlider = Slider::paginate(5)->withQueryString();
         foreach ($lstSlider as $item) {
             $this->fixImage($item);
         }
@@ -39,39 +39,11 @@ class SliderController extends Controller
 
     public function searchSlider(Request $request)
     {
-        $output = "";
 
-        if ($request->input('txtSearch') != "") {
-            $lstSlider = Slider::where('tieuDe', 'LIKE', '%' . $request->input('txtSearch') . '%')->get();
-            foreach ($lstSlider as $key => $item) {
-                $this->fixImage($item);
-                $output2 = '' . ($item->trangThai == 1) ? '<span class="badge bg-label-primary">hiển thị</span>' : '<span class="badge bg-label-danger">không hiển thị</span>'
-                    . '';
-                $output .= '
-                    <tr> 
-                    <td>
-                    <div class="img">
-                        <img src="' . asset('storage/' . $item->hinhAnh) . '" class="image-product" alt="' . $item->tieuDe . '">
-                    </div>
-                    </td>
-                    <td> ' . $item->tieuDe  . ' </td>
-                    <td>' . $item->slug . '</td>
-                    <td>' . $output2 . ' </td>
-                    <td>
-                    <a class="btn btn-success" href="' . route('slider.edit', ['slider' => $item]) . '">
-                        <i class="bx bx-edit-alt me-1"></i>Sửa
-                    </a>
-                    <form class="d-inline-block" method="post" action="' . route('slider.destroy', ['slider' => $item]) . '">
-                    <input type="hidden" name="_method" value="DELETE">
-                    <input type="hidden" name="_token" value="' . csrf_token() . '">
-                        <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
-                    </form>
-                    </td>
-                </tr>
-                ';
-            }
+        if ($request->input('keyword') != "") {
+            $lstSlider = Slider::where('tieuDe', 'LIKE', '%' . $request->input('keyword') . '%')->paginate(5);
         }
-        return response()->json($output);
+        return View('admin.slideshow.index-slideshow', ['lstSlider' => $lstSlider]);
     }
     /**
      * Show the form for creating a new resource.

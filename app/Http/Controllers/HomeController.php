@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Registered;
+use Svg\Tag\Rect;
 
 class HomeController extends Controller
 {
@@ -110,12 +111,7 @@ class HomeController extends Controller
         return redirect()->route('home');
     }
 
-    public function xemThongTin()
-    {
-        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
-        $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
-        return view('user', ['lstDanhMuc' => $lstDanhMuc, 'lstDanhMucHeader' => $lstDanhMucHeader]);
-    }
+
     /**
      * Display a listing of the resource.
      *
@@ -132,7 +128,6 @@ class HomeController extends Controller
         $lstSanPhamBanChay = SanPham::where('dacTrung', 1)->with('hinhanhs')->with('danhmuc')->with('danhgias')->orderBy('created_at', 'desc')->take(8)->get();
 
         $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
-
         $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
 
         return view('home', [
@@ -142,16 +137,6 @@ class HomeController extends Controller
         ]);
     }
 
-    public function danhgia()
-    {
-
-        $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->get();
-
-        $lstSanPhamNoiBat = SanPham::with('hinhanhs')->with('danhmuc')->take(8)->get();
-
-
-        return view('review', ['lstSanPham' => $lstSanPham, 'lstSanPhamNoiBat' => $lstSanPhamNoiBat]);
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -428,7 +413,7 @@ class HomeController extends Controller
             'password' => Hash::make($request->password),
             'soDienThoai' => $request->input('soDienThoai'),
             'phan_quyen_id' => '2',
-            'anhDaiDien' => 'images/user-default.jpg',
+            'anhDaiDien' => '',
             'diaChi' => ''
         ]);
         $user->save();
@@ -462,6 +447,51 @@ class HomeController extends Controller
         //
     }
 
+    public function xemThongTin()
+    {
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
+        return view('user', ['lstDanhMuc' => $lstDanhMuc, 'lstDanhMucHeader' => $lstDanhMucHeader]);
+    }
+
+    public function changePass()
+    {
+        if (Auth()->user()->social_type != null) {
+            return Redirect::back();
+        }
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        return view('change-password', ['lstDanhMuc' => $lstDanhMuc]);
+    }
+
+    public function doimatkhau(Request $request)
+    {
+
+        $request->validate([
+            'password' => 'required',
+            'newpassword' => 'required|min:6',
+            'confirm_password' => 'required|same:newpassword',
+
+        ], [
+            'password.required' => 'Mật khẩu không được bỏ trống',
+            'newpassword.required' => 'Mật khẩu mới không được bỏ trống',
+            'newpassword.min' => 'Mật khẩu mới ít nhất 6 kí tự',
+            'confirm_password.required' => 'Xác nhận mật khẩu không được bỏ trống',
+            'confirm_password.same' => 'Xác nhận mật khẩu chưa trùng khớp',
+        ]);
+
+        $user = User::whereId($request->user)->first();
+
+        if (!Hash::check($request->password, $user->password)) {
+            return Redirect::back()->withErrors(['password' => 'Mật khẩu cũ không đúng, vui lòng nhập lại']);
+        }
+
+        $user->fill([
+            'password' => Hash::make($request->newpassword),
+        ]);
+        $user->save();
+
+        return Redirect::route('xem-thong-in-ca-nhan')->with('success', 'Đổi mật khẩu thành công');
+    }
     /**
      * Update the specified resource in storage.
      *
@@ -469,9 +499,41 @@ class HomeController extends Controller
      * @param  \App\Models\User  $taiKhoan
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $taiKhoan)
+    public function update(Request $request)
     {
-        //
+
+        $request->validate([
+            'hoTen' => 'required|string|max:255',
+            'soDienThoai' => 'required|string',
+            'diaChi' => 'required|string',
+
+        ], [
+            'hoTen.required' => 'Họ Tên không được bỏ trống',
+            'soDienThoai.required' => 'Số điện thoại không được bỏ trống',
+            'diaChi.required' => 'Địa Chỉ không được bỏ trống',
+        ]);
+
+
+        $user = User::whereId($request->user)->first();
+
+
+
+        $user->fill([
+            'hoTen' => $request->input('hoTen'),
+            'email' => $user->email,
+            'password' => $user->password,
+            'anhDaiDien' => $user->anhDaiDien,
+            'diaChi' => $request->input('diaChi'),
+            'soDienThoai' => $request->input('soDienThoai'),
+        ]);
+        $user->save();
+
+        if ($request->hasFile('anhDaiDien')) {
+            $user->anhDaiDien = $request->file('anhDaiDien')->store('images/tai-khoan', 'public');
+        }
+        $user->save();
+
+        return Redirect::route('xem-thong-in-ca-nhan')->with('success', 'Cập nhật thông tin cá nhân thành công');
     }
 
     /**

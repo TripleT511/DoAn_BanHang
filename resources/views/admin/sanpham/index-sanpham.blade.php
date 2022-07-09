@@ -22,6 +22,12 @@
               <li class="nav-item">
                   <a class="nav-link active" href="{{ route('sanpham.create') }}"><i class="bx bx-plus"></i> Thêm mới</a>
               </li>
+              <li class="nav-item "  style="margin-left: 10px;">
+                <form action="{{ route('searchSanPham') }}" method="GET" class="form-search-custom">
+                    <input type="text" class="form-control" name="keyword" id="searchDanhMuc" placeholder="Từ khoá ..."  >
+                    <button type="submit" class="btn btn-success"><i class='bx bx-search'></i></button>
+                </form>
+            </li>
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">

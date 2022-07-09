@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 
 class TaiKhoanController extends Controller
@@ -28,12 +29,12 @@ class TaiKhoanController extends Controller
         if (Storage::disk('public')->exists($user->anhDaiDien)) {
             $user->anhDaiDien = $user->anhDaiDien;
         } else {
-            $user->anhDaiDien = 'images/no-image-available.jpg';
+            $user->anhDaiDien = 'images/user-default.jpg';
         }
     }
     public function index(Request $request)
     {
-        $lstTaiKhoan = User::with('phanquyen')->paginate(3);
+        $lstTaiKhoan = User::with('phanquyen')->paginate(5);
         if ($request->block) {
             $lstTaiKhoan =  User::with('phanquyen')->onlyTrashed()->paginate(3);
         } elseif ($request->phan_quyen_id) {
@@ -48,7 +49,7 @@ class TaiKhoanController extends Controller
         return View('admin.taikhoan.index-taikhoan', ['lstTaiKhoan' => $lstTaiKhoan]);
     }
 
-    public function searchTaiKhoan(Request $request)
+    public function searchTai(Request $request)
     {
         $output = "";
         $pagination = "";
@@ -95,6 +96,20 @@ class TaiKhoanController extends Controller
             'data' => $output,
             'pagination' => strval($pagination)
         ]);
+    }
+
+    public function searchTaiKhoan(Request $request)
+    {
+       $lstTaiKhoan = User::with('phanquyen')->paginate(5);
+        if ($request->keyword != " ") {
+            $lstTaiKhoan = User::with('phanquyen')->where('hoTen', 'LIKE', '%' . $request->input('keyword') . '%')
+            ->orWhere('email', 'LIKE', '%' . $request->input('keyword') . '%')->
+            orWhere('soDienThoai', '=', $request->input('keyword'))->withTrashed()->paginate(5);
+            foreach ($lstTaiKhoan as $item) {
+                $this->fixImage($item);
+            }
+        }
+        return View('admin.taikhoan.index-taikhoan', ['lstTaiKhoan' => $lstTaiKhoan]);
     }
     /**
      * Show the form for creating a new resource.
@@ -194,47 +209,56 @@ class TaiKhoanController extends Controller
             'soDienThoai.required' => 'Số điện thoại không được bỏ trống',
         ]);
         $user->fill([
-            'hoTen' => $user->hoTen,
-            'email' => $user->email,
+            'hoTen' => $request->input('hoTen'),
+            'email' => $request->input('email'),
             'password' => $user->password,
-            'soDienThoai' => $user->soDienThoai,
-            'phan_quyen_id' => $user->phan_quyen_id,
+            'diaChi'=>$request->input('diaChi'),
+            'soDienThoai' => $request->input('soDienThoai'),
+            'phan_quyen_id' => $request->input('phan_quyen_id'),
             'anhDaiDien' => $user->anhDaiDien
         ]);
         $user->save();
         if ($request->hasFile('anhDaiDien')) {
-            Storage::disk('public')->delete($user->anhDaiDien);
             $user->anhDaiDien = $request->file('anhDaiDien')->store('images/tai-khoan', 'public');
         }
         $user->save();
         return Redirect::route('user.index');
     }
 
-    public function changepass(User $user)
-    {
-        return View('admin.taikhoan.change-password-taikhoan', ['user' => $user]);
-    }
 
-    public function doimatkhau(Request $request, User $user)
-    {
-
-        $request->validate([
-            'password' => 'required|string|min:6|max:16',
-            'newpassword' => 'required',
+    public function doimatkhau(Request $request)
+    {  
+       
+        $validator = Validator::make(
+            $request->all(),
+             [
+            'newpassword' => 'required|min:6',
+            'confirm_password' => 'required|same:newpassword', 
         ], [
-            'password.min' => 'Mật khẩu tối thiểu 6 ký tự',
-            'password.max' => 'Mật khẩu tối đa 16 ký tự',
-            'password.required' => 'Mật khẩu không được bỏ trống',
-            'newpassword.required' => 'Xác nhận mật khẩu không được bỏ trống',
+            'newpassword.required' => "Mật khẩu không được bỏ trống",
+            'newpassword.min' => "Mật khẩu phải có ít nhất 6 ký tự",
+            'confirm_password.required' => "Xác nhận mật khẩu không được bỏ trống",
+            'confirm_password.same' => "Mật khẩu nhập lại chưa trùng khớp",
         ]);
-        if (strcmp($request->password, $request->newpassword) == 0) {
-            $user->fill([
-                'password' => Hash::make($request->password),
-            ]);
-            $user->save();
-            return Redirect::route('user.index');
+
+        if ($validator->fails()) {
+            $error = "";
+            foreach ($validator->errors()->all() as $item) {
+                $error .= '
+                    <li class="card-description" style="color: #fff;">' . $item . '</li>
+                ';
+            }
+            return response()->json(['error' => $error]);
         }
-        return View('admin.taikhoan.change-password-taikhoan', ['user' => $user]);
+
+        $user = User::whereId($request->user_id)->first();
+        
+        $user->fill([
+            'password'=>Hash::make($request->newpassword),
+        ]);
+        $user->save();
+       
+        return response()->json(["success" => "Đổi mật khẩu thành công"]);
     }
 
     /**
