@@ -95,7 +95,6 @@ class TaiKhoanController extends Controller
             'email.email' => 'Email không hợp lệ',
             'password.required' => 'Mật khẩu không được bỏ trống',
             'soDienThoai.required' => 'Số điện thoại không được bỏ trống',
-            'anhDaiDien.required' => 'Bắt buộc chọn Hình ảnh',
             'phan_quyen_id.required' => 'Bắt buộc chọn quyền',
         ]);
 
@@ -122,7 +121,8 @@ class TaiKhoanController extends Controller
             'password' => Hash::make($request->password),
             'soDienThoai' => $request->input('soDienThoai'),
             'phan_quyen_id' => $request->input('phan_quyen_id'),
-            'anhDaiDien' => ''
+            'anhDaiDien' => '',
+            'diaChi' => '',
         ]);
         $user->save();
 

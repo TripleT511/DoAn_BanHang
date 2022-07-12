@@ -21,6 +21,14 @@
              <h4 class="fw-bold py-3">Đơn hàng</h4>
             <ul class="nav nav-pills flex-column flex-md-row mb-3">
               <li class="nav-item">
+                <a type="button"  href="{{ route('admin.ExportHoaDon') }}" class="nav-link active" >
+                    <i class='bx bxs-download'></i>
+                    Xuất file
+                </a>
+              </li>
+            </ul>
+            <ul class="nav nav-pills flex-column flex-md-row mb-3">
+              <li class="nav-item">
                 <form action="{{ route('admin.locDonHang') }}" method="GET" >
                   <div class="header-right d-flex align-items-end gap-2">
                       <div class="header-right-item d-flex align-items-start flex-column text-left gap-1">
@@ -50,6 +58,7 @@
                       <button type="submit" class="btn btn-success"><i class='bx bx-search'></i></button>
                   </form>
               </li>
+              
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">
@@ -166,7 +175,7 @@
         
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Print</button>
+        <a type="button" href="{{ route('admin.hoadonPDF') }}" class="btn btn-primary">Print</a>
         <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
           Đóng
         </button>
@@ -236,8 +245,7 @@
                 id: item.dataset.id
             },
             success: function (response) {
-                console.log(response);
-                $(".modal-body").html(response);
+              $(".modal-body").html(response.data);
             }
         });
         }) );

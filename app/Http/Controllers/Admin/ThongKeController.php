@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\BaoCaoThongKeExport;
 use App\Http\Controllers\Controller;
 use App\Models\HoaDon;
 use App\Models\LuotTimKiem;
@@ -11,6 +12,7 @@ use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ThongKeController extends Controller
 {
@@ -186,6 +188,7 @@ class ThongKeController extends Controller
 
         $tongSanPham = "";
         $tongHoaDon = "";
+        $top5SanPhamBanChay = "";
         switch ($request->type) {
             case 'today':
                 $data = HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereDate('created_at', Carbon::now())->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
@@ -200,9 +203,19 @@ class ThongKeController extends Controller
 
                 $tongSanPham = DB::table('san_phams')->whereDate('created_at', Carbon::now())->get()->count();
                 $tongHoaDon = DB::table('hoa_dons')->whereDate('created_at', Carbon::now())->get()->count();
-                // *** Thống Kê Số Lượng *** //
+                // *** Thống Kê Số Lượng *** // 
 
-
+                // *** Sản phẩm *** //
+                $top5SanPhamBanChay = SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereDate('created_at', Carbon::now())->where('trangThai', 4);
+                    });
+                }], 'soLuong')->withCount(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereDate('created_at', Carbon::now())->where('trangThai', 4);
+                    });
+                }], 'hoa_don_id')->orderBy('chitiethoadons_sum_so_luong', 'desc')->take(5)->get();
+                // *** Sản phẩm *** //
                 break;
             case 'yesterday':
                 $data = HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereDate('created_at', Carbon::now()->subDays(1))->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
@@ -218,6 +231,17 @@ class ThongKeController extends Controller
                 $tongHoaDon = DB::table('hoa_dons')->whereDate('created_at', Carbon::now()->subDays(1))->get()->count();
                 // *** Thống Kê Số Lượng *** //
 
+                // *** Sản phẩm *** //
+                $top5SanPhamBanChay = SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereDate('created_at', Carbon::now()->subDays(1))->where('trangThai', 4);
+                    });
+                }], 'soLuong')->withCount(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereDate('created_at', Carbon::now()->subDays(1))->where('trangThai', 4);
+                    });
+                }], 'hoa_don_id')->orderBy('chitiethoadons_sum_so_luong', 'desc')->take(5)->get();
+                // *** Sản phẩm *** //
                 break;
             case 'last7days':
                 $data =
@@ -239,6 +263,18 @@ class ThongKeController extends Controller
                     array_push($lstDate, $date);
                 }
 
+                // *** Sản phẩm *** //
+                $top5SanPhamBanChay = SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4);
+                    });
+                }], 'soLuong')->withCount(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4);
+                    });
+                }], 'hoa_don_id')->orderBy('chitiethoadons_sum_so_luong', 'desc')->take(5)->get();
+                // *** Sản phẩm *** //
+
                 break;
             case 'last30days':
                 $data =
@@ -259,6 +295,18 @@ class ThongKeController extends Controller
                 foreach ($period as $date) {
                     array_push($lstDate, $date);
                 }
+
+                // *** Sản phẩm *** //
+                $top5SanPhamBanChay = SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereBetween('created_at', [Carbon::now()->subDays(29)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4);
+                    });
+                }], 'soLuong')->withCount(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereBetween('created_at', [Carbon::now()->subDays(29)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4);
+                    });
+                }], 'hoa_don_id')->orderBy('chitiethoadons_sum_so_luong', 'desc')->take(5)->get();
+                // *** Sản phẩm *** //
                 break;
             case 'last90days':
                 $data =
@@ -278,6 +326,17 @@ class ThongKeController extends Controller
                 foreach ($period as $date) {
                     array_push($lstDate, $date);
                 }
+                // *** Sản phẩm *** //
+                $top5SanPhamBanChay = SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereBetween('created_at', [Carbon::now()->subDays(89)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4);
+                    });
+                }], 'soLuong')->withCount(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereBetween('created_at', [Carbon::now()->subDays(89)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4);
+                    });
+                }], 'hoa_don_id')->orderBy('chitiethoadons_sum_so_luong', 'desc')->take(5)->get();
+                // *** Sản phẩm *** //
                 break;
             case 'lastmonth':
                 $data =
@@ -298,6 +357,18 @@ class ThongKeController extends Controller
                 foreach ($period as $date) {
                     array_push($lstDate, $date);
                 }
+
+                // *** Sản phẩm *** //
+                $top5SanPhamBanChay = SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereBetween('created_at', [Carbon::now()->subMonth(1)->startOfMonth(), Carbon::now()->subMonth(1)->endOfMonth()])->where('trangThai', 4);
+                    });
+                }], 'soLuong')->withCount(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereBetween('created_at', [Carbon::now()->subMonth(1)->startOfMonth(), Carbon::now()->subMonth(1)->endOfMonth()])->where('trangThai', 4);
+                    });
+                }], 'hoa_don_id')->orderBy('chitiethoadons_sum_so_luong', 'desc')->take(5)->get();
+                // *** Sản phẩm *** //
                 break;
             case 'lastyear':
                 $data =
@@ -318,6 +389,18 @@ class ThongKeController extends Controller
                 foreach ($period as $date) {
                     array_push($lstDate, $date);
                 }
+
+                // *** Sản phẩm *** //
+                $top5SanPhamBanChay = SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereBetween('created_at', [Carbon::now()->subYear(1)->startOfYear(), Carbon::now()->subYear(1)->endOfYear()])->where('trangThai', 4);
+                    });
+                }], 'soLuong')->withCount(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereBetween('created_at', [Carbon::now()->subYear(1)->startOfYear(), Carbon::now()->subYear(1)->endOfYear()])->where('trangThai', 4);
+                    });
+                }], 'hoa_don_id')->orderBy('chitiethoadons_sum_so_luong', 'desc')->take(5)->get();
+                // *** Sản phẩm *** //
                 break;
             case 'thisyear':
                 $data =
@@ -338,6 +421,18 @@ class ThongKeController extends Controller
                 foreach ($period as $date) {
                     array_push($lstDate, $date);
                 }
+
+                // *** Sản phẩm *** //
+                $top5SanPhamBanChay = SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->where('trangThai', 4);
+                    });
+                }], 'soLuong')->withCount(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->where('trangThai', 4);
+                    });
+                }], 'hoa_don_id')->orderBy('chitiethoadons_sum_so_luong', 'desc')->take(5)->get();
+                // *** Sản phẩm *** //
                 break;
             default:
                 $data = HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereDate('created_at', Carbon::now())->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
@@ -351,6 +446,18 @@ class ThongKeController extends Controller
                 $tongSanPham = DB::table('san_phams')->whereDate('created_at', Carbon::now())->get()->count();
                 $tongHoaDon = DB::table('hoa_dons')->whereDate('created_at', Carbon::now())->get()->count();
                 // *** Thống Kê Số Lượng *** //
+
+                // *** Sản phẩm *** //
+                $top5SanPhamBanChay = SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereDate('created_at', Carbon::now())->where('trangThai', 4);
+                    });
+                }], 'soLuong')->withCount(['chitiethoadons' => function ($query) {
+                    $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                        $query->whereDate('created_at', Carbon::now())->where('trangThai', 4);
+                    });
+                }], 'hoa_don_id')->orderBy('chitiethoadons_sum_so_luong', 'desc')->take(5)->get();
+                // *** Sản phẩm *** //
                 break;
         }
 
@@ -418,6 +525,18 @@ class ThongKeController extends Controller
             }
         }
 
+        // **** Sản Phẩm *** //
+
+
+
+        $dataSanPham = [];
+        foreach ($top5SanPhamBanChay as $item) {
+            $soLuong = ($item->chitiethoadons_sum_so_luong) ? $item->chitiethoadons_sum_so_luong : 0;
+            array_push($dataSanPham, $soLuong);
+        }
+
+        // *** Sản Phẩm *** //
+
         return response()->json([
             'data' => $output,
             'type' => $request->type,
@@ -425,6 +544,7 @@ class ThongKeController extends Controller
             'labels' => $lstDate,
             'chartData' => $lstData,
             'dataDonHang' => $dataDonHang,
+            'dataSanPham' => $dataSanPham,
             'dataDoanhThu' => $dataDoanhThu,
             'tongDoanhThu' => number_format($tongDoanhThu, 0, '', ',') . ' ₫',
             'tongSanPham' => $tongSanPham,
@@ -543,6 +663,24 @@ class ThongKeController extends Controller
                 $value->format('d/m');
         }
 
+        $top5SanPhamBanChay = SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) use ($request) {
+            $query->with('hoadon')->whereHas('hoadon', function ($query) use ($request) {
+                $query->whereBetween('created_at', [$request->startDate, $request->endDate])->where('trangThai', 4);
+            });
+        }], 'soLuong')->withCount(['chitiethoadons' => function ($query) use ($request) {
+            $query->with('hoadon')->whereHas('hoadon', function ($query) use ($request) {
+                $query->whereBetween('created_at', [$request->startDate, $request->endDate])->where('trangThai', 4);
+            });
+        }], 'hoa_don_id')->orderBy('chitiethoadons_sum_so_luong', 'desc')->take(5)->get();
+
+
+        $dataSanPham = [];
+        foreach ($top5SanPhamBanChay as $item) {
+            $soLuong = ($item->chitiethoadons_sum_so_luong) ? $item->chitiethoadons_sum_so_luong : 0;
+            array_push($dataSanPham, $soLuong);
+        }
+
+
         return response()->json([
             'data' => $output,
             'type' => $type,
@@ -551,6 +689,7 @@ class ThongKeController extends Controller
             'chartData' => $lstData,
             'dataDonHang' => $dataDonHang,
             'dataDoanhThu' => $dataDoanhThu,
+            'dataSanPham' => $dataSanPham,
             'tongDoanhThu' => number_format($tongDoanhThu, 0, '', ',') . ' ₫',
             'tongSanPham' => $tongSanPham,
             'tongDonHang' => $tongHoaDon,
@@ -580,11 +719,45 @@ class ThongKeController extends Controller
         $labelsDoanhThu = ["Trước giảm giá", "Giảm giá", "Thực tế"];
         $dataDoanhThu = [$tongDoanhThuTruocGiamGia, $tongGiamGia, $tongDoanhThuThucTe];
 
+        $top5SanPhamBanChay = SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
+            $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                $query->where('trangThai', 4);
+            });
+        }], 'soLuong')->withCount(['chitiethoadons' => function ($query) {
+            $query->with('hoadon')->whereHas('hoadon', function ($query) {
+                $query->where('trangThai', 4);
+            });
+        }], 'hoa_don_id')->orderBy('chitiethoadons_sum_so_luong', 'desc')->take(5)->get();
+
+
+        $labelsSanPham = [];
+        $dataSanPham = [];
+        foreach ($top5SanPhamBanChay as $item) {
+            $soLuong = ($item->chitiethoadons_sum_so_luong) ? $item->chitiethoadons_sum_so_luong : 0;
+            array_push($labelsSanPham, $item->tenSanPham);
+            array_push($dataSanPham, $soLuong);
+        }
+
         return response()->json([
             'labelsDonHang' => $labelsDonHang,
             'dataDonHang' => $dataDonHang,
             'labelsDoanhThu' => $labelsDoanhThu,
-            'dataDoanhThu' => $dataDoanhThu
+            'dataDoanhThu' => $dataDoanhThu,
+            'labelsSanPham' => $labelsSanPham,
+            'dataSanPham' => $dataSanPham,
         ]);
+    }
+
+    private $excel;
+    public function __construct(Excel $excel)
+    {
+        $this->excel = $excel;
+    }
+
+    public function ExportBaoCao()
+    {
+        return $this->excel->download(new BaoCaoThongKeExport, 'baocao.xlsx');
+
+        // return Excel::download($export , 'users.xlsx');
     }
 }

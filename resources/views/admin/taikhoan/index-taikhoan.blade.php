@@ -113,15 +113,19 @@
                             <a class="btn btn-primary btn-change-password" data-bs-toggle="modal" data-bs-target="#modalCenter"  data-id="{{ $item->id }}" href="#">
                               <i class='bx bxs-key'></i>
                             </a>
+                            @if(Auth()->user()->phan_quyen_id == 0)
                             <form class="d-inline-block" method="post" action="{{ route('user.destroy',['user'=>$item]) }}">
                               @csrf
                               @method("DELETE")
                               <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class='bx bx-lock' ></i></button>
                             </form>
+                            @endif
                             @elseif($item->deleted_at != null) 
+                            @if(Auth()->user()->phan_quyen_id == 0)
                             <a class="btn btn-success" href="{{ route('mokhoa',['user'=>$item]) }}">
                               <i class='bx bx-lock-open-alt'></i></i>
                             </a>
+                            @endif
                             @endif
                           </td>
                         </tr>

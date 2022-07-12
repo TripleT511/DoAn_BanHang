@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\PhieuKhoExport;
 use App\Http\Controllers\Controller;
 
 
@@ -14,6 +15,7 @@ use App\Models\DanhMuc;
 use App\Models\HinhAnh;
 use App\Models\NhaCungCap;
 use App\Models\SanPham;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -23,7 +25,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use PDF;
+use Maatwebsite\Excel\Excel;
 
 
 use function GuzzleHttp\Promise\all;
@@ -661,7 +663,7 @@ class PhieuKhoController extends Controller
             ]);
     }
 
-    public function createPDF(Request $request)
+    public function PhieuKhoPDF()
     {
         $data = Session::get('pdfPhieuKho');
         $chitietphieukho =
@@ -675,5 +677,14 @@ class PhieuKhoController extends Controller
         $pdf = PDF::loadView('admin.pdf.kho', $data);
 
         return $pdf->stream();
+    }
+    private $excel;
+    public function __construct(Excel $excel)
+    {
+        $this->excel = $excel;
+    }
+    public function ExportPhieuKho()
+    {
+        return $this->excel->download(new PhieuKhoExport, 'phieukho.xlsx');
     }
 }

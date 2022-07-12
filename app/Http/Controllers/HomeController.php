@@ -486,7 +486,6 @@ class HomeController extends Controller
 
     public function huyDatHang(Request $request)
     {
-        return $request;
         $hoadon = HoaDon::find($request->hoadon)->first();
         $hoadon->trangThai = 5;
         $hoadon->save();

@@ -90,10 +90,10 @@
                                 <div class="header-left">
                                     <ul class="nav nav-pills" >
                                         <li class="nav-item">
-                                            <button type="button" class="nav-link active" >
+                                            <a type="button"  href="{{ route('admin.ExportBaoCao') }}" class="nav-link active" >
                                                 <i class='bx bxs-download'></i>
                                                 Xuất file
-                                            </button>
+                                            </a>
                                         </li>
                                     </ul>
                                 </div>
@@ -179,14 +179,15 @@
                                 </div>
                             </div>
                             <div class="row mb-4">
-                                <div class="col-md-5">
+                                <div class="col-md-4">
                                     <h5 class="card-header m-0 me-2 pb-1 text-center" >Biểu đồ thống kê đơn hàng</h5>
                                     <canvas id="thongKeDonHang"></canvas>
                                 </div>
-                                <div class="col-md-2">
-
+                                <div class="col-md-4">
+                                    <h5 class="card-header m-0 me-2 pb-1 text-center" >Biểu đồ thống kê sản phẩm</h5>
+                                    <canvas id="thongKeSanPham"></canvas>
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-4">
                                     <h5 class="card-header m-0 me-2 pb-1 text-center" >Biểu đồ thống kê doanh thu</h5>
                                     <canvas id="thongKeDoanhThu"></canvas>
                                 </div>
@@ -362,10 +363,12 @@
         var ctx2 = document.getElementById('myChart').getContext('2d');
         var ctxDH = document.getElementById('thongKeDonHang').getContext('2d');
         var ctxDT = document.getElementById('thongKeDoanhThu').getContext('2d');
+        var ctxSP = document.getElementById('thongKeSanPham').getContext('2d');
 
         var myChart2;
         var myChartDH;
         var myChartDT;
+        var myChartSP;
 
 		$.ajax({
 			type: "GET",
@@ -429,6 +432,25 @@
                                 'rgb(113, 221, 55)',
                                 'rgb(105, 108, 255)',
                                 'rgb(255, 62, 29)'
+                            ],
+                            hoverOffset: 4
+                        }]
+                    },
+                });
+
+                myChartSP = new Chart(ctxSP, {
+                    type: 'doughnut',
+                    data: {
+                        labels: response.labelsSanPham,
+                        datasets: [{
+                            label: 'Thống kê sản phẩm',
+                            data: response.dataSanPham,
+                            backgroundColor: [
+                                'rgb(255, 235, 59)',
+                                'rgb(3, 169, 244)',
+                                'rgb(0, 150, 136)',
+                                'rgb(63, 81, 181)',
+                                'rgb(156, 39, 176)'
                             ],
                             hoverOffset: 4
                         }]
@@ -509,6 +531,8 @@
                                 myChartDH.update();
                                 myChartDT.data.datasets[0].data = response.dataDoanhThu;
                                 myChartDT.update();
+                                myChartSP.data.datasets[0].data = response.dataSanPham;
+                                myChartSP.update();
 
                                 $("#tongDoanhThu").text(response.tongDoanhThu);
                                 $("#tongDonHang").text(response.tongDonHang);
@@ -592,6 +616,8 @@
                                 myChartDH.update();
                                 myChartDT.data.datasets[0].data = response.dataDoanhThu;
                                 myChartDT.update();
+                                myChartSP.data.datasets[0].data = response.dataSanPham;
+                                myChartSP.update();
 
                                 $("#tongDoanhThu").text(response.tongDoanhThu);
                                 $("#tongDonHang").text(response.tongDonHang);

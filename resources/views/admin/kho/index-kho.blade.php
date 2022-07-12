@@ -24,6 +24,12 @@
               <li class="nav-item" >
                   <a class="nav-link active" href="{{ route('phieukho.create') }}"><i class="bx bx-plus"></i> Thêm mới</a>
               </li>
+              <li class="nav-item" style="margin-left: 10px;">
+                <a type="button"  href="{{ route('admin.ExportPhieuKho') }}" class="nav-link active" >
+                    <i class='bx bxs-download'></i>
+                    Xuất file
+                </a>
+             </li>
             </ul>
             <ul class="nav nav-pills align-items-end flex-column flex-md-row mb-3">
               <li class="nav-item" style="margin-left: 10px;">
@@ -64,6 +70,7 @@
                       <button type="submit" class="btn btn-success"><i class='bx bx-search'></i></button>
                   </form>
               </li>
+              
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">
@@ -159,7 +166,7 @@
       </div>
       <div class="modal-footer">
         <input type="hidden" id="dataPDF">
-        <a type="button" href="{{ route('PDF') }}" class="btn btn-primary">Print</a>
+        <a type="button" href="{{ route('admin.phieukhoPDF') }}" class="btn btn-primary">In phiếu kho</a>
         <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
           Đóng
         </button>
@@ -189,8 +196,8 @@
     </div>
   </div>
 </div>
+            
 @endsection
-
 @section('js')
     <script>
       $(function() {

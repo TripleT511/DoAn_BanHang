@@ -9,8 +9,14 @@ use App\Models\HoaDon;
 use App\Models\SanPham;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
+use App\Exports\HoaDonExport;
+use App\Exports\HoaDonTrongKhoangThoiGianExport;
+use App\Imports\HoaDonImport;
+use Maatwebsite\Excel\Excel;
 
 class HoaDonController extends Controller
 {
@@ -300,9 +306,37 @@ class HoaDonController extends Controller
                         </div>
                     </div>
                     ';
+        Session::put('pdfHoaDon', $hoadon);
         return
-            response()->json($output);
+            response()->json([
+                'data' => $output,
+            ]);
     }
+
+    public function HoaDonPDF()
+    {
+        $data = Session::get('pdfHpaDon');
+
+        // $data = [
+        //     'hoadon'     => $data,
+        //     'chitiethoadon' => $chitiethoadon
+        // ];
+        $pdf = PDF::loadView('admin.pdf.hoadon');
+
+        return $pdf->stream();
+    }
+
+    private $excel;
+    public function __construct(Excel $excel)
+    {
+        $this->excel = $excel;
+    }
+
+    public function ExportHoaDon()
+    {
+        return $this->excel->download(new HoaDonExport, 'hoadon.xlsx');
+    }
+
 
     /**
      * Remove the specified resource from storage.
