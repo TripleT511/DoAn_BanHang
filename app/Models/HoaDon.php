@@ -24,6 +24,8 @@ class HoaDon extends Model
         'soDienThoai',
         'ngayXuatHD',
         'tongTien',
+        'giamGia',
+        'tongThanhTien',
         'ghiChu',
         'trangThaiThanhToan',
         'trangThai',

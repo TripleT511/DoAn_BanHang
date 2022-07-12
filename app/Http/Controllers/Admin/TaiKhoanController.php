@@ -135,7 +135,6 @@ class TaiKhoanController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
             'soDienThoai' => 'required|string',
-            'anhDaiDien' => 'required',
             'phan_quyen_id' => 'required',
         ], [
             'hoTen.required' => 'Họ Tên không được bỏ trống',
@@ -143,7 +142,6 @@ class TaiKhoanController extends Controller
             'email.unique' => 'Email đã tồn tại',
             'password.required' => 'Mật khẩu không được bỏ trống',
             'soDienThoai.required' => 'Số điện thoại không được bỏ trống',
-            'anhDaiDien.required' => 'Bắt buộc chọn Hình ảnh',
             'phan_quyen_id.required' => 'Bắt buộc chọn quyền',
         ]);
         $user = new User();
@@ -153,7 +151,8 @@ class TaiKhoanController extends Controller
             'password' => Hash::make($request->password),
             'soDienThoai' => $request->input('soDienThoai'),
             'phan_quyen_id' => $request->input('phan_quyen_id'),
-            'anhDaiDien' => ''
+            'anhDaiDien' => '',
+            'diaChi'=>'',
         ]);
         $user->save();
 

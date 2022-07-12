@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\BaoCaoThongKeExport;
 use App\Http\Controllers\Controller;
 use App\Models\HoaDon;
 use App\Models\LuotTimKiem;
@@ -10,6 +11,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ThongKeController extends Controller
 {
@@ -302,4 +304,19 @@ class ThongKeController extends Controller
         $hoadonDangXuLy = DB::table('hoa_dons')->whereIn('trangThai', [0, 1, 2, 3]);
         $hoadonDangHuy = DB::table('hoa_dons')->where('trangThai', 5);
     }
+
+    private $excel;
+    public function __construct(Excel $excel)
+    {
+        $this->excel= $excel;
+    }
+
+    public function ExportBaoCao()
+    {
+        return $this->excel->download(new BaoCaoThongKeExport , 'baocao.xlsx');
+        
+        // return Excel::download($export , 'users.xlsx');
+    }
+   
+    
 }

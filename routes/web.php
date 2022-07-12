@@ -160,6 +160,7 @@ Route::prefix('admin')->group(function () {
 
         Route::get('/thong-ke-san-pham-ban-chay', [ThongKeController::class, 'thongKeTopSanPhamBanChay']);
 
+        Route::get('/export-bao-cao', [ThongKeController::class, 'ExportBaoCao'])->name('admin.ExportBaoCao');
         // *** Thống Kê *** //
 
         Route::resource('user', TaiKhoanController::class);
@@ -181,7 +182,10 @@ Route::prefix('admin')->group(function () {
         Route::get('/hoa-don/search', [HoaDonController::class, 'searchDonHang'])->name('admin.timKiemHoaDon');
         // Xem đơn hàng
         Route::get('/hoa-don/xem-don-hang', [HoaDonController::class, 'xemDonHang'])->name('xemDonHang');
-
+        Route::get('/hoadon-pdf', [HoaDonController::class, 'HoaDonPDF'])->name('admin.hoadonPDF');
+        Route::get('/export-hoa-don', [HoaDonController::class, 'ExportHoaDon'])->name('admin.ExportHoaDon');
+        Route::post('/import-hoa-don', [HoaDonController::class, 'ImportHoaDon'])->name('admin.ImportHoaDon');
+        
         // Mã giảm giá hết hạn
         Route::get('/discount-het-han', [MaGiamGiaController::class, 'indexDie'])->name('maHetHan');
 
@@ -234,7 +238,9 @@ Route::prefix('admin')->group(function () {
 
         // Lọc phiếu kho
         Route::get('/phieu-kho/loc-phieu-kho', [PhieuKhoController::class, 'locPhieuKho'])->name('admin.locPhieuNhap');
-        Route::get('/phieukho-pdf', [PhieuKhoController::class, 'createPDF'])->name('PDF');
+        Route::get('/phieukho-pdf', [PhieuKhoController::class, 'PhieuKhoPDF'])->name('admin.phieukhoPDF');
+        Route::get('/export-phieu-kho', [PhieuKhoController::class, 'ExportPhieuKho'])->name('admin.ExportPhieuKho');
+
 
 
         // Thêm Thuộc Tính

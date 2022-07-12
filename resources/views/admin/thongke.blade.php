@@ -95,10 +95,10 @@
                                 <div class="header-left">
                                     <ul class="nav nav-pills" >
                                         <li class="nav-item">
-                                            <button type="button" class="nav-link active" >
+                                            <a type="button"  href="{{ route('admin.ExportBaoCao') }}" class="nav-link active" >
                                                 <i class='bx bxs-download'></i>
                                                 Xuất file
-                                            </button>
+                                            </a>
                                         </li>
                                     </ul>
                                 </div>

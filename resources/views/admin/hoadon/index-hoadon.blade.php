@@ -50,6 +50,20 @@
                       <button type="submit" class="btn btn-success"><i class='bx bx-search'></i></button>
                   </form>
               </li>
+              <li class="nav-item">
+                <a type="button"  href="{{ route('admin.ExportHoaDon') }}" class="nav-link active" >
+                    <i class='bx bxs-download'></i>
+                    Xuất file
+                </a>
+              </li>
+              <form method="post" action="{{ route('admin.ImportHoaDon')}}" enctype="multipart/form-data">
+                @csrf
+                @method("POST")   
+                <div>
+                  <input  type="file"name="file" >
+              </div>
+                <button type="submit" class="btn btn-primary">Import</button>
+              </form>
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">
@@ -169,7 +183,7 @@
         
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Print</button>
+        <a type="button" href="{{ route('admin.hoadonPDF') }}" class="btn btn-primary">Print</a>
         <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
           Đóng
         </button>
@@ -218,8 +232,7 @@
                 id: item.dataset.id
             },
             success: function (response) {
-                console.log(response);
-                $(".modal-body").html(response);
+              $(".modal-body").html(response.data);
             }
         });
         }) );

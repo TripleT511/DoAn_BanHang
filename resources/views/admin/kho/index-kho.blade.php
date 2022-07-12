@@ -50,6 +50,12 @@
                       <button type="submit" class="btn btn-success"><i class='bx bx-search'></i></button>
                   </form>
               </li>
+              <li class="nav-item">
+                <a type="button"  href="{{ route('admin.ExportPhieuKho') }}" class="nav-link active" >
+                    <i class='bx bxs-download'></i>
+                    Xuất file
+                </a>
+            </li>
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">
@@ -146,7 +152,7 @@
                   </div>
                   <div class="modal-footer">
                     <input type="hidden" id="dataPDF">
-                    <a type="button" href="{{ route('PDF') }}" class="btn btn-primary">Print</a>
+                    <a type="button" href="{{ route('admin.phieukhoPDF') }}" class="btn btn-primary">Print</a>
                     <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
                       Đóng
                     </button>

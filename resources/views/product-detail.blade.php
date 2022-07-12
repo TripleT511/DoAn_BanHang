@@ -293,9 +293,11 @@
 											</div>
 											<h4>{{  $item->taikhoan->hoTen }}</h4>
 											<p>{{  $item->noiDung }}</p>
+											@Auth
 											@if(Auth()->user()->id == $item->user_id) 
 												<a href="" class="btn btn-delete" data-id="$item->id">Xoá</a>
 											@endif
+											@endauth
 										</div>
 									</div>
 								   @endforeach

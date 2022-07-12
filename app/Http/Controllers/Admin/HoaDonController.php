@@ -7,8 +7,14 @@ use App\Models\ChiTietHoaDon;
 use App\Models\HoaDon;
 use App\Models\SanPham;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
+use App\Exports\HoaDonExport;
+use App\Exports\HoaDonTrongKhoangThoiGianExport;
+use App\Imports\HoaDonImport;
+use Maatwebsite\Excel\Excel;
 
 class HoaDonController extends Controller
 {
@@ -200,6 +206,7 @@ class HoaDonController extends Controller
         }
 
         $output .= ' <h3 class="text-center">Chi Tiết Đơn Hàng</h3>
+                    <div class="text-center">Ngày tạo: ' . $hoadon->created_at->format('d/m/Y') . '</div>
                     <dl class="row mt-2">
                         <dt class="col-sm-3">Mã đơn hàng:</dt>
                         <dd class="col-sm-3" id="maDonHang">' . $hoadon->id . '</dd>
@@ -282,8 +289,42 @@ class HoaDonController extends Controller
                         </div>
                     </div>
                     ';
+            Session::put('pdfHoaDon', $hoadon);
         return
-            response()->json($output);
+        response()->json([
+            'data' => $output,
+        ]);
+    }
+
+    public function HoaDonPDF()
+    {
+        $data = Session::get('pdfHpaDon');
+
+        // $data = [
+        //     'hoadon'     => $data,
+        //     'chitiethoadon' => $chitiethoadon
+        // ];
+        $pdf = PDF::loadView('admin.pdf.hoadon');
+
+        return $pdf->stream();
+    }
+
+    private $excel;
+    public function __construct(Excel $excel)
+    {
+        $this->excel= $excel;
+    }
+    
+    public function ExportHoaDon()
+    {
+        return $this->excel->download(new HoaDonExport , 'hoadon.xlsx');
+    }
+
+    public function ImportHoaDon(Request $request)
+    {
+        $file = $request->file('file'); 
+        $this->excel->import(new HoaDonImport , $file);
+        return Redirect::route('hoadon.index');
     }
 
     /**
