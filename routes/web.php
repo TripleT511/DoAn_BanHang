@@ -22,10 +22,11 @@ use App\Models\DanhMuc;
 use Faker\Provider\ar_EG\Payment;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginSocialiteController;
+use App\Models\DanhGia;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,7 @@ use Illuminate\Support\Facades\Redirect;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
     \UniSharp\LaravelFilemanager\Lfm::routes();
@@ -110,12 +112,19 @@ Route::post('/login', [
 
 Route::get('/send-mail', [MailController::class, 'sendMail'])->name('sendMail');
 
+Route::post('/forgot-password', [DashboardController::class, 'forgot'])->name('Forgot');
+
+Route::get('/lay-lai-mat-khau/{token}', [HomeController::class, 'formResetPassWord'])->name('user.showFormReset');
+
+Route::post('/lay-lai-mat-khau', [HomeController::class, 'resetPassWord'])->name('user.resetPassword');
 
 Route::middleware(['isGuest'])->group(function () {
 
     Route::get('/thong-tin-ca-nhan', [HomeController::class, 'xemThongTin'])->name('xem-thong-in-ca-nhan');
 
     Route::get('/don-hang-cua-toi', [HomeController::class, 'myOrder'])->name('myOrder');
+
+    Route::get('/chi-tiet-don-hang-cua-toi', [HomeController::class, 'myOrderDetail'])->name('myOrderDetail');
 
     Route::post('/huy-dat-hang', [HomeController::class, 'huyDatHang'])->name('huyDatHang');
 
@@ -135,17 +144,30 @@ Route::middleware(['isGuest'])->group(function () {
     Route::post('/thanh-toan-vnpay', [PayMentOnlineController::class, 'paymentVNPay'])->name('paymentVNPay');
 
     Route::get('/thanh-toan-thanh-cong/', [PayMentOnlineController::class, 'checkoutSuccess'])->name('confirm-checkout');
+
+    Route::delete('/xoa-danh-gia', [DanhGiaController::class, 'xoaDanhGia'])->name('user.xoa-danh-gia');
+
+    Route::patch('/cap-nhat-danh-gia', [DanhGiaController::class, 'updateDanhGia'])->name('user.cap-nhat-danh-gia');
 });
 
 
 Route::prefix('admin')->group(function () {
 
+    Route::get('/forgot-password', [DashboardController::class, 'showFormForgot'])->name('admin.showFormForgot');
+
+    Route::get('/reset-password/{token}', [DashboardController::class, 'formResetPassWord'])->name('admin.showFormReset');
+
+    Route::post('/reset-password', [DashboardController::class, 'resetPassWord'])->name('admin.resetPassword');
+
     Route::get('/thong-ke', [DashboardController::class, 'thongKeDoanhThu']);
 
     Route::middleware(['isAdmin'])->group(function () {
 
+
+        Route::resource('user', TaiKhoanController::class);
         // Quyền administrator
         Route::middleware(['isRoot'])->group(function () {
+            Route::resource('phanquyen', PhanQuyenController::class);
         });
 
 
@@ -158,13 +180,16 @@ Route::prefix('admin')->group(function () {
 
         Route::get('/thong-ke-khoang-thoi-gian', [ThongKeController::class, 'khoangThoiGian']);
 
+        Route::get('/thong-ke-doanh-thu-theo-thoi-gian', [ThongKeController::class, 'thongKeDoanhThuTheoKhoangThoiGian']);
+
+        Route::get('/thong-ke-theo-so-luong', [ThongKeController::class, 'thongKeSoLuong']);
+
         Route::get('/thong-ke-san-pham-ban-chay', [ThongKeController::class, 'thongKeTopSanPhamBanChay']);
 
         // *** Thống Kê *** //
 
-        Route::resource('user', TaiKhoanController::class);
+
         Route::get('/taikhoan/mokhoa{user}', [TaiKhoanController::class, 'moKhoa'])->name('mokhoa');
-        Route::resource('phanquyen', PhanQuyenController::class);
         Route::resource('sanpham', SanPhamController::class);
         Route::resource('danhgia', DanhGiaController::class);
         Route::resource('slider', SliderController::class);
@@ -190,7 +215,7 @@ Route::prefix('admin')->group(function () {
         Route::get('search/taikhoan', [TaiKhoanController::class, 'searchTaiKhoan'])->name('searchTaiKhoan');
         Route::get('search/danhgia', [DanhGiaController::class, 'searchDanhGia'])->name('searchDanhGia');
         Route::get('search/nhacungcap', [NhaCungCapController::class, 'searchNCC'])->name('searchNhaCungCap');
-        Route::get('search/sanpham', [SanPhamController::class, 'searchSanPham'])->name('searchSanPham');
+        Route::get('search/sanpham', [SanPhamController::class, 'searchSanPham'])->name('admin.searchSanPham');
         Route::get('search/slideshow', [SliderController::class, 'searchSlider'])->name('searchSlideShow');
         Route::get('search/thuoctinh', [ThuocTinhController::class, 'searchThuocTinh'])->name('searchThuocTinh');
         Route::get('search/phanquyen', [PhanQuyenController::class, 'searchPhanQuyen'])->name('searchPhanQuyen');
@@ -234,6 +259,10 @@ Route::prefix('admin')->group(function () {
 
         // Lọc phiếu kho
         Route::get('/phieu-kho/loc-phieu-kho', [PhieuKhoController::class, 'locPhieuKho'])->name('admin.locPhieuNhap');
+
+        // Phiếu kho chờ duyệt
+        Route::get('/phieu-kho/phieu-kho-cho-duyet', [PhieuKhoController::class, 'phieuChoDuyet'])->name('admin.phieuChoDuyet');
+
         Route::get('/phieukho-pdf', [PhieuKhoController::class, 'createPDF'])->name('PDF');
 
 
@@ -256,4 +285,5 @@ Route::prefix('admin')->group(function () {
 });
 
 Route::get('/san-pham-{slug}', [HomeController::class, 'sanpham'])->name('chitietsanpham');
+Route::get('/slider-{slug}', [HomeController::class, 'slider'])->name('slider');
 Route::get('/danh-muc-{slug}', [HomeController::class, 'danhmucsanpham'])->name('danhmucsanpham');

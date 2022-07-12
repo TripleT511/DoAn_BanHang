@@ -37,7 +37,7 @@
                         <th>Hành động</th>
                       </tr>
                     </thead>
-                    <tbody class="table-border-bottom-0">
+                    <tbody class="table-border-bottom-0" id="lstPhanQuyen">
                       @foreach ($lstPhanQuyen as $item)
                         <tr>
                           <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $item->tenViTri }}</strong></td>
@@ -46,11 +46,9 @@
                             <a class="btn btn-success btn-change-tenvitri" data-bs-toggle="modal" data-bs-target="#modalCenter"  data-id="{{ $item->id }}" href="#">
                               <i class='bx bx-edit-alt me-1'></i>
                             </a>
-                            <form class="d-inline-block" method="post" action="{{ route('phanquyen.destroy', ['phanquyen'=>$item]) }}">
-                              @csrf
-                              @method("DELETE")
-                              <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
-                            </form>
+                            <button type="button"  class="btn btn-danger btn-delete-phanquyen" data-route="{{ route('phanquyen.destroy', ['phanquyen'=>$item]) }}" data-bs-toggle="modal" data-bs-target="#basicModal">
+                          <i class="bx bx-trash me-1"></i>
+                          </button>
                           </td>
                       </tr>
                       @endforeach
@@ -96,6 +94,27 @@
               </div>
           </div>
 <div class="modal-backdrop fade "></div>
+{{-- Model Delete --}}
+<div class="modal fade" id="basicModal" tabindex="-1" aria-modal="true" role="dialog">
+  <div class="modal-dialog" role="document" style="max-width: 30%; width: 30%;">
+    <div class="modal-content">
+      <div class="modal-header justify-content-center py-4">
+        <h5 class="modal-title text-center w-100" id="exampleModalLabel1">Bạn có chắc chắn muốn xoá không ?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" >
+         Đóng
+        </button>
+         <form class="d-inline-block" method="post" id="form-delete" action="">
+          @csrf
+          @method("DELETE")
+          <button style="outline: none; border: none" class="btn btn-danger" type="submit"> Xác nhận </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 @section('js')
 <script>
@@ -134,6 +153,8 @@
               }, 2000);
               return;
             }
+
+            $("#lstPhanQuyen").html(response.data);
             let btnShowModel = document.querySelector("#closeModel");
             btnShowModel.click();
 
@@ -144,6 +165,8 @@
             setTimeout(() => {
                 document.querySelector(".bs-toast").classList.remove("show");
             }, 2000);
+
+            
           }
         });
 
@@ -151,6 +174,13 @@
       
     }));
   });
+
+  let lstBtnDeleteRoute = document.querySelectorAll(".btn-delete-phanquyen");
+      lstBtnDeleteRoute.forEach((item) => item.addEventListener("click", function() {
+        let linkRoute = item.dataset.route;
+        let formDel = document.querySelector("#form-delete");
+        formDel.action  = linkRoute;
+      }));
           
 </script>
 

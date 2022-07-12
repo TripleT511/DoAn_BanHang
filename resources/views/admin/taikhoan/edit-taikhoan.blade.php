@@ -29,7 +29,7 @@
 @endsection
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tài Khoản/</span>Chỉnh sửa tài khoản nhân viên</h4>
+    <h4 class="fw-bold py-3 mb-4">Chỉnh sửa tài khoản</h4>
     <!-- Basic Layout -->
     <div class="row">
         <div class="col-xl">
@@ -82,16 +82,18 @@
                     </div>
                     <div class="form-text">Bạn có thể sử dụng chữ cái, số & dấu chấm</div>
                 </div>
-          
+                
+                @if (Auth()->user()->phan_quyen_id == 0)
                 <div class="mb-3">
-                        <label for="exampleFormControlSelect1" class="form-label">Phân quyền</label>
-                        <select id="defaultSelect" name="phan_quyen_id" class="form-select">
+                    <label for="exampleFormControlSelect1" class="form-label">Phân quyền</label>
+                    <select id="defaultSelect" name="phan_quyen_id" class="form-select">
                         <option value="0">Chọn quyền</option>
                         @foreach($lstPhanQuyen as $pq)
                         <option value="{{$pq->viTri}}" {{ $user->phan_quyen_id == $pq->viTri ? 'selected' : ''}} >{{$pq->tenViTri}}</option>
                         @endforeach
                     </select>
-                    </div>
+                </div>
+                @endif
 
                 <div class="mb-3">
                     <label for="anhDaiDien" class="form-label">Ảnh đại diện</label>

@@ -21,7 +21,7 @@
              <h4 class="fw-bold py-3">Đơn hàng</h4>
             <ul class="nav nav-pills flex-column flex-md-row mb-3">
               <li class="nav-item">
-                <form action="{{ route('admin.locDonHang') }}" method="POST" >
+                <form action="{{ route('admin.locDonHang') }}" method="GET" >
                   <div class="header-right d-flex align-items-end gap-2">
                       <div class="header-right-item d-flex align-items-start flex-column text-left gap-1">
                           <span class="d-block">Trạng thái đơn hàng</span>
@@ -45,7 +45,7 @@
                 </form>
               </li>
               <li class="nav-item d-flex align-items-end"  style="margin-left: 15px">
-                  <form action="{{ route('admin.timKiemHoaDon') }}" method="POST" class="form-search-custom">
+                  <form action="{{ route('admin.timKiemHoaDon') }}" method="GET" class="form-search-custom">
                       <input type="text" class="form-control" name="keyword" id="admin.timKiem" placeholder="Tìm kiếm theo mã đơn hàng, tên, SĐT, Email khách hàng"  style="width: 450px;">
                       <button type="submit" class="btn btn-success"><i class='bx bx-search'></i></button>
                   </form>
@@ -127,13 +127,10 @@
                           @endif
 
                           @if($item->trangThai != 4 && $item->trangThai != 5)
-                          <form class="d-inline-block" method="post" action="{{ route('hoadon.update', ['hoadon'=>$item]) }}">
-                            @csrf
-                            @method("PATCH")
-                            <input type="hidden" name="page_on" value="{{ $lstHoaDon->currentPage() }}">
-                            <input type="hidden" name="trangThai" value="5">
-                            <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Huỷ</button>
-                          </form>
+                           <button type="button"  class="btn btn-danger btn-delete-donhang" data-route="{{ route('hoadon.update', ['hoadon'=>$item, 'delete' => 1]) }}" data-bs-toggle="modal" data-bs-target="#basicModal">
+                          <i class="bx bx-trash me-1"></i>
+                          </button>
+                         
                           @endif
                         </td>
                       </tr>
@@ -178,6 +175,27 @@
   </div>
 </div>
 <div class="modal-backdrop fade "></div>
+{{-- Model Delete --}}
+<div class="modal fade" id="basicModal" tabindex="-1" aria-modal="true" role="dialog">
+  <div class="modal-dialog" role="document" style="max-width: 30%; width: 30%;">
+    <div class="modal-content">
+      <div class="modal-header justify-content-center py-4">
+        <h5 class="modal-title text-center w-100" id="exampleModalLabel1">Bạn có chắc chắn muốn xoá không ?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" >
+         Đóng
+        </button>
+         <form class="d-inline-block" method="post" id="form-delete" action="">
+          @csrf
+          @method("PATCH")
+          <button style="outline: none; border: none" class="btn btn-danger" type="submit"> Xác nhận </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 @section('js')
@@ -225,6 +243,13 @@
         }) );
         
       })
+
+      let lstBtnDeleteRoute = document.querySelectorAll(".btn-delete-donhang");
+      lstBtnDeleteRoute.forEach((item) => item.addEventListener("click", function() {
+        let linkRoute = item.dataset.route;
+        let formDel = document.querySelector("#form-delete");
+        formDel.action  = linkRoute;
+      }));
     });
   </script>
 @endsection

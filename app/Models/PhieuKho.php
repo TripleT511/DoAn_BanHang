@@ -24,13 +24,13 @@ class PhieuKho extends Model
 
     public function nhacungcap()
     {
-        return $this->belongsTo(NhaCungCap::class, 'nha_cung_cap_id', 'id');
+        return $this->belongsTo(NhaCungCap::class, 'nha_cung_cap_id', 'id')->withTrashed();
     }
 
 
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id')->withTrashed();
     }
 }

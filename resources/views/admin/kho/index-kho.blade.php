@@ -2,7 +2,21 @@
 
 @section('title','Quản lý kho')
 
-
+@section('css')
+<style>
+  .modal-backdrop.fade {
+    display: none;
+  } 
+  .modal-backdrop.show {
+    z-index: 1089;
+    display: block;
+  }
+  .modal-dialog {
+    max-width: 80%;
+    width: 80%;
+  }
+</style>
+@endsection
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
             <h4 class="fw-bold ">Nhập kho</h4>
@@ -18,15 +32,15 @@
                         @foreach ($errors->all() as $err)
                             <li class="card-description" style="color: #fc424a;">{{ $err }}</li>
                         @endforeach
-                    @endif    
+                    @endif   
                   <div class="header-right d-flex align-items-end gap-2">
                       <div class="header-right-item d-flex align-items-start flex-column text-left gap-1">
                           <span class="d-block">Ngày bắt đầu</span>
-                          <input class="form-control" name="ngayBatDau" type="date"  id="startDate">
+                          <input class="form-control" name="startDate" type="date"  id="startDate">
                       </div>
                       <div class="header-right-item d-flex align-items-start flex-column text-left gap-1">
                           <span class="d-block">Ngày kết thúc</span>
-                          <input class="form-control" name="ngayKetThuc" type="date"  id="endDate">
+                          <input class="form-control" name="endDate" type="date"  id="endDate">
                       </div>
                       <div class="header-right-item">
                           <button type="submit" class="btn btn-primary">
@@ -38,7 +52,7 @@
                 </form>
               </li>
               <li class="nav-item "  style="margin-left: 10px;">
-                <form action="{{ route('admin.locPhieuNhap') }}" method="GET" class="form-search-custom">
+                <form action="{{ route('admin.phieuChoDuyet') }}" method="GET" class="form-search-custom">
                       <input type="hidden" name="trangThai"  value="0">
                       <button type="submit" class="btn btn-info"><i class='bx bxs-notepad'></i>Phiếu chờ duyệt</button>
                   </form>
@@ -108,11 +122,10 @@
                               <button style="outline: none; border: none" class="btn btn-info" type="submit"><i class='bx bxs-check-circle'></i> </button>
                             </form>
                           @endif
-                          <form class="d-inline-block" method="post" action="{{ route('phieukho.destroy', ['phieukho'=>$item]) }}">
-                            @csrf
-                            @method("DELETE")
-                            <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> </button>
-                          </form>
+                          <button type="button"  class="btn btn-danger btn-delete-phieukho" data-route="{{ route('phieukho.destroy', ['phieukho'=>$item]) }}" data-bs-toggle="modal" data-bs-target="#basicModal">
+                          <i class="bx bx-trash me-1"></i>
+                          </button>
+                         
                         </td>
                       </tr>
                      @endforeach
@@ -127,50 +140,57 @@
               </div>
             </div>
            
-            {{-- Model --}}
-            <div class="modal fade" id="modalCenter" tabindex="-1"  aria-modal="true" role="dialog">
-              <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="modalCenterTitle">TRIPLET SHOP</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <div class="load-data d-flex align-items-center justify-content-center mt-3 mb-3">
-                      <div role="status" class="spinner-border spinner-border-lg text-info ">
-                          <span class="visually-hidden">Loading...</span>
-                      </div>
-                    </div>
-                    
-                   
-                  </div>
-                  <div class="modal-footer">
-                    <input type="hidden" id="dataPDF">
-                    <a type="button" href="{{ route('PDF') }}" class="btn btn-primary">Print</a>
-                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
-                      Đóng
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="modal-backdrop fade "></div>
+{{-- Model --}}
+<div class="modal fade" id="modalCenter" tabindex="-1"  aria-modal="true" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCenterTitle">TRIPLET SHOP</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="load-data d-flex align-items-center justify-content-center mt-3 mb-3">
+          <div role="status" class="spinner-border spinner-border-lg text-info ">
+              <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        
+        
+      </div>
+      <div class="modal-footer">
+        <input type="hidden" id="dataPDF">
+        <a type="button" href="{{ route('PDF') }}" class="btn btn-primary">Print</a>
+        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade "></div>
+{{-- Model Delete --}}
+<div class="modal fade" id="basicModal" tabindex="-1" aria-modal="true" role="dialog">
+  <div class="modal-dialog" role="document" style="max-width: 30%; width: 30%;">
+    <div class="modal-content">
+      <div class="modal-header justify-content-center py-4">
+        <h5 class="modal-title text-center w-100" id="exampleModalLabel1">Bạn có chắc chắn muốn xoá không ?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" >
+         Đóng
+        </button>
+         <form class="d-inline-block" method="post" id="form-delete" action="">
+          @csrf
+          @method("DELETE")
+          <button style="outline: none; border: none" class="btn btn-danger" type="submit"> Xác nhận </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
-@section('css')
-<style>
-  .modal-backdrop.fade {
-    display: none;
-  } 
-  .modal-backdrop.show {
-    z-index: 1089;
-    display: block;
-  }
-  .modal-dialog {
-    max-width: 80%;
-    width: 80%;
-  }
-</style>
-@endsection
+
 @section('js')
     <script>
       $(function() {
@@ -191,6 +211,13 @@
         });
         }) );
         
-      })
+      });
+
+      let lstBtnDeleteRoute = document.querySelectorAll(".btn-delete-phieukho");
+      lstBtnDeleteRoute.forEach((item) => item.addEventListener("click", function() {
+        let linkRoute = item.dataset.route;
+        let formDel = document.querySelector("#form-delete");
+        formDel.action  = linkRoute;
+      }));
     </script>
 @endsection

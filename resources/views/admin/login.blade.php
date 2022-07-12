@@ -74,7 +74,7 @@
               <div class="mb-3 form-password-toggle">
                 <div class="d-flex justify-content-between">
                   <label class="form-label" for="password">Mật khẩu</label>
-                  <a href="auth-forgot-password-basic.html">
+                  <a href="{{ route('admin.showFormForgot') }}">
                     <small>Quên mật khẩu?</small>
                   </a>
                 </div>
@@ -92,7 +92,7 @@
                 </div>
               </div>
               <div class="mb-3">
-                <button class="btn btn-primary d-grid w-100" type="submit">Sign in</button>
+                <button class="btn btn-primary d-grid w-100" type="submit">Đăng nhập</button>
               </div>
             </form>
           </div>

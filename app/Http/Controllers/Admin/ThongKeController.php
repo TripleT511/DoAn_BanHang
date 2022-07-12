@@ -10,13 +10,13 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ThongKeController extends Controller
 {
     public function index()
     {
         $doanhThu = HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
-
 
         $top5SanPhamBanChay = SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
             $query->with('hoadon')->whereHas('hoadon', function ($query) {
@@ -28,10 +28,17 @@ class ThongKeController extends Controller
             });
         }], 'hoa_don_id')->orderBy('chitiethoadons_sum_so_luong', 'desc')->take(5)->get();
 
+        $tongDoanhThu = $doanhThu->sum("tongThanhTien");
+        $tongSanPham = DB::table('san_phams')->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->get()->count();
+        $tongHoaDon = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->get()->count();
+
 
         return View('admin.thongke', [
             'doanhThuAfter7Days' => $doanhThu,
             'top5SanPhamBanChay' => $top5SanPhamBanChay,
+            'tongDoanhThu' => $tongDoanhThu,
+            'tongSanPham' => $tongSanPham,
+            'tongDonHang' => $tongHoaDon,
         ]);
     }
 
@@ -173,19 +180,60 @@ class ThongKeController extends Controller
         $data = '';
         $period = "";
         $lstDate = [];
+        $hoadonDaXuLy = "";
+        $hoadonDangXuLy = "";
+        $hoadonDaHuy = "";
 
+        $tongSanPham = "";
+        $tongHoaDon = "";
         switch ($request->type) {
             case 'today':
                 $data = HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereDate('created_at', Carbon::now())->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
+
+                // *** Biểu đồ tròn *** //
+                $hoadonDaXuLy = DB::table('hoa_dons')->whereDate('created_at', Carbon::now())->where('trangThai', 4)->count();
+                $hoadonDangXuLy = DB::table('hoa_dons')->whereDate('created_at', Carbon::now())->whereIn('trangThai', [0, 1, 2, 3])->count();
+                $hoadonDaHuy = DB::table('hoa_dons')->whereDate('created_at', Carbon::now())->where('trangThai', 5)->count();
+                // *** Biểu đồ tròn *** //
+
+                // *** Thống Kê Số Lượng *** //
+
+                $tongSanPham = DB::table('san_phams')->whereDate('created_at', Carbon::now())->get()->count();
+                $tongHoaDon = DB::table('hoa_dons')->whereDate('created_at', Carbon::now())->get()->count();
+                // *** Thống Kê Số Lượng *** //
+
+
                 break;
             case 'yesterday':
                 $data = HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereDate('created_at', Carbon::now()->subDays(1))->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
+
+                // *** Biểu đồ tròn *** //
+                $hoadonDaXuLy = DB::table('hoa_dons')->whereDate('created_at', Carbon::now()->subDays(1))->where('trangThai', 4)->count();
+                $hoadonDangXuLy = DB::table('hoa_dons')->whereDate('created_at', Carbon::now()->subDays(1))->whereIn('trangThai', [0, 1, 2, 3])->count();
+                $hoadonDaHuy = DB::table('hoa_dons')->whereDate('created_at', Carbon::now()->subDays(1))->where('trangThai', 5)->count();
+                // *** Biểu đồ tròn *** //
+
+                // *** Thống Kê Số Lượng *** //
+                $tongSanPham = DB::table('san_phams')->whereDate('created_at', Carbon::now()->subDays(1))->get()->count();
+                $tongHoaDon = DB::table('hoa_dons')->whereDate('created_at', Carbon::now()->subDays(1))->get()->count();
+                // *** Thống Kê Số Lượng *** //
 
                 break;
             case 'last7days':
                 $data =
                     HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
                 $period = CarbonPeriod::create(Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString());
+
+                // *** Biểu đồ tròn *** //
+                $hoadonDaXuLy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4)->count();
+                $hoadonDangXuLy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->whereIn('trangThai', [0, 1, 2, 3])->count();
+                $hoadonDaHuy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 5)->count();
+                // *** Biểu đồ tròn *** //
+
+                // *** Thống Kê Số Lượng *** //
+                $tongSanPham = DB::table('san_phams')->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->get()->count();
+                $tongHoaDon = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->get()->count();
+                // *** Thống Kê Số Lượng *** //
 
                 foreach ($period as $date) {
                     array_push($lstDate, $date);
@@ -197,6 +245,17 @@ class ThongKeController extends Controller
                     HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereBetween('created_at', [Carbon::now()->subDays(29)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
                 $period = CarbonPeriod::create(Carbon::now()->subDays(29)->toDateString(), Carbon::now()->toDateString());
 
+                // *** Biểu đồ tròn *** //
+                $hoadonDaXuLy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(29)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4)->count();
+                $hoadonDangXuLy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(29)->toDateString(), Carbon::now()->toDateString()])->whereIn('trangThai', [0, 1, 2, 3])->count();
+                $hoadonDaHuy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(29)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 5)->count();
+                // *** Biểu đồ tròn *** //
+
+                // *** Thống Kê Số Lượng *** //
+                $tongSanPham = DB::table('san_phams')->whereBetween('created_at', [Carbon::now()->subDays(29)->toDateString(), Carbon::now()->toDateString()])->get()->count();
+                $tongHoaDon = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(29)->toDateString(), Carbon::now()->toDateString()])->get()->count();
+                // *** Thống Kê Số Lượng *** //
+
                 foreach ($period as $date) {
                     array_push($lstDate, $date);
                 }
@@ -205,6 +264,16 @@ class ThongKeController extends Controller
                 $data =
                     HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereBetween('created_at', [Carbon::now()->subDays(89)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
                 $period = CarbonPeriod::create(Carbon::now()->subDays(89)->toDateString(), Carbon::now()->toDateString());
+
+                // *** Biểu đồ tròn *** //
+                $hoadonDaXuLy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(89)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4)->count();
+                $hoadonDangXuLy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(89)->toDateString(), Carbon::now()->toDateString()])->whereIn('trangThai', [0, 1, 2, 3])->count();
+                $hoadonDaHuy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(89)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 5)->count();
+                // *** Biểu đồ tròn *** //
+                // *** Thống Kê Số Lượng *** //
+                $tongSanPham = DB::table('san_phams')->whereBetween('created_at', [Carbon::now()->subDays(89)->toDateString(), Carbon::now()->toDateString()])->get()->count();
+                $tongHoaDon = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(89)->toDateString(), Carbon::now()->toDateString()])->get()->count();
+                // *** Thống Kê Số Lượng *** //
 
                 foreach ($period as $date) {
                     array_push($lstDate, $date);
@@ -215,14 +284,76 @@ class ThongKeController extends Controller
                     HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereBetween('created_at', [Carbon::now()->subMonth(1)->startOfMonth(), Carbon::now()->subMonth(1)->endOfMonth()])->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
                 $period = CarbonPeriod::create(Carbon::now()->subMonth(1)->startOfMonth(), Carbon::now()->subMonth(1)->endOfMonth());
 
+                // *** Biểu đồ tròn *** //
+                $hoadonDaXuLy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subMonth(1)->startOfMonth(), Carbon::now()->subMonth(1)->endOfMonth()])->where('trangThai', 4)->count();
+                $hoadonDangXuLy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subMonth(1)->startOfMonth(), Carbon::now()->subMonth(1)->endOfMonth()])->whereIn('trangThai', [0, 1, 2, 3])->count();
+                $hoadonDaHuy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subMonth(1)->startOfMonth(), Carbon::now()->subMonth(1)->endOfMonth()])->where('trangThai', 5)->count();
+                // *** Biểu đồ tròn *** //
+
+                // *** Thống Kê Số Lượng *** //
+                $tongSanPham = DB::table('san_phams')->whereBetween('created_at', [Carbon::now()->subMonth(1)->startOfMonth(), Carbon::now()->subMonth(1)->endOfMonth()])->get()->count();
+                $tongHoaDon = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subMonth(1)->startOfMonth(), Carbon::now()->subMonth(1)->endOfMonth()])->get()->count();
+                // *** Thống Kê Số Lượng *** //
+
+                foreach ($period as $date) {
+                    array_push($lstDate, $date);
+                }
+                break;
+            case 'lastyear':
+                $data =
+                    HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereBetween('created_at', [Carbon::now()->subYear(1)->startOfYear(), Carbon::now()->subYear(1)->endOfYear()])->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
+                $period = CarbonPeriod::create(Carbon::now()->subYear(1)->startOfYear(), Carbon::now()->subYear(1)->endOfYear());
+
+                // *** Biểu đồ tròn *** //
+                $hoadonDaXuLy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subYear(1)->startOfYear(), Carbon::now()->subYear(1)->endOfYear()])->where('trangThai', 4)->count();
+                $hoadonDangXuLy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subYear(1)->startOfYear(), Carbon::now()->subYear(1)->endOfYear()])->whereIn('trangThai', [0, 1, 2, 3])->count();
+                $hoadonDaHuy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subYear(1)->startOfYear(), Carbon::now()->subYear(1)->endOfYear()])->where('trangThai', 5)->count();
+                // *** Biểu đồ tròn *** //
+
+                // *** Thống Kê Số Lượng *** //
+                $tongSanPham = DB::table('san_phams')->whereBetween('created_at', [Carbon::now()->subYear(1)->startOfYear(), Carbon::now()->subYear(1)->endOfYear()])->get()->count();
+                $tongHoaDon = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subYear(1)->startOfYear(), Carbon::now()->subYear(1)->endOfYear()])->get()->count();
+                // *** Thống Kê Số Lượng *** //
+
+                foreach ($period as $date) {
+                    array_push($lstDate, $date);
+                }
+                break;
+            case 'thisyear':
+                $data =
+                    HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
+                $period = CarbonPeriod::create(Carbon::now()->startOfYear(), Carbon::now()->endOfYear());
+
+                // *** Biểu đồ tròn *** //
+                $hoadonDaXuLy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->where('trangThai', 4)->count();
+                $hoadonDangXuLy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->whereIn('trangThai', [0, 1, 2, 3])->count();
+                $hoadonDaHuy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->where('trangThai', 5)->count();
+                // *** Biểu đồ tròn *** //
+
+                // *** Thống Kê Số Lượng *** //
+                $tongSanPham = DB::table('san_phams')->whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->get()->count();
+                $tongHoaDon = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->startOfYear(), Carbon::now()->endOfYear()])->get()->count();
+                // *** Thống Kê Số Lượng *** //
+
                 foreach ($period as $date) {
                     array_push($lstDate, $date);
                 }
                 break;
             default:
                 $data = HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereDate('created_at', Carbon::now())->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
+
+                // *** Biểu đồ tròn *** //
+                $hoadonDaXuLy = DB::table('hoa_dons')->whereDate('created_at', Carbon::now())->where('trangThai', 4)->count();
+                $hoadonDangXuLy = DB::table('hoa_dons')->whereDate('created_at', Carbon::now())->whereIn('trangThai', [0, 1, 2, 3])->count();
+                $hoadonDaHuy = DB::table('hoa_dons')->whereDate('created_at', Carbon::now())->where('trangThai', 5)->count();
+                // *** Biểu đồ tròn *** //
+                // *** Thống Kê Số Lượng *** //
+                $tongSanPham = DB::table('san_phams')->whereDate('created_at', Carbon::now())->get()->count();
+                $tongHoaDon = DB::table('hoa_dons')->whereDate('created_at', Carbon::now())->get()->count();
+                // *** Thống Kê Số Lượng *** //
                 break;
         }
+
 
 
         $output = "";
@@ -233,22 +364,10 @@ class ThongKeController extends Controller
         $tongGiamGiaDonHang = 0;
         $tongDoanhThu = 0;
         foreach ($data as $item) {
-
-            $giamGia = 0;
-            $doanhThu = $item->tongTien;
-            if ($item->ma_giam_gia_id != null) {
-                $doanhThu = 0;
-                foreach ($item->chiTietHoaDons as $item2) {
-                    $doanhThu += $item2->soLuong * $item2->donGia;
-                }
-
-                $giamGia = $doanhThu - $item->tongTien;
-            }
-
             $tongSLDonHang += $item->chi_tiet_hoa_dons_sum_so_luong;
-            $tongDoanhThuDonHang += $doanhThu;
-            $tongGiamGiaDonHang += $giamGia;
-            $tongDoanhThu += $item->tongTien;
+            $tongDoanhThuDonHang += $item->tongTien;
+            $tongGiamGiaDonHang += $item->giamGia;
+            $tongDoanhThu += $item->tongThanhTien;
             $output .= '
             <tr>
             <td class="text-left">
@@ -258,13 +377,13 @@ class ThongKeController extends Controller
                 ' . $item->chi_tiet_hoa_dons_sum_so_luong . '
             </td>
             <td class="text-right">
-                ' . number_format($doanhThu, 0, '', ',') . ' ₫
-            </td>
-            <td class="text-right">
-                ' . number_format($giamGia, 0, '', ',') . ' ₫
-            </td>
-            <td class="text-right">
                 ' . number_format($item->tongTien, 0, '', ',') . ' ₫
+            </td>
+            <td class="text-right">
+                ' . number_format($item->giamGia, 0, '', ',') . ' ₫
+            </td>
+            <td class="text-right">
+                ' . number_format($item->tongThanhTien, 0, '', ',') . ' ₫
             </td>
         </tr>
         ';
@@ -279,6 +398,143 @@ class ThongKeController extends Controller
         </tr>
         ';
 
+        // *** Biểu đồ tròn *** //
+        $dataDonHang = [$hoadonDaXuLy, $hoadonDangXuLy, $hoadonDaHuy];
+        $dataDoanhThu = [$tongDoanhThuDonHang, $tongGiamGiaDonHang, $tongDoanhThu];
+        // *** Biểu đồ tròn *** //
+
+
+
+        $lstData = [];
+        foreach ($lstDate as $key => $value) {
+            $doanhThu = HoaDon::whereDate('created_at', $value)->where('trangThai', 4)->sum('tongTien');
+            array_push($lstData, $doanhThu);
+            if ($request->type == "thisyear" || $request->type == "lastyear") {
+                $lstDate[$key] =
+                    $value->format('d/m/Y');
+            } else {
+                $lstDate[$key] =
+                    $value->format('d/m');
+            }
+        }
+
+        return response()->json([
+            'data' => $output,
+            'type' => $request->type,
+            'success' => "Lấy dữ liệu thành công",
+            'labels' => $lstDate,
+            'chartData' => $lstData,
+            'dataDonHang' => $dataDonHang,
+            'dataDoanhThu' => $dataDoanhThu,
+            'tongDoanhThu' => number_format($tongDoanhThu, 0, '', ',') . ' ₫',
+            'tongSanPham' => $tongSanPham,
+            'tongDonHang' => $tongHoaDon,
+        ]);
+    }
+
+    public function thongKeDoanhThuTheoKhoangThoiGian(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'startDate' => 'required|date',
+                'endDate' => 'required|date|after_or_equal:startDate'
+            ],
+            [
+                'startDate.required' => "Ngày bắt đầu không được bỏ trống",
+                'startDate.date' => "Ngày bắt đầu không hợp lệ",
+                'endDate.date' => "Ngày bắt đầu không hợp lệ",
+                'endDate.required' => "Ngày kết thúc không được bỏ trống",
+                'endDate.after_or_equal' => "Ngày kết thúc không được nhỏ hơn ngày bắt đầu",
+            ]
+        );
+
+        if ($validator->fails()) {
+            $error = '';
+            foreach ($validator->errors()->all() as $item) {
+                $error .= '
+                    <li class="card-description" style="color: #fff;">' . $item . '</li>
+                ';
+            }
+            return response()->json(['error' => $error]);
+        }
+
+        $data = '';
+        $period = "";
+        $lstDate = [];
+
+        $tongSanPham = "";
+        $tongHoaDon = "";
+
+        $data =
+            HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereBetween('created_at', [$request->startDate, $request->endDate])->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
+
+        $hoadonDaXuLy = DB::table('hoa_dons')->whereBetween('created_at', [$request->startDate, $request->endDate])->where('trangThai', 4)->count();
+        $hoadonDangXuLy = DB::table('hoa_dons')->whereBetween('created_at', [$request->startDate, $request->endDate])->whereIn('trangThai', [0, 1, 2, 3])->count();
+        $hoadonDaHuy = DB::table('hoa_dons')->whereBetween('created_at', [$request->startDate, $request->endDate])->where('trangThai', 5)->count();
+        $dataDonHang = [$hoadonDaXuLy, $hoadonDangXuLy, $hoadonDaHuy];
+
+        // *** Thống Kê Số Lượng *** //
+        $tongSanPham = DB::table('san_phams')->whereBetween('created_at', [$request->startDate, $request->endDate])->get()->count();
+        $tongHoaDon = DB::table('hoa_dons')->whereBetween('created_at', [$request->startDate, $request->endDate])->get()->count();
+        // *** Thống Kê Số Lượng *** //
+
+        $startDate = Carbon::createFromFormat('Y-m-d', $request->startDate);
+
+        $endDate = Carbon::createFromFormat('Y-m-d', $request->endDate);
+
+        $type = ($endDate->day - $startDate->day) > 1 ? "" : "today";
+
+        $period = CarbonPeriod::create($request->startDate, $request->endDate);
+
+        foreach ($period as $date) {
+            array_push($lstDate, $date);
+        }
+
+        $output = "";
+
+
+        $tongSLDonHang = 0;
+        $tongDoanhThuDonHang = 0;
+        $tongGiamGiaDonHang = 0;
+        $tongDoanhThu = 0;
+        foreach ($data as $item) {
+            $tongSLDonHang += $item->chi_tiet_hoa_dons_sum_so_luong;
+            $tongDoanhThuDonHang += $item->tongTien;
+            $tongGiamGiaDonHang += $item->giamGia;
+            $tongDoanhThu += $item->tongThanhTien;
+            $output .= '
+            <tr>
+            <td class="text-left">
+                #' . $item->id . '
+            </td>
+            <td class="text-left">
+                ' . $item->chi_tiet_hoa_dons_sum_so_luong . '
+            </td>
+            <td class="text-right">
+                ' . number_format($item->tongTien, 0, '', ',') . ' ₫
+            </td>
+            <td class="text-right">
+                ' . number_format($item->giamGia, 0, '', ',') . ' ₫
+            </td>
+            <td class="text-right">
+                ' . number_format($item->tongThanhTien, 0, '', ',') . ' ₫
+            </td>
+        </tr>
+        ';
+        }
+        $output .= '
+        <tr>
+            <td class="text-left"><strong>Tổng:</strong></td>
+            <td class="text-left"><strong>' . $tongSLDonHang . '</strong></td>
+            <td class="text-right"><strong>' . number_format($tongDoanhThuDonHang, 0, '', ',') . ' ₫</strong></td>
+            <td class="text-right"><strong>' . number_format($tongGiamGiaDonHang, 0, '', ',') . ' ₫</strong></td>
+            <td class="text-right"><strong>' . number_format($tongDoanhThu, 0, '', ',') . ' ₫</strong></td>
+        </tr>
+        ';
+
+        $dataDoanhThu = [$tongDoanhThuDonHang, $tongGiamGiaDonHang, $tongDoanhThu];
+
         $lstData = [];
         foreach ($lstDate as $key => $value) {
             $doanhThu = HoaDon::whereDate('created_at', $value)->where('trangThai', 4)->sum('tongTien');
@@ -289,17 +545,46 @@ class ThongKeController extends Controller
 
         return response()->json([
             'data' => $output,
-            'type' => $request->type,
+            'type' => $type,
             'success' => "Lấy dữ liệu thành công",
             'labels' => $lstDate,
-            'chartData' => $lstData
+            'chartData' => $lstData,
+            'dataDonHang' => $dataDonHang,
+            'dataDoanhThu' => $dataDoanhThu,
+            'tongDoanhThu' => number_format($tongDoanhThu, 0, '', ',') . ' ₫',
+            'tongSanPham' => $tongSanPham,
+            'tongDonHang' => $tongHoaDon,
         ]);
     }
 
     public function thongKeSoLuong()
     {
-        $hoadonDaXuLy = DB::table('hoa_dons')->where('trangThai', 4);
-        $hoadonDangXuLy = DB::table('hoa_dons')->whereIn('trangThai', [0, 1, 2, 3]);
-        $hoadonDangHuy = DB::table('hoa_dons')->where('trangThai', 5);
+        $hoadonDaXuLy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4)->count();
+        $hoadonDangXuLy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->whereIn('trangThai', [0, 1, 2, 3])->count();
+        $hoadonDaHuy = DB::table('hoa_dons')->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 5)->count();
+        $labelsDonHang = ["Đã xử lý", "Đang xử lý", "Đã huỷ"];
+        $dataDonHang = [$hoadonDaXuLy, $hoadonDangXuLy, $hoadonDaHuy];
+
+        $doanhThuAfter7Days =
+            HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
+
+        $tongDoanhThuTruocGiamGia = 0;
+        $tongGiamGia = 0;
+        $tongDoanhThuThucTe = 0;
+        foreach ($doanhThuAfter7Days as $key => $item) {
+            $tongDoanhThuTruocGiamGia += $item->tongTien;
+            $tongGiamGia += $item->giamGia;
+            $tongDoanhThuThucTe += $item->tongThanhTien;
+        }
+
+        $labelsDoanhThu = ["Trước giảm giá", "Giảm giá", "Thực tế"];
+        $dataDoanhThu = [$tongDoanhThuTruocGiamGia, $tongGiamGia, $tongDoanhThuThucTe];
+
+        return response()->json([
+            'labelsDonHang' => $labelsDonHang,
+            'dataDonHang' => $dataDonHang,
+            'labelsDoanhThu' => $labelsDoanhThu,
+            'dataDoanhThu' => $dataDoanhThu
+        ]);
     }
 }

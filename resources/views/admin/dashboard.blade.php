@@ -2,48 +2,7 @@
 
 @section('title','Test')
 @section('css')
-<style>
-  .img-custom {
-    width: 45px;
-    height: 45px;
-    padding: 5px;
-    border-radius: 5px;
-    background: #d7d7d7;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 
-  .img-custom.success {
-    background: #eefbe7;
-    color: rgb(113, 221, 55);
-  }
-
-  .img-custom.info {
-    background: #ededff;
-    color: rgb(3, 195, 236);
-  }
-
-  .img-custom.danger {
-    background: #ffe7e3;
-    color: rgb(255, 62, 29);
-  }
-
-  .img-custom.warning {
-    background: #fff5e0;
-    color: rgb(255, 171, 0);
-  }
-
-  .img-custom i {
-    display: block;
-    margin: auto;
-    font-size: 22px;
-  }
-
-  .item-keyword {
-    padding: 10px 0;
-  }
-</style>
 @endsection
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">

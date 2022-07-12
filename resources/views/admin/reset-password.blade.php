@@ -45,8 +45,7 @@
                 </a>
               </div>
               <!-- /Logo -->
-              <h4 class="mb-2">Quên mật khẩu? 🔒</h4>
-              <p class="mb-4">Nhập email của bạn và chúng tôi sẽ gửi cho bạn hướng dẫn để đặt lại mật khẩu</p>
+              <h4 class="mb-2">Cập nhật mật khẩu? 🔒</h4>
                @if($errors->any()) 
                 @foreach ($errors->all() as $err)
                     <li class="card-description" style="color: #fc424a;">{{ $err }}</li>
@@ -58,19 +57,31 @@
                 @if(session('message')) 
                   <label class="text-success" >{{ session('message') }}</label>
                 @endif
-              <form id="formAuthentication" class="mb-3" action="{{ route('Forgot') }}" method="POST">
+              <form id="formAuthentication" class="mb-3" action="{{ route('admin.resetPassword', ['token' => $token]) }}" method="POST">
                 @csrf
-                <div class="mb-3">
-                  <label for="email" class="form-label">Email</label>
-                  <input type="text" class="form-control" id="email" name="email" placeholder="Nhập email tại đây..." autofocus="">
+                <div class="mb-3 form-password-toggle">
+                  <div class="d-flex justify-content-between">
+                    <label class="form-label" for="password">Mật khẩu mới</label>
+                  </div>
+                  <div class="input-group input-group-merge">
+                    <input type="password" id="password" class="form-control" name="password"
+                      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                      />
+                      <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                  </div>
                 </div>
-                <button class="btn btn-primary d-grid w-100">Gửi email xác nhận</button>
+                <div class="mb-3 form-password-toggle">
+                  <div class="d-flex justify-content-between">
+                    <label class="form-label" for="confirm-password">Xác nhận mật khẩu</label>
+                  </div>
+                  <div class="input-group input-group-merge">
+                    <input type="password" id="confirm-password" class="form-control" name="confirm-password"
+                      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                      />
+                      <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                  </div>
+                </div>
+                <button class="btn btn-primary d-grid w-100">Gửi</button>
               </form>
-              <div class="text-center">
-                <a href="#" onclick="history.back()" class="d-flex align-items-center justify-content-center">
-                  <i class="bx bx-chevron-left scaleX-n1-rtl bx-sm"></i>
-                  Quay lại trang đăng nhập
-                </a>
-              </div>
             </div>
 @endsection

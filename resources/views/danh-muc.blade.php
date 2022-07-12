@@ -32,7 +32,7 @@
 					<ul class="clearfix">
 						<li>
 							<div class="sort_select">
-								<form action="{{ route('san-pham') }}" method="GET">
+								<form action="{{ route('danhmucsanpham', ['slug' => $slug ? $slug : '']) }}" method="GET">
 								<input name="danhmuc" value="{{ $danhmuc ? $danhmuc : ''}}" type="hidden">
 								<input type="hidden" name="page" value="{{ $lstSanPham->currentPage() }}">
 								<input name="price" value="{{ $price ? $price : ''}}" type="hidden">
@@ -64,7 +64,7 @@
 					<a href="{{ route('home') }}" data-toggle="dropdown" class="drop">Danh mục</a>
 					<div class="dropdown-menu">
 						<div class="filter_type">
-							<form action="{{ route('san-pham') }}" method="GET">
+							<form action="{{ route('danhmucsanpham',  ['slug' => $slug ? $slug : '']) }}" method="GET">
 							<input type="hidden" name="page" value="{{ $lstSanPham->currentPage() }}">
 							<input name="sort" value="{{ $sort ? $sort : ''}}" type="hidden">
 							<input name="price" value="{{ $price ? $price : ''}}" type="hidden">
@@ -72,7 +72,7 @@
 								@foreach($lstDanhMuc as $item)
 									<li>
 										<label class="container_check">{{ $item->tenDanhMuc}}
-											<input onchange="this.form.submit()" name="danhmuc" value="{{ $item->id}}" type="radio" {{ $danhmuc == $item->id ? 'checked' : '' }}>
+											<input {{ $danhmuc == $item->id ? 'checked' : '' }} onchange="this.form.submit()" name="danhmuc" value="{{ $item->id}}" type="checkbox">
 											<span class="checkmark"></span>
 										</label>
 									</li>
@@ -89,7 +89,7 @@
 					<a href="{{ route('home') }}" data-toggle="dropdown" class="drop">Giá tiền</a>
 					<div class="dropdown-menu">
 						<div class="filter_type">
-							<form action="{{ route('san-pham') }}" method="GET">
+							<form action="{{ route('danhmucsanpham',  ['slug' => $slug ? $slug : '']) }}" method="GET">
 							<input type="hidden" name="page" value="{{ $lstSanPham->currentPage() }}">
 							<input name="sort" value="{{ $sort ? $sort : ''}}" type="hidden">
 							<ul>
@@ -190,6 +190,7 @@
 						{!!$lstSanPham->appends(request()->input())->links() !!}
 					</ul>
 				</div>
+				
 				
 		</div>
 		<!-- /container -->

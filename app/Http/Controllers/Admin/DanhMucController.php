@@ -28,9 +28,10 @@ class DanhMucController extends Controller
             $user->anhDaiDien = 'images/no-image-available.jpg';
         }
     }
+
     public function index()
     {
-        $listDanhMuc = DanhMuc::with('childs')->paginate(10);
+        $listDanhMuc = DanhMuc::with('childs')->get();
         $listDanhMucCha = DanhMuc::orderBy('slug', 'desc')->get();
 
         return view('admin.danhmuc.index-danhmuc', ['lstDanhMuc' => $listDanhMuc, 'danhMucCha' => $listDanhMucCha]);
@@ -40,9 +41,9 @@ class DanhMucController extends Controller
     public function searchDanhMuc(Request $request)
     {
         $lstDanhMuc =
-            DanhMuc::with('childs')->paginate(5);
+            DanhMuc::with('childs')->get();
         if ($request->keyword != "") {
-            $lstDanhMuc = DanhMuc::where('tenDanhMuc', 'LIKE', '%' . $request->keyword . '%')->with('childs')->paginate(5);
+            $lstDanhMuc = DanhMuc::where('tenDanhMuc', 'LIKE', '%' . $request->keyword . '%')->with('childs')->get();
         }
         $listDanhMucCha = DanhMuc::orderBy('slug', 'desc')->get();
         return view('admin.danhmuc.index-danhmuc', ['lstDanhMuc' => $lstDanhMuc, 'danhMucCha' => $listDanhMucCha]);
@@ -185,6 +186,9 @@ class DanhMucController extends Controller
         $danhmuc->save();
 
         if ($request->hasFile('hinhAnh')) {
+            if ($danhmuc->hinhAnh != 'images/no-image-available.jpg') {
+                Storage::disk('public')->delete($danhmuc->hinhAnh);
+            }
             $danhmuc->hinhAnh = $request->file('hinhAnh')->store('images/danh-muc', 'public');
         }
         $danhmuc->save();
@@ -200,6 +204,9 @@ class DanhMucController extends Controller
      */
     public function destroy(DanhMuc $danhmuc)
     {
+        if ($danhmuc->hinhAnh != 'images/no-image-available.jpg') {
+            Storage::disk('public')->delete($danhmuc->hinhAnh);
+        }
         $danhmuc->delete();
         return Redirect::route('danhmuc.index');
     }

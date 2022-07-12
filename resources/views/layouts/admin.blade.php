@@ -77,8 +77,47 @@
             z-index: 1089;
             display: block;
         }
+         .img-custom {
+    width: 45px;
+    height: 45px;
+    padding: 5px;
+    border-radius: 5px;
+    background: #d7d7d7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .img-custom.success {
+    background: #eefbe7;
+    color: rgb(113, 221, 55);
+  }
+
+  .img-custom.info {
+    background: #ededff;
+    color: rgb(3, 195, 236);
+  }
+
+  .img-custom.danger {
+    background: #ffe7e3;
+    color: rgb(255, 62, 29);
+  }
+
+  .img-custom.warning {
+    background: #fff5e0;
+    color: rgb(255, 171, 0);
+  }
+
+  .img-custom i {
+    display: block;
+    margin: auto;
+    font-size: 22px;
+  }
+
+  .item-keyword {
+    padding: 10px 0;
+  }
     </style>
-   
     @yield('css')
   </head>
 
@@ -201,12 +240,14 @@
                 <div data-i18n="Layouts">Đơn hàng</div>
               </a>
             </li>
+            @if(Auth()->user()->phan_quyen_id == 0)
             <li class="menu-item {{  request()->routeIs('phanquyen.*') ? 'active' : '' }}">
               <a href="{{ route('phanquyen.index') }}" class="menu-link ">
                 <i class="menu-icon tf-icons bx bxs-component"></i>
                 <div data-i18n="Layouts">Phân quyền</div>
               </a>
             </li>
+            @endif
             <li class="menu-item {{  request()->routeIs('slider.*') ? 'active' : '' }}">
               <a href="{{ route('slider.index') }}" class="menu-link ">
                 <i class="menu-icon tf-icons bx bxs-image"></i>

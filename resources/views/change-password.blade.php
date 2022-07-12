@@ -178,12 +178,12 @@ a.btn_2:hover, .btn_2:hover
                             <div class="d-flex justify-content-between">
                               <label class="form-label" for="password">Mật khẩu cũ</label>
                             </div>
-                            <div class="input-group input-group-merge">
+                            <div class="input-group input-group-merge form-group-password">
                              
-                              <input type="password" id="password" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" class="form-control" name="password"
+                              <input type="password" id="password" class="form-control" name="password"
                                 placeholder="Mật khẩu cũ.........."
                                />
-                              <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                              <i id="show-password" class="fas fa-eye-slash show-password"></i>
                             </div>
                             <span class="text-validate" id="validate-pw"  style="display: block; color: red; margin-top: 5px;">
                               @if($errors->has('password')) 
@@ -196,11 +196,11 @@ a.btn_2:hover, .btn_2:hover
                             <div class="d-flex justify-content-between">
                               <label class="form-label" for="newpassword">Mật khẩu mới</label>
                             </div>
-                            <div class="input-group input-group-merge">
-                              <input type="password" id="newpassword" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" class="form-control" name="newpassword"
+                            <div class="form-group form-group-password">
+                                <input type="password" id="newpassword" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" class="form-control" name="newpassword"
                                 placeholder="Mật khẩu mới.........."
                                />
-                              <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                              <i id="show-password2" class="fas fa-eye-slash show-password"></i>
                             </div>
                             <span class="text-validate" id="validate-newpw"  style="display: block; color: red; margin-top: 5px;">
                               @if($errors->has('newpassword')) 
@@ -212,11 +212,11 @@ a.btn_2:hover, .btn_2:hover
                             <div class="d-flex justify-content-between">
                               <label for="confirm_password" class="form-label">Xác nhận mật khẩu mới</label>
                             </div>
-                            <div class="input-group input-group-merge">
+                            <div class="input-group input-group-merge form-group-password">
                               <input type="password" id="confirm_password" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" class="form-control" name="confirm_password"
                                 placeholder="Nhập lại mật khẩu........"
                                 aria-describedby="confirm_password" />
-                              <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                                <i id="show-password3" class="fas fa-eye-slash show-password"></i>
                             </div>
                             <span class="text-validate" id="validate-confirm"  style="display: block; color: red; margin-top: 5px;">
                               @if($errors->has('confirm_password')) 
@@ -237,23 +237,12 @@ a.btn_2:hover, .btn_2:hover
 
 @section('js')
     <script>
-      let txtPassword = document.querySelector("#password");
       let txtNewPassword = document.querySelector("#newpassword");
       let txtConfirmPassword = document.querySelector("#confirm_password");
 
-
-txtPassword.addEventListener("blur", function(event) {
-  if(!txtPassword.checkValidity()) {
-  document.querySelector("#validate-pw").innerHTML = "Mật khẩu phải bao gồm chữ hoa, chữ thường và số";
-  } else {
-    document.querySelector("#validate-pw").innerHTML = "";
-  }
-
-});
-
 txtNewPassword.addEventListener("blur", function(event) {
   if(!txtNewPassword.checkValidity()) {
-  document.querySelector("#validate-newpw").innerHTML = "Mật khẩu phải bao gồm chữ hoa, chữ thường và số";
+  document.querySelector("#validate-newpw").innerHTML = "Mật khẩu phải ít nhất 6 kí tự bao gồm chữ hoa, chữ thường và số";
   } else {
     document.querySelector("#validate-newpw").innerHTML = "";
   }
@@ -262,11 +251,57 @@ txtNewPassword.addEventListener("blur", function(event) {
 
 txtConfirmPassword.addEventListener("blur", function(event) {
   if(!txtConfirmPassword.checkValidity()) {
-  document.querySelector("#validate-confirm").innerHTML = "Mật khẩu phải bao gồm chữ hoa, chữ thường và số";
+  document.querySelector("#validate-confirm").innerHTML = "Mật khẩu phải ít nhất 6 kí tự bao gồm chữ hoa, chữ thường và số";
   } else {
     document.querySelector("#validate-confirm").innerHTML = "";
   }
 
 });
+
+let txtPassword = document.querySelector("#password");
+let showPassword = document.querySelector("#show-password");
+let showPassword2 = document.querySelector("#show-password2");
+let showPassword3 = document.querySelector("#show-password3");
+
+showPassword.addEventListener("click", function() { 
+    if(showPassword.classList.contains("fa-eye-slash")) {
+        txtPassword.type = "text";
+        showPassword.classList.remove("fa-eye-slash");
+        showPassword.classList.add("fa-eye");
+    } else {
+        txtPassword.type = "password";
+        showPassword.classList.remove("fa-eye");
+        showPassword.classList.add("fa-eye-slash");
+    }
+    
+});
+
+showPassword2.addEventListener("click", function() { 
+    if(showPassword2.classList.contains("fa-eye-slash")) {
+        txtNewPassword.type = "text";
+        showPassword2.classList.remove("fa-eye-slash");
+        showPassword2.classList.add("fa-eye");
+    } else {
+        txtNewPassword.type = "password";
+        showPassword2.classList.remove("fa-eye");
+        showPassword2.classList.add("fa-eye-slash");
+    }
+    
+});
+
+showPassword3.addEventListener("click", function() { 
+    if(showPassword3.classList.contains("fa-eye-slash")) {
+        txtConfirmPassword.type = "text";
+        showPassword3.classList.remove("fa-eye-slash");
+        showPassword3.classList.add("fa-eye");
+    } else {
+        txtConfirmPassword.type = "password";
+        showPassword3.classList.remove("fa-eye");
+        showPassword3.classList.add("fa-eye-slash");
+    }
+    
+});
+
+
     </script>
 @endsection

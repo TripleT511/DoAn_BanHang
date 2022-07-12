@@ -19,7 +19,7 @@
       <div class="text-center">
         <span>Ngày {{  $phieukho->created_at->format('d') }}</span>
         <span>Tháng {{  $phieukho->created_at->format('m') }}</span>
-        <span>Năm 20{{  $phieukho->created_at->format('y') }}</span>
+        <span>Năm {{  $phieukho->created_at->format('Y') }}</span>
       </div>
     </div>
     <table class="table">

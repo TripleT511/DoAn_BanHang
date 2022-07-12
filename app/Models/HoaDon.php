@@ -31,16 +31,16 @@ class HoaDon extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'nhan_vien_id', 'id');
+        return $this->belongsTo(User::class, 'nhan_vien_id', 'id')->withTrashed();
     }
 
     public function khachhang()
     {
-        return $this->belongsTo(User::class, 'khach_hang_id', 'id');
+        return $this->belongsTo(User::class, 'khach_hang_id', 'id')->withTrashed();
     }
 
     public function chiTietHoaDons()
     {
-        return $this->hasMany(ChiTietHoaDon::class, 'hoa_don_id', 'id');
+        return $this->hasMany(ChiTietHoaDon::class, 'hoa_don_id', 'id')->withTrashed();
     }
 }

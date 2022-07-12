@@ -23,11 +23,11 @@ class ChiTietPhieuKho extends Model
 
     public function sanpham()
     {
-        return $this->belongsTo(SanPham::class, 'san_pham_id', 'id');
+        return $this->belongsTo(SanPham::class, 'san_pham_id', 'id')->withTrashed();
     }
 
     public function phieukho()
     {
-        return $this->belongsTo(PhieuKho::class, 'phieu_kho_id', 'id');
+        return $this->belongsTo(PhieuKho::class, 'phieu_kho_id', 'id')->withTrashed();
     }
 }

@@ -40,6 +40,14 @@ class PayMentOnlineController extends Controller
             'soDienThoai_billing.required' => 'Số điện thoại không được để trống',
         ]);
 
+        if ($request->filled('soDienThoai_billing')) {
+            $request->validate([
+                'soDienThoai_billing' => 'regex:/((09|03|07|08|05)+([0-9]{8,9})\b)/'
+            ], [
+                'soDienThoai_billing.regex' => 'Số điện thoại không hợp lệ'
+            ]);
+        }
+
         $user = Auth::user();
 
 

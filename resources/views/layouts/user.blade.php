@@ -240,6 +240,48 @@
 				display: flex;
 				margin: auto;
 			}
+
+			.form-group-password > input {
+				position: relative;
+			}
+
+			.form-group-password > .show-password {
+				position: absolute;
+				content: "";
+				top: 50%;
+				right: 5px;
+				display: block;
+				transform: translateY(-50%);
+				padding: 10px;
+				cursor: pointer;
+			}
+
+			 a.btn_2, .btn_2  {
+    border: none;
+    color: #fff;
+    background: red;
+    border: 1px solid red;
+    outline: none;
+    cursor: pointer;
+    display: inline-block;
+    text-decoration: none;
+    padding: 12px 25px;
+    color: #fff;
+    font-weight: 500;
+    text-align: center;
+    font-size: 14px;
+    font-size: 0.875rem;
+    -moz-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    -webkit-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    border-radius: 3px;
+    line-height: normal;
+}
 	</style>
 </head>
 
@@ -535,10 +577,10 @@ function renderChild($item)
 						<div class="follow_us">
 							<h5>Theo dõi</h5>
 							<ul>
-								<li><a href="#0"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="img/twitter_icon.svg" alt="" class="lazy"></a></li>
-								<li><a href="#0"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="img/facebook_icon.svg" alt="" class="lazy"></a></li>
-								<li><a href="#0"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="img/instagram_icon.svg" alt="" class="lazy"></a></li>
-								<li><a href="#0"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="img/youtube_icon.svg" alt="" class="lazy"></a></li>
+								<li><a href="#0"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="{{ asset('img/twitter_icon.svg') }}" alt="" class="lazy"></a></li>
+								<li><a href="#0"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="{{ asset('img/facebook_icon.svg') }}" alt="" class="lazy"></a></li>
+								<li><a href="#0"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="{{ asset('img/instagram_icon.svg') }}" alt="" class="lazy"></a></li>
+								<li><a href="#0"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="{{ asset('img/youtube_icon.svg') }}" alt="" class="lazy"></a></li>
 							</ul>
 						</div>
 					</div>
@@ -567,7 +609,7 @@ function renderChild($item)
 								</select>
 							</div>
 						</li>
-						<li><img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="img/cards_all.svg" alt="" width="198" height="30" class="lazy"></li>
+						<li><img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" data-src="{{ asset('img/cards_all.svg') }}" alt="" width="198" height="30" class="lazy"></li>
 					</ul>
 				</div>
 				<div class="col-lg-6">

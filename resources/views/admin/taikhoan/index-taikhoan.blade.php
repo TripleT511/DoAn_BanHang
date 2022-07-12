@@ -59,7 +59,14 @@
            
               <!-- Basic Bootstrap Table -->
               <div class="card">
-               
+                 @if($errors->any()) 
+                   		 @foreach ($errors->all() as $err)
+                        <li class="card-description" style="color: #fc424a;">{{ $err }}</li>
+                   		 @endforeach
+              @endif
+                          @if(session('error')) 
+                              <label class="text-danger" style="color: #fc424a;margin: 10px;" >{{ session('error') }}</label>
+                          @endif
                 <div class="table-responsive text-nowrap">
                   <table class="table">
                     <thead>
@@ -98,6 +105,7 @@
                             @endif
                           </td>
                           <td>
+                           
                             @if($item->deleted_at == null)
                             <a class="btn btn-success" href="{{ route('user.edit', ['user' => $item]) }}">
                               <i class="bx bx-edit-alt me-1"></i>

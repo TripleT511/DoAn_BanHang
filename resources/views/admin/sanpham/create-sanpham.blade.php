@@ -140,13 +140,7 @@
                         </div>
                         <div class="mb-3">
                             <div class="list-preview-image">
-                                <div class="preview-image-item">
-                                    <img src="" alt="imgPreview" id="imgPreview1">
-                                </div>
-                                <div class="preview-image-item">
-                                    <img src="" alt="imgPreview"
-                                    id="imgPreview2">
-                                </div>
+                               
                             </div>
                         </div>
                         
@@ -167,12 +161,19 @@
         // === Preview Image === // 
        
         $("#hinhAnh").on("change", function (e) {
-                var filePath = URL.createObjectURL(e.target.files[0]);
-                var filePath2 = URL.createObjectURL(e.target.files[1]);
-                $(".list-preview-image").css('display', 'flex');
-                
-                $("#imgPreview1").show().attr("src", filePath);
-                $("#imgPreview2").show().attr("src", filePath2);
+            $(".list-preview-image").css('display', 'flex');
+            var divShowImage = document.querySelector(".list-preview-image");
+                divShowImage.innerHTML = "";
+                var dataFile = e.target.files;
+                for(var i = 0; i < dataFile.length; i++) {
+                    var filePath = URL.createObjectURL(dataFile[i]);
+                    var divTag = document.createElement("div");
+                    divTag.classList.add("preview-image-item");
+                    var imgTag = document.createElement("img");
+                    imgTag.src = filePath;
+                    divTag.appendChild(imgTag);
+                    divShowImage.appendChild(divTag);
+                }
                
             });
 

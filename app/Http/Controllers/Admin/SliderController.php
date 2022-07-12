@@ -39,9 +39,12 @@ class SliderController extends Controller
 
     public function searchSlider(Request $request)
     {
-
-        if ($request->input('keyword') != "") {
-            $lstSlider = Slider::where('tieuDe', 'LIKE', '%' . $request->input('keyword') . '%')->paginate(5);
+        if (!empty($request->keyword)) {
+            return Redirect::back();
+        }
+        $lstSlider = Slider::where('tieuDe', 'LIKE', '%' . $request->input('keyword') . '%')->paginate(5);
+        foreach ($lstSlider as $item) {
+            $this->fixImage($item);
         }
         return View('admin.slideshow.index-slideshow', ['lstSlider' => $lstSlider]);
     }
@@ -83,12 +86,13 @@ class SliderController extends Controller
         }
 
 
+        $noiDung = str_replace("../../", "../../../", $request->noiDung);
 
         $slider = new Slider();
         $slider->fill([
             'hinhAnh' => '',
             'tieuDe' => $request->input('tieuDe'),
-            'noiDung' => $request->noiDung,
+            'noiDung' => $noiDung,
             'slug' => $slug,
             'trangThai' => '1'
         ]);
@@ -121,10 +125,7 @@ class SliderController extends Controller
      */
     public function edit(Slider $slider)
     {
-        $lstSlider = Slider::all();
-        foreach ($lstSlider as $item) {
-            $this->fixImage($item);
-        }
+
         return View('admin.slideshow.edit-slideshow', ['slider' => $slider]);
     }
 
@@ -166,7 +167,10 @@ class SliderController extends Controller
         } else $slider->trangThai = 0;
 
         if ($request->hasFile('hinhAnh')) {
-            Storage::disk('public')->delete($slider->hinhAnh);
+
+            if ($slider->hinhAnh != 'images/no-image-available.jpg') {
+                Storage::disk('public')->delete($slider->hinhAnh);
+            }
             $slider->hinhAnh = $request->file('hinhAnh')->store('images/slideshow', 'public');
         }
         $slider->save();
@@ -181,8 +185,9 @@ class SliderController extends Controller
      */
     public function destroy(Slider $slider)
     {
-
-        Storage::disk('public')->delete($slider->hinhAnh);
+        if ($slider->hinhAnh != 'images/no-image-available.jpg') {
+            Storage::disk('public')->delete($slider->hinhAnh);
+        }
         $slider->delete();
 
         return Redirect::route('slider.index');

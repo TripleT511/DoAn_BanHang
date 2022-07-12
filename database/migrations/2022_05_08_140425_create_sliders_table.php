@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->text('hinhAnh')->default('images/no-image-available.jpg');
             $table->string('tieuDe');
-            $table->string('noiDung');
+            $table->longText('noiDung');
             $table->string('slug');
             $table->tinyInteger('trangThai')->default(1);
             $table->timestamps();

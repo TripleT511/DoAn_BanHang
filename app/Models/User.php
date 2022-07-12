@@ -52,6 +52,6 @@ class User extends Authenticatable
 
     public function phanquyen()
     {
-        return $this->hasOne(PhanQuyen::class, 'viTri', 'phan_quyen_id');
+        return $this->hasOne(PhanQuyen::class, 'viTri', 'phan_quyen_id')->withTrashed();
     }
 }

@@ -79,18 +79,13 @@
     <div class="row ">
         <div class="col-12 col-lg-12 order-2 order-md-3 order-lg-2 mb-4">
             <div class="card" style="height: 100%;">
-                <div class="row">
-                    <div class="col-md-6">
-                        <canvas id="thongKeDonHang"></canvas>
-                    </div>
-                    <div class="col-md-6">
-                        <canvas id="thongKeDoanhThu"></canvas>
-                    </div>
+                <div class="row m-b">
+                    
                 </div>
                 <div class="row row-bordered g-0">
                     <div class="col-md-12">
                         <div class="p-2">
-                            <h5 class="card-header m-0 me-2 pb-1">Doanh thu cửa hàng 7 ngày qua</h5>
+                            <h5 class="card-header m-0 me-2 pb-1" id="title-thongle-hoadon">Báo cáo bán hàng 7 ngày qua</h5>
                             <div class="card-header-custom d-flex align-items-end justify-content-between mb-3">
                                 <div class="header-left">
                                     <ul class="nav nav-pills" >
@@ -109,30 +104,91 @@
                                             <option value="">Tuỳ chọn</option>
                                             <option value="today">Hôm nay</option>
                                             <option value="yesterday">Hôm qua</option>
-                                            <option value="last7days">7 ngày trước</option>
-                                            <option value="last30days">30 ngày trước</option>
-                                            <option value="last90days">90 ngày trước</option>
+                                            <option value="last7days">7 ngày qua</option>
+                                            <option value="last30days">30 ngày qua</option>
+                                            <option value="last90days">90 ngày qua</option>
                                             <option value="lastmonth">Tháng trước</option>
-                                            <option value="quarter1">Quý 1</option>  
-                                            <option value="quarter2">Quý 2</option>     
-                                            <option value="quarter3">Quý 3</option>     
-                                            <option value="quarter4">Quý 4</option>     
+                                            <option value="lastyear">Năm trước</option>  
+                                            <option value="thisyear">Năm nay</option>     
                                         </select>
                                     </div>
                                     <div class="header-right-item d-flex align-items-start flex-column text-left gap-1">
                                         <span class="d-block">Ngày bắt đầu</span>
-                                        <input class="form-control" type="date" value="2021-06-18" id="startDate">
+                                        <input class="form-control" type="date" name="startDate" id="startDateDonHang">
                                     </div>
                                     <div class="header-right-item d-flex align-items-start flex-column text-left gap-1">
                                         <span class="d-block">Ngày kết thúc</span>
-                                        <input class="form-control" type="date" value="2021-06-18" id="endDate">
+                                        <input class="form-control" type="date" name="endDate" id="endDateDonHang">
                                     </div>
                                     <div class="header-right-item">
-                                        <button type="submit" class="btn btn-primary">
+                                        <button type="submit" class="btn btn-primary" id="filterDonHang">
                                             <i class='bx bxs-filter-alt'></i>
                                             Lọc
                                         </button>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-lg-4 col-md-12 col-4 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-title d-flex align-items-start justify-content-between">
+                                            <div class="avatar flex-shrink-0">
+                                                <div class="img-custom success">
+                                                <i class='bx bxs-badge-dollar' ></i>
+                                                </div>
+                                            </div>
+                                            
+                                            </div>
+                                            <span class="fw-semibold d-block mb-1">Doanh thu</span>
+                                            <h3 class="card-title mb-2 text-success" id="tongDoanhThu">{{ number_format($tongDoanhThu, 0, '', ',') }} ₫</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-12 col-4 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-title d-flex align-items-start justify-content-between">
+                                            <div class="avatar flex-shrink-0">
+                                                <div class="img-custom info">
+                                                <i class='bx bxs-cart-download' ></i>
+                                                </div>
+                                            </div>
+                                            
+                                            </div>
+                                            <span class="fw-semibold d-block mb-1">Đơn hàng</span>
+                                            <h3 class="card-title mb-2 text-info"  id="tongDonHang">{{  $tongDonHang }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-12 col-4 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="card-title d-flex align-items-start justify-content-between">
+                                            <div class="avatar flex-shrink-0">
+                                                <div class="img-custom danger">
+                                                <i class='bx bxs-t-shirt' ></i>
+                                                </div>
+                                            </div>
+                                            
+                                            </div>
+                                            <span class="fw-semibold d-block mb-1">Sản phẩm</span>
+                                            <h3 class="card-title mb-2 text-danger"  id="tongSanPham">{{ $tongSanPham }}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-md-5">
+                                    <h5 class="card-header m-0 me-2 pb-1 text-center" >Biểu đồ thống kê đơn hàng</h5>
+                                    <canvas id="thongKeDonHang"></canvas>
+                                </div>
+                                <div class="col-md-2">
+
+                                </div>
+                                <div class="col-md-5">
+                                    <h5 class="card-header m-0 me-2 pb-1 text-center" >Biểu đồ thống kê doanh thu</h5>
+                                    <canvas id="thongKeDoanhThu"></canvas>
                                 </div>
                             </div>
                             <canvas id="myChart"></canvas>
@@ -160,21 +216,10 @@
                                 @endphp
                                 @foreach($doanhThuAfter7Days as $item)
                                     @php
-                                        $giamGia = 0;
-                                        $doanhThu = $item->tongTien;
-                                        if($item->ma_giam_gia_id != null) {
-                                            $doanhThu = 0;
-                                            foreach($item->chiTietHoaDons as $item2) {
-                                                $doanhThu += $item2->soLuong * $item2->donGia;
-                                            }
-
-                                            $giamGia = $doanhThu - $item->tongTien;
-                                        }
-
                                         $tongSLDonHang += $item->chi_tiet_hoa_dons_sum_so_luong;
-                                        $tongDoanhThuDonHang += $doanhThu;
-                                        $tongGiamGiaDonHang += $giamGia;
-                                        $tongDoanhThu += $item->tongTien;
+                                        $tongDoanhThuDonHang += $item->tongTien;
+                                        $tongGiamGiaDonHang += $item->giamGia;
+                                        $tongDoanhThu += $item->tongThanhTien;
                                     @endphp
                                 <tr>
                                     <td class="text-left">
@@ -184,13 +229,13 @@
                                         {{ $item->chi_tiet_hoa_dons_sum_so_luong }}
                                     </td>
                                     <td class="text-right">
-                                        {{ number_format($doanhThu, 0, '', ',') }} ₫
-                                    </td>
-                                    <td class="text-right">
-                                        {{ number_format($giamGia, 0, '', ',') }} ₫
-                                    </td>
-                                    <td class="text-right">
                                         {{ number_format($item->tongTien, 0, '', ',') }} ₫
+                                    </td>
+                                    <td class="text-right">
+                                        {{ number_format($item->giamGia, 0, '', ',') }} ₫
+                                    </td>
+                                    <td class="text-right">
+                                        {{ number_format($item->tongThanhTien, 0, '', ',') }} ₫
                                     </td>
                                 </tr>
                                 @endforeach
@@ -301,12 +346,27 @@
 </div>
 </div>
 <div class="modal-backdrop fade"></div>
+<div class="bs-toast toast toast-placement-ex m-2 fade bg-danger top-50 start-50 translate-middle " role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+    <div class="toast-header">
+        <i class="bx bx-bell me-2"></i>
+        <div class="me-auto fw-semibold">Thông báo</div>
+        <small>1 second ago</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">Lỗi</div>
+</div>
 @endsection
 @section('js')
   <script>
     $(document).ready(function(){
         var ctx2 = document.getElementById('myChart').getContext('2d');
+        var ctxDH = document.getElementById('thongKeDonHang').getContext('2d');
+        var ctxDT = document.getElementById('thongKeDoanhThu').getContext('2d');
+
         var myChart2;
+        var myChartDH;
+        var myChartDT;
+
 		$.ajax({
 			type: "GET",
 			url: "/admin/thong-ke-doanh-thu-after-7-days",
@@ -352,10 +412,112 @@
 			}
 		});
 
+        $.ajax({
+			type: "GET",
+			url: "/admin/thong-ke-theo-so-luong",
+			dataType: "json",
+			success: function (response) {
+                
+                myChartDH = new Chart(ctxDH, {
+                    type: 'doughnut',
+                    data: {
+                        labels: response.labelsDonHang,
+                        datasets: [{
+                            label: 'Thống kê đơn hàng',
+                            data: response.dataDonHang,
+                            backgroundColor: [
+                                'rgb(113, 221, 55)',
+                                'rgb(105, 108, 255)',
+                                'rgb(255, 62, 29)'
+                            ],
+                            hoverOffset: 4
+                        }]
+                    },
+                });
+
+                myChartDT = new Chart(ctxDT, {
+                    type: 'doughnut',
+                    data: {
+                        labels: response.labelsDoanhThu,
+                        datasets: [{
+                            label: 'Thống kê doanh thu',
+                            data: response.dataDoanhThu,
+                            backgroundColor: [
+                                'rgb(3, 195, 236)',
+                                'rgb(255, 171, 0)',
+                                'rgb(113, 221, 55)'
+                            ],
+                            hoverOffset: 4
+                        }]
+                    },
+                });
+			}
+		});
+
+        
+
         let optionTime = document.querySelector("#khoangThoiGian");
         let optionTopProducts = document.querySelector("#topSanPham");
         let overlay = document.querySelector(".modal-backdrop");
         let loading = document.querySelector(".loading-item");
+        let btnLocDonHang = document.querySelector("#filterDonHang");
+        btnLocDonHang.addEventListener("click", function() {
+            overlay.classList.remove("fade");
+            overlay.classList.add("show");
+            loading.classList.add("active");
+            $.ajax({
+                    type: "GET",
+                    url: "/admin/thong-ke-doanh-thu-theo-thoi-gian",
+                    dataType: "json",
+                    data: {
+                        startDate: $("#startDateDonHang").val(),
+                        endDate: $("#endDateDonHang").val()
+                    },
+                    success: function (response) {
+                        overlay.classList.add("fade");
+                        overlay.classList.remove("show");
+                        loading.classList.remove("active");
+                        
+                        if(response.error) {
+
+                            document.querySelector(".bs-toast").classList.add("bg-danger");
+                            document.querySelector(".bs-toast").classList.remove("bg-success");
+                            document.querySelector(".toast-body").innerHTML = response.error;
+                            document.querySelector(".bs-toast").classList.add("show");
+                            setTimeout(() => {
+                                document.querySelector(".bs-toast").classList.remove("show");
+                            }, 1000);
+
+                            return;
+                        }
+
+                        if(response.success) {
+                            $("#title-thongle-hoadon").text("Báo cáo bán hàng");
+                            $("#thongKeDoanhThuTheoThoiGian").html(response.data);
+                            if(response.type == 'today') {
+                                $("#myChart").hide();
+                            } else {
+                                $("#myChart").show();
+                            }
+                                myChart2.data.labels = response.labels;
+                                myChart2.data.datasets[0].data = response.chartData;
+                                
+                                myChart2.update();
+
+                                
+                                myChartDH.data.datasets[0].data = response.dataDonHang;
+                                myChartDH.update();
+                                myChartDT.data.datasets[0].data = response.dataDoanhThu;
+                                myChartDT.update();
+
+                                $("#tongDoanhThu").text(response.tongDoanhThu);
+                                $("#tongDonHang").text(response.tongDonHang);
+                                $("#tongSanPham").text(response.tongSanPham);
+                           
+                        }
+                    }
+                });
+        });
 
         // *** Top Sản Phẩm Bán Chạy *** //
         optionTopProducts.addEventListener('change', function(e) {
@@ -394,7 +556,7 @@
 
         optionTime.addEventListener('change', function(e) {
             let currentValue = e.target.value;
-            let lstType = ["today","yesterday","last7days","last30days","last90days","lastmonth","quarter1","quarter2","quarter3","quarter4"];
+            let lstType = ["today","yesterday","last7days","last30days","last90days","lastmonth","lastyear","thisyear"];
             let validateValue = lstType.find((value) => value == currentValue);
             if(!!validateValue) {
                 overlay.classList.remove("fade");
@@ -415,16 +577,25 @@
                         loading.classList.remove("active");
                         
                         if(response.success) {
+                            $("#title-thongle-hoadon").text("Báo cáo bán hàng");
                             $("#thongKeDoanhThuTheoThoiGian").html(response.data);
                             if(response.type == 'today' || response.type == 'yesterday') {
                                 $("#myChart").hide();
                             } else {
                                 $("#myChart").show();
+                            }
                                 myChart2.data.labels = response.labels;
                                 myChart2.data.datasets[0].data = response.chartData;
-                                
                                 myChart2.update();
-                            }
+
+                                myChartDH.data.datasets[0].data = response.dataDonHang;
+                                myChartDH.update();
+                                myChartDT.data.datasets[0].data = response.dataDoanhThu;
+                                myChartDT.update();
+
+                                $("#tongDoanhThu").text(response.tongDoanhThu);
+                                $("#tongDonHang").text(response.tongDonHang);
+                                $("#tongSanPham").text(response.tongSanPham);
                            
                         }
                     }

@@ -30,26 +30,26 @@ class SanPham extends Model
 
     public function hinhanhs()
     {
-        return $this->hasMany(HinhAnh::class, 'san_pham_id', 'id');
+        return $this->hasMany(HinhAnh::class, 'san_pham_id', 'id')->withTrashed();
     }
 
     public function danhmuc()
     {
-        return $this->belongsTo(DanhMuc::class, 'danh_muc_id', 'id');
+        return $this->belongsTo(DanhMuc::class, 'danh_muc_id', 'id')->withTrashed();
     }
 
     public function chitietphieukhos()
     {
-        return $this->hasMany(ChiTietPhieuKho::class, 'san_pham_id', 'id');
+        return $this->hasMany(ChiTietPhieuKho::class, 'san_pham_id', 'id')->withTrashed();
     }
 
     public function danhgias()
     {
-        return $this->hasMany(DanhGia::class, 'san_pham_id', 'id');
+        return $this->hasMany(DanhGia::class, 'san_pham_id', 'id')->withTrashed();
     }
 
     public function chitiethoadons()
     {
-        return $this->hasMany(ChiTietHoaDon::class, 'san_pham_id', 'id');
+        return $this->hasMany(ChiTietHoaDon::class, 'san_pham_id', 'id')->withTrashed();
     }
 }

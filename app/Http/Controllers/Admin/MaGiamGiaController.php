@@ -30,7 +30,7 @@ class MaGiamGiaController extends Controller
     }
     public function index()
     {
-        $lstDiscount = MaGiamGia::paginate(4)->withQueryString();
+        $lstDiscount = MaGiamGia::orderBy('created_at', 'desc')->paginate(4)->withQueryString();
         foreach ($lstDiscount as $item)
             $this->fixImage($item);
         return view('admin.discount.index-discount', ['lstDiscount' => $lstDiscount]);
@@ -38,7 +38,7 @@ class MaGiamGiaController extends Controller
 
     public function indexDie()
     {
-        $lstDiscount = MaGiamGia::where('ngayKetThuc', '<', date('Y-m-d', strtotime(date('Y-m-d') . " +1 days")))->paginate(4)->withQueryString();
+        $lstDiscount = MaGiamGia::where('ngayKetThuc', '<', date('Y-m-d', strtotime(date('Y-m-d') . " +1 days")))::orderBy('created_at', 'desc')->paginate(4)->withQueryString();
         foreach ($lstDiscount as $item)
             $this->fixImage($item);
         return view('admin.discount.index-discount', ['lstDiscount' => $lstDiscount]);
@@ -70,7 +70,7 @@ class MaGiamGiaController extends Controller
             'loaiKhuyenMai' => 'required',
             'giaTriKhuyenMai' => 'required|',
             'ngayBatDau'    => 'required|date|after_or_equal:today',
-            'ngayKetThuc' => 'required|date|after_or_equal:today',
+            'ngayKetThuc' => 'required|date|after_or_equal:ngayBatDau',
         ], [
             'code.required' => 'Mã giảm giá không được bỏ trống',
             'tenMa.required' => "Tên mã giảm giá không được bỏ trống",
@@ -80,7 +80,7 @@ class MaGiamGiaController extends Controller
             'ngayBatDau.required' => "Ngày bắt đầu bắt buộc chọn",
             'ngayBatDau.after_or_equal' => "Ngày bắt đầu không thể nhỏ hơn ngày hiện tại",
             'ngayKetThuc.required' => "Ngày kết thúc bắt buộc chọn",
-            'ngayKetThuc.after_or_equal' => "Ngày kết thúc không thể nhỏ hơn ngày hiện tại",
+            'ngayKetThuc.after_or_equal' => "Ngày kết thúc không thể nhỏ hơn ngày bắt đầu",
         ]);
 
         if ($request->loaiKhuyenMai == 1) {
@@ -131,13 +131,13 @@ class MaGiamGiaController extends Controller
 
 
         // Save Image FroalaEditor
-
+        $moTa = str_replace("../../", "../../../", $request->moTa);
         $discount = new MaGiamGia();
         $discount->fill([
             'code' => strtoupper($code),
             'tenMa' => $request->tenMa,
             'hinhAnh' => 'images/no-image-available.jpg',
-            'moTa' => $request->moTa,
+            'moTa' => $moTa,
             'soLuong' => $request->filled('soLuong') ? $request->soLuong : null,
             'loaiKhuyenMai' => $request->loaiKhuyenMai,
             'giaTriKhuyenMai' => $request->giaTriKhuyenMai,
@@ -157,37 +157,6 @@ class MaGiamGiaController extends Controller
         return Redirect::route('discount.index');
     }
 
-    public function upLoadImageEditor()
-    {
-        // Save Image FroalaEditor
-        $allowedExts = array("gif", "jpeg", "jpg", "png", "svg", "blob");
-
-        $temp = explode(".", $_FILES['image_param']["name"]);
-
-        $extension = end($temp);
-
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = finfo_file($finfo, $_FILES["image_param"]["tmp_name"]);
-
-        if ((($mime == "image/gif")
-                || ($mime == "image/jpeg")
-                || ($mime == "image/pjpeg")
-                || ($mime == "image/x-png")
-                || ($mime == "image/png"))
-            && in_array($extension, $allowedExts)
-        ) {
-            // Generate new random name.
-            $name = sha1(microtime()) . "." . $extension;
-
-            // Save file in the uploads folder.
-            move_uploaded_file($_FILES["image_param"]["tmp_name"], getcwd() . "/public/storage/images/" . $name);
-
-            // Generate response.
-            $response = new stdClass;
-            $response->link = "/public/storage/images/" . $name;
-            echo stripslashes(json_encode($response));
-        }
-    }
 
     /**
      * Display the specified resource.
@@ -224,12 +193,12 @@ class MaGiamGiaController extends Controller
         $request->validate([
             'tenMa' => 'required',
             'moTa' => 'required',
-            'ngayKetThuc' => 'required|date|after_or_equal:today',
+            'ngayKetThuc' => "required|date|after_or_equal:$discount->ngayBatDau",
         ], [
             'tenMa.required' => "Tên mã giảm giá không được bỏ trống",
             'moTa.required' => "Mô tả không được bỏ trống",
             'ngayKetThuc.required' => "Ngày kết thúc bắt buộc chọn",
-            'ngayKetThuc.after_or_equal' => "Ngày kết thúc không thể nhỏ hơn ngày hiện tại",
+            'ngayKetThuc.after_or_equal' => "Ngày kết thúc không thể nhỏ hơn ngày bắt đầu",
         ]);
 
 
@@ -276,6 +245,9 @@ class MaGiamGiaController extends Controller
         $discount->save();
 
         if ($request->hasFile('hinhAnh')) {
+            if ($discount->hinhAnh != 'images/no-image-available.jpg') {
+                Storage::disk('public')->delete($discount->hinhAnh);
+            }
             $discount->hinhAnh = $request->file('hinhAnh')->store('images/discount', 'public');
         }
         $discount->save();
@@ -291,7 +263,10 @@ class MaGiamGiaController extends Controller
      */
     public function destroy(MaGiamGia $discount)
     {
-        Storage::disk('public')->delete($discount->hinhAnh);
+        if ($discount->hinhAnh != 'images/no-image-available.jpg') {
+            Storage::disk('public')->delete($discount->hinhAnh);
+        }
+
         $discount->delete();
         return Redirect::route('discount.index');
     }

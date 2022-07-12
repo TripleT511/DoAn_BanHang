@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DanhGiaController extends Controller
 {
@@ -29,15 +31,16 @@ class DanhGiaController extends Controller
     }
     public function searchDanhGia(Request $request)
     {
+        if (!empty($request->keyword)) {
+            return Redirect::back();
+        }
         $stringSearch = $request->input('keyword');
 
-        if ($request->input('keyword') != "") {
-            $lstDanhGia = DanhGia::with('sanpham')->whereHas('sanpham', function ($query) use ($stringSearch) {
-                return $query->where('tenSanPham', 'LIKE', '%' . $stringSearch . '%');
-            })->with('taikhoan')->orWhereHas('taikhoan', function ($query) use ($stringSearch) {
-                return $query->where('hoTen', 'LIKE', '%' . $stringSearch . '%');
-            })->paginate(5);
-        }
+        $lstDanhGia = DanhGia::with('sanpham')->whereHas('sanpham', function ($query) use ($stringSearch) {
+            return $query->where('tenSanPham', 'LIKE', '%' . $stringSearch . '%');
+        })->with('taikhoan')->orWhereHas('taikhoan', function ($query) use ($stringSearch) {
+            return $query->where('hoTen', 'LIKE', '%' . $stringSearch . '%');
+        })->orWhere('noiDung', 'LIKE', '%' . $stringSearch . '%')->paginate(5);
         return View('admin.danhgia.index-danhgia', ['lstDanhGia' => $lstDanhGia]);
     }
     /**
@@ -84,6 +87,11 @@ class DanhGiaController extends Controller
             return response()->json(['error' => $error]);
         }
 
+        $existDanhGia = DanhGia::where('user_id', $request->user_id)->count();
+        if ($existDanhGia > 0) {
+            return response()->json(['error' => '<li class="card-description" style="color: #fff;">Bạn đã đánh giá sản phẩm này rồi </li>']);
+        }
+
         $danhgia = new DanhGia();
 
         $danhgia->fill([
@@ -98,6 +106,8 @@ class DanhGiaController extends Controller
         $output = "";
 
         $lstDanhGia = DanhGia::with('sanpham')->with('taikhoan')->where('san_pham_id', $request->sanphamId)->orderBy('created_at', 'desc')->get();
+
+
 
         $countDanhGia = $lstDanhGia->count();
         $avgDanhGia = round($lstDanhGia->avg('xepHang'));
@@ -115,10 +125,6 @@ class DanhGiaController extends Controller
             $outputMain1 .= '<i class="icon-star"></i>';
             $outputMain2 .= ' <i class="icon-star empty"></i>';
         }
-
-
-
-
 
         foreach ($lstDanhGia as $key => $item) {
             $starActive = $item->xepHang;
@@ -144,9 +150,17 @@ class DanhGiaController extends Controller
                             <em>' . date('d-m-Y', strtotime($item->created_at)) . '</em>
                         </div>
                         <h4>' . $item->taikhoan->hoTen . '</h4>
-                        <p>' . $item->noiDung . '</p>
-                        ' . Auth()->user()->id == $item->user_id ? '<a href="" class="btn btn-danger" data-id="' . $item->id . '</a>Xoá</a>' : '' . '
-                    </div>
+                        <p class="content-rating-' . $item->id . '">' . $item->noiDung . '</p>';
+            if (Auth::check() && Auth()->user()->id == $item->user_id) {
+                $output .= '
+                <div class="rating-wrapper">
+                    <a href="#" class="btn_2 btn-delete" data-toggle="modal" data-target="#exampleModal" data-id="' . $item->id  . '">Xoá</a>
+                    <a href="#" class="btn_1 btn-edit" data-toggle="modal" data-target="#staticBackdrop" data-id="' . $item->id . '">Sửa</a>
+                </div>
+                ';
+            }
+
+            $output .=    '</div>
                 </div>
             ';
         }
@@ -201,9 +215,216 @@ class DanhGiaController extends Controller
      * @param  \App\Models\DanhGia  $danhgia
      * @return \Illuminate\Http\Response
      */
-    public function destroy(DanhGia $danhgia)
+    public function destroy(DanhGia $danhgium)
     {
-        $danhgia->delete();
+        $danhgium->delete();
         return Redirect::route('danhgia.index');
+    }
+
+    public function updateDanhGia(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'noiDung' => 'required',
+            ],
+            [
+                'noiDung.required' => "Nội dung không được bỏ trống",
+            ]
+        );
+
+        if ($validator->fails()) {
+            $error = '';
+            foreach ($validator->errors()->all() as $item) {
+                $error .= '
+                    <li class="card-description" style="color: red;">' . $item . '</li>
+                ';
+            }
+            return response()->json(['error' => $error]);
+        }
+
+        $danhgia =
+            DanhGia::whereId($request->id)->where('user_id', Auth()->user()->id)->first();
+
+        if (!$danhgia) {
+            return response()->json(['error' => '<li class="card-description" style="color: #fff;">Đã có lỗi xảy ra !</li>']);
+        }
+
+        $danhgia->noiDung = $request->noiDung;
+        $danhgia->save();
+
+        // Render UI
+        $output = "";
+
+        $lstDanhGia = DanhGia::with('sanpham')->with('taikhoan')->where('san_pham_id', $request->sanphamId)->orderBy('created_at', 'desc')->get();
+
+        $countDanhGia = $lstDanhGia->count();
+        $avgDanhGia = round($lstDanhGia->avg('xepHang'));
+
+        $outputMain1 = "";
+        $outputMain2 = "";
+
+        $starActive = round($avgDanhGia);
+        $starNonActive = 5 - $starActive;
+        for ($i = 0; $i < $starActive; $i++) {
+            $outputMain1 .= ' <i class="icon-star voted"></i>';
+            $outputMain2 .= ' <i class="icon-star"></i>';
+        }
+        for ($i = 0; $i < $starNonActive; $i++) {
+            $outputMain1 .= '<i class="icon-star"></i>';
+            $outputMain2 .= ' <i class="icon-star empty"></i>';
+        }
+
+        foreach ($lstDanhGia as $key => $item) {
+            $starActive = $item->xepHang;
+            $starNonActive = 5 - $item->xepHang;
+            $star1 = "";
+            $star2 = "";
+            for ($i = 0; $i < $starActive; $i++) {
+                $star1 .= '<i class="icon-star"></i>';
+            }
+            for ($i = 0; $i < $starNonActive; $i++) {
+                $star2 .= '<i class="icon-star empty"></i>';
+            }
+            $output .= '
+                <div class="col-lg-6">
+                    <div class="review_content">
+                        <div class="clearfix add_bottom_10">
+                            <span class="rating">
+                            ' .
+                $star1 . $star2
+                . '
+                            </i>
+                            </span>
+                            <em>' . date('d-m-Y', strtotime($item->created_at)) . '</em>
+                        </div>
+                        <h4>' . $item->taikhoan->hoTen . '</h4>
+                        <p class="content-rating-' . $item->id . '">' . $item->noiDung . '</p>';
+            if (Auth::check() && Auth()->user()->id == $item->user_id) {
+                $output .= '
+                <div class="rating-wrapper">
+                    <a href="#" class="btn_2 btn-delete" data-toggle="modal" data-target="#exampleModal" data-id="' . $item->id  . '">Xoá</a>
+                    <a href="#" class="btn_1 btn-edit" data-toggle="modal" data-target="#staticBackdrop" data-id="' . $item->id . '">Sửa</a>
+                </div>
+                ';
+            }
+
+            $output .=    '</div>
+                </div>
+            ';
+        }
+
+        return response()->json([
+            'success' => "Cập nhật đánh giá thành công",
+            'output' => $output,
+            'outputMain1' => $outputMain1,
+            'outputMain2' => $outputMain2,
+            'avg' => $avgDanhGia,
+            'count' => $countDanhGia
+        ]);
+    }
+
+    public function xoaDanhGia(Request $request)
+    {
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'id' => 'required',
+            ],
+            [
+                'id.required' => "Đã có lỗi xảy ra",
+            ]
+        );
+
+        if ($validator->fails()) {
+            $error = '';
+            foreach ($validator->errors()->all() as $item) {
+                $error .= '
+                    <li class="card-description" style="color: #fff;">' . $item . '</li>
+                ';
+            }
+            return response()->json(['error' => $error]);
+        }
+
+        $danhgia = DanhGia::whereId($request->id)->where('user_id', Auth()->user()->id)->first();
+
+        if (!$danhgia) {
+            return response()->json(['error' => '<li class="card-description" style="color: #fff;">Đã có lỗi xảy ra !</li>']);
+        }
+
+        $danhgia->delete();
+
+        // Render UI
+        $output = "";
+
+        $lstDanhGia = DanhGia::with('sanpham')->with('taikhoan')->where('san_pham_id', $request->sanphamId)->orderBy('created_at', 'desc')->get();
+
+
+
+        $countDanhGia = $lstDanhGia->count();
+        $avgDanhGia = round($lstDanhGia->avg('xepHang'));
+
+        $outputMain1 = "";
+        $outputMain2 = "";
+
+        $starActive = round($avgDanhGia);
+        $starNonActive = 5 - $starActive;
+        for ($i = 0; $i < $starActive; $i++) {
+            $outputMain1 .= ' <i class="icon-star voted"></i>';
+            $outputMain2 .= ' <i class="icon-star"></i>';
+        }
+        for ($i = 0; $i < $starNonActive; $i++) {
+            $outputMain1 .= '<i class="icon-star"></i>';
+            $outputMain2 .= ' <i class="icon-star empty"></i>';
+        }
+
+        foreach ($lstDanhGia as $key => $item) {
+            $starActive = $item->xepHang;
+            $starNonActive = 5 - $item->xepHang;
+            $star1 = "";
+            $star2 = "";
+            for ($i = 0; $i < $starActive; $i++) {
+                $star1 .= '<i class="icon-star"></i>';
+            }
+            for ($i = 0; $i < $starNonActive; $i++) {
+                $star2 .= '<i class="icon-star empty"></i>';
+            }
+            $output .= '
+                <div class="col-lg-6">
+                    <div class="review_content">
+                        <div class="clearfix add_bottom_10">
+                            <span class="rating">
+                            ' .
+                $star1 . $star2
+                . '
+                            </i>
+                            </span>
+                            <em>' . date('d-m-Y', strtotime($item->created_at)) . '</em>
+                        </div>
+                        <h4>' . $item->taikhoan->hoTen . '</h4>
+                        <p class="content-rating-' . $item->id . '">' . $item->noiDung . '</p>';
+            if (Auth::check() && Auth()->user()->id == $item->user_id) {
+                $output .= '
+                <div class="rating-wrapper">
+                    <a href="#" class="btn_2 btn-delete" data-toggle="modal" data-target="#exampleModal" data-id="' . $item->id  . '">Xoá</a>
+                    <a href="#" class="btn_1 btn-edit" data-id="' . $item->id . '">Sửa</a>
+                </div>
+                ';
+            }
+
+            $output .=    '</div>
+                </div>
+            ';
+        }
+
+        return response()->json([
+            'success' => "Đánh giá sản phẩm thành công",
+            'output' => $output,
+            'outputMain1' => $outputMain1,
+            'outputMain2' => $outputMain2,
+            'avg' => $avgDanhGia,
+            'count' => $countDanhGia
+        ]);
     }
 }

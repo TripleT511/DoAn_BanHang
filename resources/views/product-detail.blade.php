@@ -51,10 +51,34 @@
 	.het-hang {
 		padding: 5px 15px;
 		background: #fff;
-		border: 2px dashed red;
-		color: red;
+		border: 2px dashed #ccc;
+		color: #ccc;
 		width: fit-content;
 		margin-left: 15px;
+	}
+
+	a.btn_1, .btn_1 {
+		padding: 10px 17px !important;
+	}
+
+	a.btn_2, .btn_2 {
+		border: 0 !important;
+		padding: 10px 17px !important;
+	}
+
+	.btn_2:focus {
+		outline: none;
+	}
+	.modal {
+		z-index: 100000 !important;
+	}
+
+	.fade {
+		z-index: 90000;
+	}
+	
+	.toast {
+		z-index: 110000 !important;
 	}
 </style>
 @endsection
@@ -235,6 +259,7 @@
 										</div>	
 									</div>
 									<div class="col-lg-6">
+										@auth
 										<div class="write_review">
 											<input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
 											<div class="rating_submit">
@@ -270,6 +295,7 @@
 											</div>
 											<a href="javascript:void(0)" id="review_btn" class="btn_1">Gửi</a>
 										</div>
+										@endauth
 									</div>
 									
 								</div>
@@ -292,10 +318,15 @@
 												<em>{{ date('d-m-Y', strtotime($item->created_at)) }}</em>
 											</div>
 											<h4>{{  $item->taikhoan->hoTen }}</h4>
-											<p>{{  $item->noiDung }}</p>
+											<p class="content-rating-{{ $item->id }}">{{  $item->noiDung }}</p>
+											@Auth
 											@if(Auth()->user()->id == $item->user_id) 
-												<a href="" class="btn btn-delete" data-id="$item->id">Xoá</a>
+											<div class="rating-wrapper">
+												<a href="#" class="btn_2 btn-delete"  data-toggle="modal" data-target="#exampleModal" data-id="{{ $item->id }}">Xoá</a>
+												<a href="#" class="btn_1 btn-edit" data-toggle="modal" data-target="#staticBackdrop"  data-id="{{ $item->id }}">Sửa</a>
+											</div>
 											@endif
+											@endauth
 										</div>
 									</div>
 								   @endforeach
@@ -337,7 +368,7 @@
 							<a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}">
 								@foreach ($item->hinhanhs as $key => $item2) 
 								 @if($key == 1) <?php break; ?> @endif
-								<img class="owl-lazy" src="{{ asset('storage/'.$item->hinhAnh) }}g" data-src="{{ asset('storage/'.$item2->hinhAnh) }}" alt="">
+								<img class="owl-lazy" src="{{ asset('storage/'.$item2->hinhAnh) }}" data-src="{{ asset('storage/'.$item2->hinhAnh) }}" alt="">
 								@endforeach
 							</a>
 	                            
@@ -413,6 +444,48 @@
 		
 	</main>
 
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="border: 0;">
+        <h5 class="modal-title" id="exampleModalLabel">Bạn có chắc chắn muốn xoá không ?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-footer" style="border: 0;">
+        <button type="button" class="btn_1 close-modal" data-dismiss="modal">Đóng</button>
+        <button type="button" class="btn_2 btn-delete-danhgia" data-id="">Xác nhận</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="border: 0;">
+        <h5 class="modal-title" id="staticBackdropLabel">Cập nhật đánh giá</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+		<ul class="show-error" style="padding: 0;">
+			
+		</ul>
+		<div class="form-group">
+			<label for="noiDungDanhGia" class="col-form-label" style="font-size: 16px;">Nội dung đánh giá:</label>
+			<textarea name="noiDungDanhGia" id="noiDungDanhGia"  class="form-control" cols="30" rows="5"></textarea>
+		</div>
+      </div>
+      <div class="modal-footer" style="border: 0;">
+        <button type="button" class="btn_1 close-modal2" data-dismiss="modal">Đóng</button>
+        <button type="button" class="btn_2 btn-update-danhgia" data-id="">Xác nhận</button>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 
 @section('js')
@@ -425,7 +498,7 @@
 	let lstBtnRatingStart = document.querySelectorAll(".rating-input");
 	let toast = document.querySelector(".toast");
 
-	lstBtnRatingStart.forEach(item => item.addEventListener('click', function() {
+	lstBtnRatingStart && lstBtnRatingStart.forEach(item => item.addEventListener('click', function() {
 		$("#ratingStart").val(item
 			.value);
 	}));
@@ -477,7 +550,7 @@
 	});
 
 	//Thêm giỏ hàng
-	btnAddCart.addEventListener("click", function(){
+  btnAddCart &&	btnAddCart.addEventListener("click", function(){
 		let soLuong = $("#quantity_1").val();
 		if(isNaN(soLuong) || soLuong <= 0 || soLuong.length == 0) {
 			let toast = document.querySelector(".toast");
@@ -524,94 +597,192 @@
 	});
 
 	// Đánh giá sản phẩm
-	btnReview.addEventListener("click", function(){
+	btnReview && btnReview.addEventListener("click", function(){
+		if($("#userId").val() == "") return;
 		$.ajax({
-                    type: "POST",
-                    url: "/review",
-                    dataType: "json",
-                    data: {
-						_token: $("#token").val(),
-						sanphamId: $("#sanphamId").val(),
-						user_id: $("#userId").val(),
-						noiDung: $("#review-content").val(),
-						xepHang: $("#ratingStart").val() != '' ? $("#ratingStart").val() : null,
-					},
-					error: function(response) {
-						if(response.status == 302) {
-							toast.querySelector(".toast-body").innerHTML = "Vui lòng đăng nhập để thực hiện chức năng này";
-							toast.classList.remove("toast-success");
-								toast.classList.add("toast-danger", "show");
-							setTimeout(() => {
-								toast.classList.remove("show");
-                                }, 2000);
-						}
-					},
-                    success: function (response) {
-					
-                        if(response.error) {
-							toast.querySelector(".toast-body").innerHTML = response.error;
-							toast.classList.remove("toast-success");
-								toast.classList.add("toast-danger", "show");
-							setTimeout(() => {
-								toast.classList.remove("show");
-                                }, 2000);
-                        } else {
-							toast.querySelector(".toast-body").innerHTML = response.success;
-							toast.classList.remove("toast-danger");
-							toast.classList.add("toast-success", "show");
-							setTimeout(() => {
-								toast.classList.remove("show");
-                                }, 2000);
-                           $("#lstReview").html(response.output);
-						   $(".avg-start").html(response.avg + " / 5");
-						   $(".count-rating").html(response.count);
-						   $(".overview-bottom").html(response.outputMain2);
-						   $(".top-rating").html(response.outputMain1);
-                        }
-                    }
-                });
+			type: "POST",
+			url: "/review",
+			dataType: "json",
+			data: {
+				_token: $("#token").val(),
+				sanphamId: $("#sanphamId").val(),
+				user_id: $("#userId").val(),
+				noiDung: $("#review-content").val(),
+				xepHang: $("#ratingStart").val() != '' ? $("#ratingStart").val() : null,
+			},
+			error: function(response) {
+				if(response.status == 302) {
+					toast.querySelector(".toast-body").innerHTML = "Vui lòng đăng nhập để thực hiện chức năng này";
+					toast.classList.remove("toast-success");
+						toast.classList.add("toast-danger", "show");
+					setTimeout(() => {
+						toast.classList.remove("show");
+						}, 2000);
+				}
+			},
+			success: function (response) {
+			
+				if(response.error) {
+					toast.querySelector(".toast-body").innerHTML = response.error;
+					toast.classList.remove("toast-success");
+						toast.classList.add("toast-danger", "show");
+					setTimeout(() => {
+						toast.classList.remove("show");
+						}, 2000);
+				} else {
+					toast.querySelector(".toast-body").innerHTML = response.success;
+					toast.classList.remove("toast-danger");
+					toast.classList.add("toast-success", "show");
+					setTimeout(() => {
+						toast.classList.remove("show");
+						}, 2000);
+					$("#lstReview").html(response.output);
+					$(".avg-start").html(response.avg + " / 5");
+					$(".count-rating").html(response.count);
+					$(".overview-bottom").html(response.outputMain2);
+					$(".top-rating").html(response.outputMain1);
+
+					lstBtnDeleteRating = document.querySelectorAll(".btn-delete");
+					lstBtnUpdateRating = document.querySelectorAll(".btn-edit");
+					lstBtnDeleteRating.forEach((item) => item.addEventListener("click", function () {
+						btnDeleteRatingAjax.setAttribute("data-id", item.dataset.id);
+					}));
+
+					lstBtnUpdateRating.forEach((item) => item.addEventListener("click", function () {
+						btnUpdateRatingAjax.setAttribute("data-id", item.dataset.id);
+					}));
+				}
+			}
+		});
 	});
 
-	// Thêm vào giỏ hàng sản phẩm liên quan
+	// Xoá đánh giá
+	let lstBtnDeleteRating = document.querySelectorAll(".btn-delete");
+	let lstBtnUpdateRating = document.querySelectorAll(".btn-edit");
 
-	let lstBtnAddToCartNow = document.querySelectorAll(".add-to-cart-now");
-	lstBtnAddToCartNow.forEach((item, index) => item.addEventListener("click", function(){
-		$.ajax({
-				type: "POST",
-				url: "/add-to-cart",
-				dataType: "json",
-				data: {
-					_token: $("#token").val(),
-					sanphamId: lstBtnAddToCartNow[index].dataset.id,
-					soLuong: 1,
-				},
-				success: function (response) {
-					let toast = document.querySelector(".toast");
-					if(response.error) {
-						toast.querySelector(".toast-body").innerHTML = response.error;
-						toast.classList.remove("toast-success");
-							toast.classList.add("toast-danger", "show");
-						setTimeout(() => {
-							toast.classList.remove("show");
-							}, 2000);
-					} else {
-						toast.querySelector(".toast-body").innerHTML = response.message;
-						toast.classList.remove("toast-danger");
-						toast.classList.add("toast-success", "show");
-						setTimeout(() => {
-							toast.classList.remove("show");
-							}, 2000);
-						$("#lstReview").html(response.output);
-						$("#lstItemCart").html(response.newCart);
-						document.querySelector(".total_drop div span").innerHTML = `${response.total} ₫`;
-						document.querySelector(".dropdown-cart a strong").innerHTML = response.numberCart;
-					}
-				}
-			});
+	let btnDeleteRatingAjax = document.querySelector(".btn-delete-danhgia");
+	let btnUpdateRatingAjax = document.querySelector(".btn-update-danhgia");
+
+
+	let btnCloseModel = document.querySelector(".close-modal");
+	let btnCloseModel2 = document.querySelector(".close-modal2");
+
+	lstBtnDeleteRating.forEach((item) => item.addEventListener("click", function () {
+		btnDeleteRatingAjax.setAttribute("data-id", item.dataset.id);
 	}));
 
-	
+	lstBtnUpdateRating.forEach((item) => item.addEventListener("click", function () {
+		btnUpdateRatingAjax.setAttribute("data-id", item.dataset.id);
+		let contentRating = document.querySelector(`.content-rating-${item.dataset.id}`);
+		$("#noiDungDanhGia").val(contentRating.innerText);
+	}));
 
+	// *** Xoá Đánh Giá *** //
+	btnDeleteRatingAjax.addEventListener("click", function() {
+		btnCloseModel.click();
+		if(this.dataset.id != "" || this.dataset.id != undefined) {
+			$.ajax({
+			type: "DELETE",
+			url: "/xoa-danh-gia",
+			dataType: "json",
+			data: {
+				_token: $("#token").val(),
+				id: this.dataset.id,
+				sanphamId: '{{ $sanpham->id }}'
+			},
+			success: function (response) {
+				if(response.error) {
+					toast.querySelector(".toast-body").innerHTML = response.error;
+					toast.classList.remove("toast-success");
+						toast.classList.add("toast-danger", "show");
+					setTimeout(() => {
+						toast.classList.remove("show");
+						}, 2000);
+				} 
+				if(response.success) {
+					toast.querySelector(".toast-body").innerHTML = response.success;
+					toast.classList.remove("toast-danger");
+					toast.classList.add("toast-success", "show");
+					setTimeout(() => {
+						toast.classList.remove("show");
+						}, 2000);
+					$("#lstReview").html(response.output);
+					$(".avg-start").html(response.avg + " / 5");
+					$(".count-rating").html(response.count);
+					$(".overview-bottom").html(response.outputMain2);
+					$(".top-rating").html(response.outputMain1);
+					
+					lstBtnDeleteRating = document.querySelectorAll(".btn-delete");
+					lstBtnUpdateRating = document.querySelectorAll(".btn-edit");
+					lstBtnDeleteRating.forEach((item) => item.addEventListener("click", function () {
+						btnDeleteRatingAjax.setAttribute("data-id", item.dataset.id);
+					}));
+
+					lstBtnUpdateRating.forEach((item) => item.addEventListener("click", function () {
+						btnUpdateRatingAjax.setAttribute("data-id", item.dataset.id);
+						let contentRating = document.querySelector(`.content-rating-${item.dataset.id}`);
+						$("#noiDungDanhGia").val(contentRating.innerText);
+					}));
+				}
+			}
+		});
+		}
+		
+	});
+
+	// *** Xoá Đánh Giá *** //
+
+	// *** Cập Nhật Đánh Giá *** //
+	btnUpdateRatingAjax.addEventListener("click", function() {
+		if(this.dataset.id != "" || this.dataset.id != undefined) {
+			$.ajax({
+			type: "PATCH",
+			url: "/cap-nhat-danh-gia",
+			dataType: "json",
+			data: {
+				_token: $("#token").val(),
+				id: this.dataset.id,
+				sanphamId: '{{ $sanpham->id }}',
+				noiDung: $("#noiDungDanhGia").val(),
+			},
+			success: function (response) {
+				if(response.error) {
+					document.querySelector(".show-error").innerHTML = response.error;
+				} 
+				if(response.success) {
+					btnCloseModel2.click();
+					document.querySelector(".show-error").innerHTML = "";
+					toast.querySelector(".toast-body").innerHTML = response.success;
+					toast.classList.remove("toast-danger");
+					toast.classList.add("toast-success", "show");
+					setTimeout(() => {
+						toast.classList.remove("show");
+						}, 2000);
+					$("#lstReview").html(response.output);
+					$(".avg-start").html(response.avg + " / 5");
+					$(".count-rating").html(response.count);
+					$(".overview-bottom").html(response.outputMain2);
+					$(".top-rating").html(response.outputMain1);
+					
+					lstBtnDeleteRating = document.querySelectorAll(".btn-delete");
+					lstBtnUpdateRating = document.querySelectorAll(".btn-edit");
+					lstBtnDeleteRating.forEach((item) => item.addEventListener("click", function () {
+						btnDeleteRatingAjax.setAttribute("data-id", item.dataset.id);
+					}));
+
+					lstBtnUpdateRating.forEach((item) => item.addEventListener("click", function () {
+						btnUpdateRatingAjax.setAttribute("data-id", item.dataset.id);
+						let contentRating = document.querySelector(`.content-rating-${item.dataset.id}`);
+						$("#noiDungDanhGia").val(contentRating.innerText);
+					}));
+				}
+			}
+		});
+		}
+		
+	});
+
+	// *** Cập Nhật Đánh Giá *** //
 
 	closeToast.addEventListener('click', function() {
 		toast.classList.remove("show");

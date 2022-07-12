@@ -36,7 +36,7 @@ class SanPhamController extends Controller
     }
     public function index()
     {
-        $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->paginate(5);
+        $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->orderBy('created_at', 'desc')->paginate(5);
         foreach ($lstSanPham as $key => $item) {
             foreach ($item->hinhanhs as $item2) {
                 $this->fixImage($item2);
@@ -49,10 +49,11 @@ class SanPhamController extends Controller
     public function searchSanPham(Request $request)
     {
         $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->paginate(5);
+        $stringSearch = $request->keyword;
         if ($request->keyword != "") {
-            $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')
-            ->where('tenSanPham', 'LIKE', '%' . $request->input('keyword') . '%')
-            ->orWhere('sku', 'LIKE', '%' . $request->input('keyword') . '%')->paginate(5);
+            $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->whereHas('danhmuc', function ($query) use ($stringSearch) {
+                $query->where('tenDanhMuc', 'LIKE', '%' . $stringSearch . '%');
+            })->orWhere('tenSanPham', 'LIKE', '%' . $stringSearch . '%')->orWhere('sku', 'LIKE', '%' . $stringSearch . '%')->paginate(5);
             foreach ($lstSanPham as $key => $item) {
                 foreach ($item->hinhanhs as $item2) {
                     $this->fixImage($item2);
@@ -69,7 +70,7 @@ class SanPhamController extends Controller
      */
     public function create()
     {
-        $lstDanhMucCha = DanhMuc::where('idDanhMucCha', null)->get();
+        $lstDanhMucCha = DanhMuc::all();
         return View('admin.sanpham.create-sanpham', ['lstDanhMuc' => $lstDanhMucCha]);
     }
 
@@ -81,8 +82,6 @@ class SanPhamController extends Controller
      */
     public function store(StoreSanPhamRequest $request)
     {
-
-
 
         $request->validate([
             'tenSanPham' => 'required|unique:san_phams',
@@ -123,13 +122,16 @@ class SanPhamController extends Controller
             $slug = Str::of($request->input('tenSanPham'))->slug('-');
         }
 
+        $moTa =
+            str_replace("../../", "../../../", $request->moTa);
+        $noiDung = str_replace("../../", "../../../", $request->noiDung);
 
         $sanpham = new SanPham();
         $sanpham->fill([
             'sku' => $request->input('maSKU'),
             'tenSanPham' => $request->input('tenSanPham'),
-            'moTa' => $request->input('moTa'),
-            'noiDung' => $request->input('noiDung'),
+            'moTa' => $moTa,
+            'noiDung' => $noiDung,
             'dacTrung' => $request->input('dacTrung'),
             'gia' => $request->input('gia'), 'giaKhuyenMai' => $request->input('giaKhuyenMai'),
             'danh_muc_id' => $request->input('danhmucid'),
@@ -179,7 +181,7 @@ class SanPhamController extends Controller
      */
     public function edit(SanPham $sanpham)
     {
-        $lstDanhMucCha = DanhMuc::where('idDanhMucCha', null)->get();
+        $lstDanhMucCha = DanhMuc::all();
         $lstHinhAnh = HinhAnh::where('san_pham_id', $sanpham->id)->get();
         foreach ($lstHinhAnh as $item) {
             $this->fixImage($item);
@@ -242,7 +244,9 @@ class SanPhamController extends Controller
             $hinhAnh = HinhAnh::where('san_pham_id', $sanpham->id)->get();
 
             foreach ($hinhAnh as $item) {
-                Storage::disk('public')->delete($item->hinhAnh);
+                if ($item->hinhAnh != 'images/no-image-available.jpg') {
+                    Storage::disk('public')->delete($item->hinhAnh);
+                }
                 $item->delete();
             }
 
@@ -274,7 +278,9 @@ class SanPhamController extends Controller
         $hinhAnh = HinhAnh::where('san_pham_id', $sanpham->id)->get();
 
         foreach ($hinhAnh as $item) {
-            Storage::disk('public')->delete($item->hinhAnh);
+            if ($item->hinhAnh != 'images/no-image-available.jpg') {
+                Storage::disk('public')->delete($item->hinhAnh);
+            }
             $item->delete();
         }
 

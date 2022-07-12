@@ -29,7 +29,7 @@
 @endsection
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Sản Phẩm/</span> Sửa Sản Phẩm</h4>
+    <h4 class="fw-bold py-3 mb-4">Sửa Sản Phẩm</h4>
     <!-- Basic Layout -->
     <div class="row">
         <div class="col-xl">
@@ -130,13 +130,18 @@
         // === Preview Image === // 
        
         $("#hinhAnh").on("change", function (e) {
-                var filePath = URL.createObjectURL(e.target.files[0]);
-                var filePath2 = URL.createObjectURL(e.target.files[1]);
-               
-                
-                $("#imgPreview1").show().attr("src", filePath);
-                $("#imgPreview2").show().attr("src", filePath2);
-               
+                var divShowImage = document.querySelector(".list-preview-image");
+                divShowImage.innerHTML = "";
+                var dataFile = e.target.files;
+                for(var i = 0; i < dataFile.length; i++) {
+                    var filePath = URL.createObjectURL(dataFile[i]);
+                    var divTag = document.createElement("div");
+                    divTag.classList.add("preview-image-item");
+                    var imgTag = document.createElement("img");
+                    imgTag.src = filePath;
+                    divTag.appendChild(imgTag);
+                    divShowImage.appendChild(divTag);
+                }
             });
 
         // === Preview Image === // 

@@ -152,107 +152,79 @@
 					<ul>
 						<li><a href="#">Trang chủ</a></li>
 						<li>Đơn hàng của tôi</li>
+						<li>Chi tiết đơn hàng</li>
 					</ul>
 				</div>
-				<h1>Đơn hàng của tôi</h1>
-			</div>
-			<div class="row " style="margin-bottom:15px; display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
-				<div class="col-lg-4">
-					<div class="fillter-wrapper" style="display: flex; align-items: center;">
-						<select class="form-select form-control" style="margin-right: 10px;" id="filter-donhang">
-							<option value="" selected>Tuỳ chọn</option>
-							<option value="waiting">Chờ xử lý </option>
-							<option value="processed">Đã xử lý </option>
-							<option value="packing">Đang đóng gói </option>
-							<option value="shipping">Đang giao hàng </option>
-							<option value="done">Đã giao </option>
-							<option value="cancel">Đã huỷ</option>
-						</select>
-						<button id="locDongHang" class="btn btn-primary" style="border-radius: 3px;">Lọc</button>
-					</div>
-				</div>
+				<h1>Chi tiết đơn hàng</h1>
 			</div>
 			<table class="table table-striped cart-list">
 				<thead>
 					<tr>
-						<th>
-							Mã đơn hàng
+						<th class="text-left">
+							STT
 						</th>
-						<th>
-							Sản phẩm
+						<th class="text-left">
+							Tên sản phẩm
 						</th>
-						<th>
+                        <th class="text-right">
+                            Số lượng
+                        </th>
+						<th class="text-right">
+							Giá
+						</th>
+						<th class="text-right">
 							Thành tiền
 						</th>
-						<th>
-							Trạng thái
-						</th>
-						<th>
-						</th>
+						
 					</tr>
 				</thead>
 				<tbody id="lstOrder">
-					@foreach($lstDonHang as $item) 
+					@foreach($hoadon->chiTietHoaDons as $value => $item) 
+                        @php
+                         $tongTien = (int)$item->soLuong * (float)$item->donGia;
+                        @endphp
 					<tr>
-                        <td>
-							<a href="{{ route('myOrderDetail', ['id' => $item->id]) }}">
-								#{{ $item->id}}
-							</a>
+                        <td class="text-left">
+                            {{ $value + 1 }}
                         </td>
-						<td>
-							<ul class="lst-product">
-								
-								@foreach($item->chiTietHoaDons as $cthd)
-								<li>
-									<a href="{{ route('chitietsanpham', ['slug' =>$cthd->sanpham->slug]) }}">
-										<div class="title">
-											<h5>{{ $cthd->sanpham->tenSanPham }} x {{ $cthd->soLuong }}</h5>
-											<span>{{ number_format($cthd->donGia, 0, '', ',') }} ₫</span>
-										</div>
-									</a>
-								</li>
-								@endforeach
-							</ul>
-						</td>
-						<td>
-							<strong>{{ number_format($item->tongThanhTien, 0, '', ',') }} ₫</strong>
-						</td>
-						<td>
-							@if($item->trangThai == 0)
-								<span class="badge bg-label-primary">Chờ xử lý</span>
-							@elseif($item->trangThai == 1)
-								<span class="badge bg-label-success">Đã xử lý</span>
-							@elseif($item->trangThai == 2)
-								<span class="badge bg-label-info">Đang đóng gói</span>
-							@elseif($item->trangThai == 3)
-								<span class="badge bg-label-warning">Đang giao hàng</span>
-							@elseif($item->trangThai == 4)
-								<span class="badge bg-label-success">Đã giao</span>
-							@elseif($item->trangThai == 5)
-								<span class="badge bg-label-danger">Đã huỷ</span>
-							@endif
-						</td>
-						<td>
-							@if($item->trangThai == 0 || $item->trangThai == 1)
-							<form action="{{ route('huyDatHang', ['hoadon' => $item]) }}" method="post">
-								@csrf
-								@method("POST")
-								<button type="submit"  class="btn btn-danger">Huỷ đơn hàng</button>
-							</form>
-								
-							@elseif($item->trangThai == 3)
-							<form action="{{ route('nhanHangThanhCong', ['hoadon' => $item]) }}" method="post">
-								@csrf
-								@method("POST")
-								<button type="submit"  class="btn btn-success">Đã nhận hàng</button>
-							</form>
-							@endif
-						</td>
-						
+                        <td class="text-left">
+                            {{ $item->sanpham->tenSanPham }}
+                        </td>
+                        
+                        <td class="text-right">
+                            {{ $item->soLuong }}
+                        </td>
+                        <td class="text-right">         
+                            {{ number_format($item->donGia, 0, ',', ',') }} đ
+                        </td>
+                        <td class="text-right">
+                            {{ number_format($tongTien, 0, ',', ',') }} đ
+                        </td>
 					</tr>
 					@endforeach
 				</tbody>
 			</table>
+    <div class="box_cart">
+		<div class="container">
+			<div class="row justify-content-end">
+				<div class="col-xl-4 col-lg-4 col-md-6">
+                    <ul class="info-cart">
+                        <li>
+                            <span>Tạm tính:</span> 
+                            <p class="cart-price">{{ number_format($hoadon->tongTien, 0, '', ',') }} ₫</p>
+                        </li>
+                        <li>
+                            <span>Giảm giá:</span> <p class="discount" style="margin: 0;">{{ number_format($hoadon->giamGia, 0, '', ',') }} ₫</p> 
+                        </li>
+                        <li>
+                            <span>Tổng cộng:</span> 
+                            <b  class="cart-total">{{ number_format($hoadon->tongThanhTien, 0, '', ',') }} ₫</b>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 			
 		</div>
 		<!-- /container -->

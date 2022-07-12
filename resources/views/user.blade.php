@@ -207,7 +207,7 @@ a.btn_2:hover, .btn_2:hover
                           <div class="mb-3">
                             <div class="list-preview-image">
                                 <div class="preview-image-item">
-                                  <div class="img-avatar online">
+                                  <div class="img-avatar online" style="width:100%; height: 100%;">
                                     @if(Auth()->user()->social_type != null)
                                     <img src="{{  Auth()->user()->anhDaiDien }}"alt="imgPreview" id="imgPreview">
                                     @else
@@ -269,11 +269,12 @@ a.btn_2:hover, .btn_2:hover
                            
                           </div>
                          
-                          <button type="submit" class="btn btn_1 me-2">Lưu thay đổi</button>
-                          @if(Auth()->user()->social_type == null)
-                          <a type="button" class="btn btn_2 me-2" href="{{ route('changepass') }}" >Đổi mật khẩu</a>
-                          @endif
-                          <button type="button" class="btn btn-dark" onclick="history.back()">Thoát</button>
+                          <div class="col-md-6">
+                            <button type="submit" class="btn btn_1 me-2">Lưu thay đổi</button>
+                            @if(Auth()->user()->social_type == null)
+                            <a type="button" class="btn btn_2 me-2" href="{{ route('changepass') }}" >Đổi mật khẩu</a>
+                            @endif
+                          </div>
                         </form>
                       </div>
                     <!-- /Account -->

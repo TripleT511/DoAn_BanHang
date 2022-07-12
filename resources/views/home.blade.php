@@ -14,11 +14,9 @@
 							<div class="row justify-content-center justify-content-md-end">
 								<div class="col-lg-6 static">
 									<div class="slide-text text-right white">
-										<h2 class="owl-slide-animated owl-slide-title">Attack Air<br>Max 720 Sage Low</h2>
-										<p class="owl-slide-animated owl-slide-subtitle">
-											Limited items available at this price
-										</p>
-										<div class="owl-slide-animated owl-slide-cta"><a class="btn_1" href="listing-grid-1-full.html" role="button">Shop Now</a></div>
+										<h2 class="owl-slide-animated owl-slide-title">{{ $item->tieuDe }}</h2>
+										<div class="owl-slide-animated owl-slide-cta">
+											<a class="btn_1" href="{{ route('slider', ['slug'=> $item->slug]) }}" role="button">Xem thêm</a></div>
 									</div>
 								</div>
 							</div>
@@ -34,33 +32,21 @@
 		<!--/carousel-->
 
 		<ul id="banners_grid" class="clearfix">
-			<li>
-				<a href="#0" class="img_container">
-					<img src="{{ asset('img/banner_02.jpg') }}" data-src="{{ asset('img/banner_02.jpg') }}" alt="" class="lazy">
-					<div class="short_info opacity-mask" data-opacity-mask="rgba(0, 0, 0, 0.5)">
-						<h3>Men's Collection</h3>
-						<div><span class="btn_1">Shop Now</span></div>
-					</div>
-				</a>
-			</li>
-			<li>
-				<a href="#0" class="img_container">
-					<img src="{{ asset('img/banner_02.jpg') }}" data-src="{{ asset('img/banner_03.jpg') }}" alt="" class="lazy">
-					<div class="short_info opacity-mask" data-opacity-mask="rgba(0, 0, 0, 0.5)">
-						<h3>Womens's Collection</h3>
-						<div><span class="btn_1">Shop Now</span></div>
-					</div>
-				</a>
-			</li>
-			<li>
-				<a href="#0" class="img_container">
-					<img src="{{ asset('img/banner_02.jpg') }}" data-src="{{ asset('img/banner_02.jpg') }}" alt="" class="lazy">
-					<div class="short_info opacity-mask" data-opacity-mask="rgba(0, 0, 0, 0.5)">
-						<h3>Kids's Collection</h3>
-						<div><span class="btn_1">Shop Now</span></div>
-					</div>
-				</a>
-			</li>
+			@foreach($lstDanhMuc as $key => $item)
+				@php
+				if($key == 3) break;
+				@endphp
+				<li>
+					<a href="{{ route('danhmucsanpham', ['slug' => $item->slug]) }}" class="img_container">
+						<img src="{{ asset('storage/'.$item->hinhAnh) }}" data-src="{{ asset('storage/'.$item->hinhAnh) }}" alt="" class="lazy">
+						<div class="short_info opacity-mask" data-opacity-mask="rgba(0, 0, 0, 0.5)">
+							<h3>{{ $item->tenDanhMuc }}</h3>
+							<div><span class="btn_1">Xem thêm</span></div>
+						</div>
+					</a>
+				</li>
+			@endforeach
+			
 		</ul>
 		<!--/banners_grid -->
 		
@@ -125,24 +111,9 @@
 		</div>
 		<!-- /container -->
 
-		<div class="featured lazy" data-bg="{{ asset('img/banner_03.jpg') }}" style="background-image: url({{ asset('img/banner_02.jpg') }});">
-			<div class="opacity-mask d-flex align-items-center" data-opacity-mask="rgba(0, 0, 0, 0.5)">
-				<div class="container margin_60">
-					<div class="row justify-content-center justify-content-md-start">
-						<div class="col-lg-6 wow" data-wow-offset="150">
-							<h3>Armor<br>Air Color 720</h3>
-							<p>Lightweight cushioning and durable support with a Phylon midsole</p>
-							<div class="feat_text_block">
-								<div class="price_box">
-									<span class="new_price">$90.00</span>
-									<span class="old_price">$170.00</span>
-								</div>
-								<a class="btn_1" href="listing-grid-1-full.html" role="button">Shop Now</a>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+		<div class="featured lazy" style="background: url({{ asset('img/banner.png') }}); height: 330px;background-size: cover !important;
+		background-position: center !important;
+		background-repeat: no-repeat !important; ">
 		</div>
 		<!-- /featured -->
 
@@ -235,77 +206,6 @@
 		</div>
 		<!-- /bg_gray -->
 
-		<div class="container margin_60_35">
-			<div class="main_title">
-				<h2>Tin Mới Nhất</h2>
-				<span>Blog</span>
-				<p>Cum doctus civibus efficiantur in imperdiet deterruisset</p>
-			</div>
-			<div class="row">
-				<div class="col-lg-6">
-					<a class="box_news" href="blog.html">
-						<figure>
-							<img src="img/blog-thumb-placeholder.jpg" data-src="img/blog-thumb-1.jpg" alt="" width="400" height="266" class="lazy">
-							<figcaption><strong>28</strong>Dec</figcaption>
-						</figure>
-						<ul>
-							<li>Bởi Mark Twain</li>
-							<li>20.11.2017</li>
-						</ul>
-						<h4>UNIQLO giới thiệu dự án PEACE FOR ALL với mục đích thiện nguyện</h4>
-						<p>Dự án PEACE FOR ALL như một cầu nối để mỗi cá nhân thể hiện thông điệp và thế giới quan độc đáo của riêng mình. Được thực hiện dựa trên mối quan hệ hợp tác giữa UNIQLO với các tên tuổi hàng đầu thế giới trong các lĩnh vực bao gồm:...</p>
-					</a>
-				</div>
-				<!-- /box_news -->
-				<div class="col-lg-6">
-					<a class="box_news" href="blog.html">
-						<figure>
-							<img src="img/blog-thumb-placeholder.jpg" data-src="img/blog-thumb-2.jpg" alt="" width="400" height="266" class="lazy">
-							<figcaption><strong>28</strong>Dec</figcaption>
-						</figure>
-						<ul>
-							<li>Bởi Jhon Doe</li>
-							<li>20.11.2017</li>
-						</ul>
-						<h4>UNIQLO giới thiệu dự án PEACE FOR ALL với mục đích thiện nguyện</h4>
-						<p>Dự án PEACE FOR ALL như một cầu nối để mỗi cá nhân thể hiện thông điệp và thế giới quan độc đáo của riêng mình. Được thực hiện dựa trên mối quan hệ hợp tác giữa UNIQLO với các tên tuổi hàng đầu thế giới trong các lĩnh vực bao gồm:...</p>
-					</a>
-				</div>
-				<!-- /box_news -->
-				<div class="col-lg-6">
-					<a class="box_news" href="blog.html">
-						<figure>
-							<img src="img/blog-thumb-placeholder.jpg" data-src="img/blog-thumb-3.jpg" alt="" width="400" height="266" class="lazy">
-							<figcaption><strong>28</strong>Dec</figcaption>
-						</figure>
-						<ul>
-							<li>Bởi Luca Robinson</li>
-							<li>20.11.2017</li>
-						</ul>
-						<h4>UNIQLO giới thiệu dự án PEACE FOR ALL với mục đích thiện nguyện</h4>
-						<p>Dự án PEACE FOR ALL như một cầu nối để mỗi cá nhân thể hiện thông điệp và thế giới quan độc đáo của riêng mình. Được thực hiện dựa trên mối quan hệ hợp tác giữa UNIQLO với các tên tuổi hàng đầu thế giới trong các lĩnh vực bao gồm:...</p>
-					</a>
-				</div>
-				<!-- /box_news -->
-				<div class="col-lg-6">
-					<a class="box_news" href="blog.html">
-						<figure>
-							<img src="img/blog-thumb-placeholder.jpg" data-src="img/blog-thumb-4.jpg" alt="" width="400" height="266" class="lazy">
-							<figcaption><strong>28</strong>Dec</figcaption>
-						</figure>
-						<ul>
-							<li>Bởi Luca Robinson</li>
-							<li>20.11.2017</li>
-						</ul>
-						<h4>UNIQLO giới thiệu dự án PEACE FOR ALL với mục đích thiện nguyện</h4>
-						<p>Dự án PEACE FOR ALL như một cầu nối để mỗi cá nhân thể hiện thông điệp và thế giới quan độc đáo của riêng mình. Được thực hiện dựa trên mối quan hệ hợp tác giữa UNIQLO với các tên tuổi hàng đầu thế giới trong các lĩnh vực bao gồm:...</p>
-					</a>
-				</div>
-				<!-- /box_news -->
-			</div>
-			<!-- /row -->
-		</div>
-		<!-- /container -->
 	</main>
 @endsection
 @section('js')

@@ -53,21 +53,21 @@ class PhanQuyenController extends Controller
         $request->validate([
             'tenViTri' => 'required|unique:phan_quyens|string',
             'viTri' => 'required|unique:phan_quyens',
-            
+
         ], [
             'tenViTri.required' => "Tên vị trí không được bỏ trống",
             'tenViTri.unique' => "Tên vị trí bị trùng",
             'viTri.required' => "Mã vị trí không được bỏ trống",
             'viTri.unique' => "Mã vị trí bị trùng",
-
         ]);
 
         $phanquyen = new PhanQuyen();
         $phanquyen->fill([
-            'tenViTri'=> $request->input('tenViTri'),
-            'viTri'=> $request->input('viTri'),
+            'tenViTri' => $request->input('tenViTri'),
+            'viTri' => $request->input('viTri'),
         ]);
         $phanquyen->save();
+
         return Redirect::route('phanquyen.index');
     }
 
@@ -104,11 +104,13 @@ class PhanQuyenController extends Controller
     {
         $validator = Validator::make(
             $request->all(),
-             [
-            'tenViTri' => 'required',
-        ], [
-            'tenViTri.required' => "Tên Vị Trí không được bỏ trống",
-        ]);
+            [
+                'tenViTri' => 'required',
+            ],
+            [
+                'tenViTri.required' => "Tên Vị Trí không được bỏ trống",
+            ]
+        );
 
         if ($validator->fails()) {
             $error = "";
@@ -121,10 +123,35 @@ class PhanQuyenController extends Controller
         }
         $phanquyen = PhanQuyen::whereId($request->phanquyen_id)->first();
         $phanquyen->fill([
-            'tenViTri'=> $request->input('tenViTri'),
+            'tenViTri' => $request->input('tenViTri'),
         ]);
         $phanquyen->save();
-        return response()->json(["success" => "Đổi mật khẩu thành công"]);
+
+        $lstPhanQuyen = PhanQuyen::all();
+
+        $output = "";
+        foreach ($lstPhanQuyen as $item) {
+            $output .= '
+                <tr>
+                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>' . $item->tenViTri . '</strong></td>
+                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i> ' . $item->viTri . '</td>
+                        <td>
+                        <a class="btn btn-success btn-change-tenvitri" data-bs-toggle="modal" data-bs-target="#modalCenter"  data-id="' . $item->id . '" href="#">
+                            <i class="bx bx-edit-alt me-1"></i>
+                        </a>
+                        <button type="button"  class="btn btn-danger btn-delete-phanquyen" data-route="' . route("phanquyen.destroy", ["phanquyen" => $item]) . '" data-bs-toggle="modal" data-bs-target="#basicModal">
+                        <i class="bx bx-trash me-1"></i>
+                        </button>
+                        </td>
+                    </tr>
+            ';
+        }
+
+
+        return response()->json([
+            "success" => "Cập nhật thành công",
+            "data" => $output,
+        ]);
     }
 
     /**

@@ -124,9 +124,30 @@
   </div>
   <div class="pagination__wrapper">
     <ul class="pagination">
-      {!!$lstDanhMuc->withQueryString()->links() !!}
+      {{-- {!!$lstDanhMuc->withQueryString()->links() !!} --}}
     </ul>
   </div>
+  <div class="modal-backdrop fade "></div>
+<div class="modal fade" id="basicModal" tabindex="-1" aria-modal="true" role="dialog">
+  <div class="modal-dialog" role="document" style="max-width: 30%; width: 30%;">
+    <div class="modal-content">
+      <div class="modal-header justify-content-center py-4">
+        <h5 class="modal-title text-center w-100" id="exampleModalLabel1">Bạn có chắc chắn muốn xoá không ?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" >
+         Đóng
+        </button>
+         <form class="d-inline-block" method="post" id="form-delete" action="">
+          @csrf
+          @method("DELETE")
+          <button style="outline: none; border: none" class="btn btn-danger" type="submit"> Xác nhận </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
   <?php
 function dequyDanhMuc($danhmuc, $idDanhMucCha = 0, $char = '')
     {
@@ -143,13 +164,11 @@ function dequyDanhMuc($danhmuc, $idDanhMucCha = 0, $char = '')
                 <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $char . $item->tenDanhMuc }}</strong></td>
                 <td>
                   <a class="btn btn-success" href="{{ route('danhmuc.edit', ['danhmuc' => $item]) }}">
-                    <i class="bx bx-edit-alt me-1"></i>Sửa
+                    <i class="bx bx-edit-alt me-1"></i>
                   </a>
-                  <form class="d-inline-block" method="post" action="{{ route('danhmuc.destroy', ['danhmuc'=>$item]) }}">
-                    @csrf
-                    @method("DELETE")
-                    <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
-                  </form>
+                   <button type="button"  class="btn btn-danger btn-delete-danhmuc" data-route="{{ route('danhmuc.destroy', ['danhmuc'=>$item]) }}" data-bs-toggle="modal" data-bs-target="#basicModal">
+                          <i class="bx bx-trash me-1"></i>
+                          </button>
                 </td>
               </tr>
               <?php
@@ -179,5 +198,12 @@ $("#hinhAnh").on("change", function (e) {
     });
 
 // === Preview Image === // 
+
+let lstBtnDeleteRoute = document.querySelectorAll(".btn-delete-danhmuc");
+      lstBtnDeleteRoute.forEach((item) => item.addEventListener("click", function() {
+        let linkRoute = item.dataset.route;
+        let formDel = document.querySelector("#form-delete");
+        formDel.action  = linkRoute;
+      }));
 </script>
 @endsection

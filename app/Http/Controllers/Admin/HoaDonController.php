@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendMail3;
 use App\Models\ChiTietHoaDon;
 use App\Models\HoaDon;
 use App\Models\SanPham;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -86,6 +88,20 @@ class HoaDonController extends Controller
         $hoadon->tongTien = $hoadon->tongTien;
         $hoadon->ghiChu = $hoadon->ghiChu;
 
+        if ($request->has('delete') && !empty($request->delete)) {
+            $hoadon->trangThai = 5;
+            $hoadon->save();
+            $lstChiTietHoaDon = ChiTietHoaDon::where('hoa_don_id', $hoadon->id)->get();
+            foreach ($lstChiTietHoaDon as $item) {
+                $sanpham = SanPham::whereId($item->san_pham_id)->first();
+                $sanpham->tonKho = $sanpham->tonKho + $item->soLuong;
+                $sanpham->save();
+            }
+            $this->dispatch(new SendMail3($hoadon));
+
+            return redirect()->route('hoadon.index');
+        }
+
         switch ($request->trangThai) {
             case '1':
                 $hoadon->trangThai = 1;
@@ -108,6 +124,7 @@ class HoaDonController extends Controller
                     $sanpham->tonKho = $sanpham->tonKho + $item->soLuong;
                     $sanpham->save();
                 }
+                $this->dispatch(new SendMail3($hoadon));
                 break;
             default:
                 $hoadon->trangThai = 1;
@@ -200,6 +217,7 @@ class HoaDonController extends Controller
         }
 
         $output .= ' <h3 class="text-center">Chi Tiết Đơn Hàng</h3>
+                    <div class="text-center">Ngày tạo: ' . Carbon::createFromFormat('Y-m-d H:i:s', $hoadon->ngayXuatHD)->format('d/m/Y') . '</div>
                     <dl class="row mt-2">
                         <dt class="col-sm-3">Mã đơn hàng:</dt>
                         <dd class="col-sm-3" id="maDonHang">' . $hoadon->id . '</dd>
@@ -243,7 +261,7 @@ class HoaDonController extends Controller
                         </thead>
                         <tbody class="table-border-bottom-0">';
         foreach ($hoadon->chiTietHoaDons as $value => $item) {
-            $tongTien += (int)$item->soLuong * (float)$item->donGia;
+            $tongTien = (int)$item->soLuong * (float)$item->donGia;
             $output .=
                 '<tr>
                     <td class="text-left">

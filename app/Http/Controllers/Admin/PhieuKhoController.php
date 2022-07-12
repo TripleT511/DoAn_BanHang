@@ -75,41 +75,38 @@ class PhieuKhoController extends Controller
         return view('admin.kho.index-kho')->with('lstPhieuKho', $lstPhieuKho);
     }
 
-    public function locPhieuKho(Request $request)
+    public function phieuChoDuyet(Request $request)
     {
-        $lstPhieuKho = "";
-        if ($request->trangThai == 0) {
+        if ($request->has('trangThai') && $request->trangThai == 0) {
             $lstPhieuKho =
                 PhieuKho::with('nhacungcap')->with('user')->where('trangThai', 0)->orderBy('created_at', 'desc')->paginate(7);
             return view('admin.kho.index-kho')->with('lstPhieuKho', $lstPhieuKho);
+        } else {
+            return Redirect::route('phieukho.index');
         }
+    }
 
-        $validator = Validator::make(
-            $request->all(),
+
+    public function locPhieuKho(Request $request)
+    {
+        $lstPhieuKho = "";
+
+        $request->validate(
             [
-                'ngayBatDau'    => 'required|date',
-                'ngayKetThuc' => 'required|date|after_or_equal:ngayBatDau',
+                'startDate' => 'required|date',
+                'endDate' => 'required|date|after_or_equal:startDate'
             ],
             [
-
-                'ngayBatDau.required' => "Ngày bắt đầu bắt buộc chọn",
-                'ngayBatDau.date' => "Ngày bắt đầu không hợp lệ",
-                'ngayKetThuc.required' => "Ngày kết thúc bắt buộc chọn",
-                'ngayKetThuc.date' => "Ngày không hợp lệ",
-                'ngayKetThuc.after_or_equal' => "Ngày kết thúc không thể nhỏ hơn ngày bắt đầu",
+                'startDate.required' => "Ngày bắt đầu không được bỏ trống",
+                'startDate.date' => "Ngày bắt đầu không hợp lệ",
+                'endDate.date' => "Ngày bắt đầu không hợp lệ",
+                'endDate.required' => "Ngày kết thúc không được bỏ trống",
+                'endDate.after_or_equal' => "Ngày kết thúc không được nhỏ hơn ngày bắt đầu",
             ]
         );
 
-
-        if ($validator->fails()) {
-            $error = '';
-            foreach ($validator->errors()->all() as $item) {
-                $error .= '
-                    <li class="card-description" style="color: #fff;">' . $item . '</li>
-                ';
-            }
-            return back()->withErrors('error', $error);
-        }
+        $lstPhieuKho = PhieuKho::with('nhacungcap')->with('user')->where('trangThai', 0)->whereBetween('created_at', [$request->startDate, $request->endDate])->orderBy('created_at', 'desc')->paginate(7);
+        return view('admin.kho.index-kho')->with('lstPhieuKho', $lstPhieuKho);
     }
 
     public function themSanPham(Request $request)
