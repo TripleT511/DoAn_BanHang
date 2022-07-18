@@ -23,7 +23,7 @@
         </div>
         <img src="{{ asset('img/banner.png') }}" class="img-fluid" alt="Banner">
     </div>
-    <div class="container">
+    <div class="container noidung">
         {!! $slider->noiDung !!}
     </div>
 </main>

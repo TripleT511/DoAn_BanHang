@@ -168,7 +168,7 @@
                 </div>
                 
                 <div class="mb-3">
-                    <div class="table-responsive text-nowrap">
+                    <div class="table-responsive text-wrap">
                   <table class="table text-left">
                     <thead>
                       <tr>
@@ -180,14 +180,14 @@
                         <th>Hành Động</th>              
                       </tr>
                     </thead>
-                    <tbody class="table-border-bottom-0 text-left table-product">
+                    <tbody class="table-border-bottom-0 text-left table-product" id="table-stock">
                       
                     </tbody>
                   </table>
                 </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Thêm</button>
-                <button type="submit" class="btn btn-primary">Cancel</button>
+                <button type="submit" class="btn btn-primary">Trở lại</button>
                 </form>
             </div>
             </div>
@@ -212,7 +212,7 @@
         </div>
         
         <div class="modal-body">
-            <div class="mb-3 input-search-custom">
+            <div class="mb-3 input-search-custom" style="display: none;">
                 <div class="input-group input-group-merge ">
                 <span id="icon-search2" class="input-group-text"><i class='bx bx-search'></i></span>
                 <input type="text" id="searchSanPham" class="form-control" placeholder="Tìm sản phẩm..." aria-label="Tìm sản phẩm..." aria-describedby="icon-search2">
@@ -270,20 +270,75 @@
                     </select>
                 </div>
                 <div class="mb-3">
+                    <label for="mausac" class="form-label">Màu sắc</label>
+                    <select id="mausac" name="mausac" class="form-select">
+                        <option value="">Chọn màu sắc</option>
+                        @foreach($lstMauSac as $color)
+                        <option value="{{$color->id}}">{{$color->tieuDe}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="mb-3">
                     <label for="hinhAnh" class="form-label">Hình Ảnh</label>
                     <input class="form-control" type="file" id="hinhAnh" name="hinhAnh[]" multiple>
                 </div>
                 <div class="mb-3">
                     <div class="list-preview-image">
-                        <div class="preview-image-item" id="preview1">
-                            <img src="" alt="imgPreview" id="imgPreview1">
-                        </div>
-                        <div class="preview-image-item" id="preview2">
-                            <img src="" alt="imgPreview"
-                            id="imgPreview2">
-                        </div>
+                       
                     </div>
                 </div>
+                <div class="mb-3">
+                            <div class="nav-align-top mb-4">
+                                <ul class="nav nav-tabs" role="tablist">
+                                    <li class="nav-item">
+                                        <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-top-home" aria-controls="navs-top-home" aria-selected="true">
+                                        Size
+                                        </button>
+                                    </li>
+                                    <li class="nav-item">
+                                        <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-top-profile" aria-controls="navs-top-profile" aria-selected="false">
+                                        Biến thể
+                                        </button>
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="navs-top-home" role="tabpanel">
+                                        <div class="lstOptionValue">
+
+                                        </div>
+                                        <div class="mb-3">
+                                                <div class="attr-item align-items-center d-flex">
+                                                    <div class="tag-input">
+                                                        <select id="valueOptions"  class="form-select form-select-size">
+                                                            <option value="">Chọn size</option>
+                                                            @foreach($lstSize as $size)
+                                                                <option value="{{$size->id}}">{{$size->tieuDe}}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="navs-top-profile" role="tabpanel">
+                                            <div class="table-responsive text-nowrap">
+                                                <table class="table text-left">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Tên biến thể</th>
+                                                        <th>Mã SKU</th>
+                                                        <th>Giá</th>
+                                                        <th>Giá khuyến mãi</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody class="table-border-bottom-0 text-left table-product" id="tableVariants">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                            </div>
+                        </div>
                 <button type="submit" class="btn btn-primary btn-add-san-pham">Thêm sản phẩm</button>
                 <button type="reset" class="btn btn-outline-primary btn-reset">Reset</button>
                
@@ -304,11 +359,11 @@
 
 <script>
     $(function() {
-      let lstRemoveProduct = document.querySelectorAll(".table-product tr");
+      let lstRemoveProduct = document.querySelectorAll("#table-stock tr");
         let lstSP = document.querySelectorAll(".product-search-item");
         let lstBtnDelete = document.querySelectorAll(".btn-xoa");
         let lstBtnUpdate = document.querySelectorAll(".btn-update");
-        let modelBtn = document.querySelector(".btn-create-product");
+        let modelBtn = document.querySelector(".btn-add-san-pham");
 
         // === Random maDonHang Generator === //
         let btnRandom = document.querySelector('#random-maDonHang');
@@ -357,10 +412,17 @@
                             setTimeout(() => {
                                 document.querySelector(".bs-toast").classList.remove("show");
                             }, 1000);
-
+                        
                             return;
                         } else {
                             $("#hinhAnh").val('');
+                            $("#tenSanPham").val('');
+                            $("#sku").val('');
+                            $("#noiDung").val('');
+                            $("#gia").val('');
+                            $("#giaKhuyenMai").val('');
+                            $("#slug").val('');
+
                             $(".list-preview-image").css('display', 'none');
 
                             let btnShowModel = document.querySelector("#closeModel");
@@ -373,8 +435,8 @@
                             setTimeout(() => {
                                 document.querySelector(".bs-toast").classList.remove("show");
                             }, 1000);
+
                             renderUI();
-                            return ;
                         }
                     }
                 });
@@ -389,20 +451,20 @@
 
 
         // === Preview Image === // 
-       
         $("#hinhAnh").on("change", function (e) {
             $(".list-preview-image").css('display', 'flex');
-                var filePath = URL.createObjectURL(e.target.files[0]);
-                $("#imgPreview1").show().attr("src", filePath);
-                if(e.target.files[1]) {
-                     $("#preview2").show();
-                    var filePath2 = URL.createObjectURL(e.target.files[1]);
-                    $("#imgPreview2").show().attr("src", filePath2);
-                } else {
-                    $("#preview2").hide();
+                var divShowImage = document.querySelector(".list-preview-image");
+                divShowImage.innerHTML = "";
+                var dataFile = e.target.files;
+                for(var i = 0; i < dataFile.length; i++) {
+                    var filePath = URL.createObjectURL(dataFile[i]);
+                    var divTag = document.createElement("div");
+                    divTag.classList.add("preview-image-item");
+                    var imgTag = document.createElement("img");
+                    imgTag.src = filePath;
+                    divTag.appendChild(imgTag);
+                    divShowImage.appendChild(divTag);
                 }
-                
-              
                
             });
 
@@ -501,7 +563,7 @@
                     url: "/admin/kho/xem-chi-tiet",
                     dataType: "json",
                     success: function (response) {
-                        $(".table-product").html(response);
+                        $("#table-stock").html(response);
                         lstBtnDelete = document.querySelectorAll(".btn-xoa");
                         lstBtnUpdate = document.querySelectorAll(".btn-update");
                         let lstSoLuong = document.querySelectorAll(".input-sl");
@@ -525,7 +587,7 @@
 
                         // Cập nhật chi tiết phiếu kho
                         lstBtnUpdate.forEach((item, index) => item.addEventListener('click', function () {
-                            if(lstSoLuong[index].value <= 0 || isNaN(lstSoLuong[index].value) || isNaN(lstGia[index].value) || lstGia[index].value < 0) {
+                            if(lstSoLuong[index].value <= 0 || isNaN(lstSoLuong[index].value)) {
                                 document.querySelector(".bs-toast").classList.add("bg-danger");
                                 document.querySelector(".bs-toast").classList.remove("bg-success");
                                 document.querySelector(".toast-body").innerText = "Lỗi";
@@ -541,7 +603,6 @@
                                     data: {
                                         id: item.dataset.id,
                                         soluong: lstSoLuong[index].value,
-                                        gia: lstGia[index].value
                                     },
                                     success: function (response) {
                                         if(response.error) {
@@ -573,9 +634,11 @@
                         }))
                     }
                 });
-
             }
             // === CK Editor === // 
+            let btnShowFormCreate = document.querySelector(".btn-create-product");
+            btnShowFormCreate.addEventListener("click", function() {
+                // === CK Editor === // 
         // === CK Editor === // 
         tinymce.init({
             selector: '#moTa',
@@ -628,9 +691,79 @@
             },
             toolbar_mode: 'floating',
             language: 'vi'
-        });  
+        }); 
+            });
           
     });
+
+     // === Attribute Option  === //
+       let lstOption = document.querySelectorAll("#option");
+       let arrayOptionsLabel = [];
+
+        let lstSelect = document.querySelectorAll(".form-select-size");
+
+        lstSelect.forEach(item => item.addEventListener('change', function (e) {
+            console.log(e);
+
+            let issetTag = document.querySelector(`.tag-item-${e.target.value}`);
+            if(issetTag) {
+                item.value = "";
+                return;
+            }
+            var tag = document.createElement("span");
+            var tagClose = document.createElement("i");
+            tagClose.classList.add("bx", "bx-x", "btn-del-value");
+            tagClose.setAttribute('data-valueid', e.target.value);
+            
+            tag.classList.add("tag-item","bg-primary",`tag-item-${e.target.value}`,`tag-option-${item.dataset.id}`);
+            var text = document.createTextNode($(`#valueOptions option:selected`).text());
+            tag.appendChild(text);
+            tag.appendChild(tagClose);
+
+            
+            $(tag).insertBefore(`#valueOptions`);
+            var optionValue = document.createElement("input");
+            optionValue.setAttribute("type", "hidden");
+            optionValue.setAttribute("name", "giaTriThuocTinh[]");
+            optionValue.setAttribute("id", `giaTriThuocTinh-${e.target.value}`);
+            optionValue.setAttribute("value", e.target.value);
+            document.querySelector(".lstOptionValue").appendChild(optionValue);
+          
+
+            // Thêm biến thể
+            let table = document.querySelector("#tableVariants");
+            let trTag = document.createElement("tr");
+            trTag.setAttribute("id", `variant-item-${e.target.value}`);
+            let nameBienThe = $(`#valueOptions option:selected`).text()
+            trTag.innerHTML = `
+                <td>${nameBienThe}</td>
+                <td><input type="text" name="variant_sku[]" value="" class="form-control input-sl" placeholder="Nhập mã sản phẩm"></td>
+                <td><input type="number" name="variant_price[]" value="0" class="form-control input-sl" placeholder="Nhập giá"></td>
+                <td><input type="number" name="variant_price_sale[]" value="0" class="form-control input-gia" placeholder="Nhập giá khuyến mãi">
+                </td>
+            `;
+
+            table.appendChild(trTag);
+
+            //
+            removeOptionValue();
+            item.value = "";
+        }));
+
+        function removeOptionValue() {
+            // Remove Value Option
+            let lstBtnDelValue = document.querySelectorAll(".btn-del-value");
+            lstBtnDelValue.forEach(item => item.addEventListener("click", function(e) {
+                    const valueOptionItem = document.querySelector(`.tag-item-${item.dataset.valueid}`);
+                    const inputValue = document.querySelector(`#giaTriThuocTinh-${item.dataset.valueid}`);
+                    const variantItem = document.querySelector(`#variant-item-${item.dataset.valueid}`);
+                    if(valueOptionItem && inputValue) {
+                        valueOptionItem.remove();
+                        inputValue.remove();
+                        variantItem.remove();
+                    }
+            }));
+        }
 
 
 </script>

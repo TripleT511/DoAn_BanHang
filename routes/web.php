@@ -272,9 +272,6 @@ Route::prefix('admin')->group(function () {
 
 
         Route::get('/phieukho-pdf', [PhieuKhoController::class, 'PhieuKhoPDF'])->name('admin.phieukhoPDF');
-
-        // Thêm Thuộc Tính
-        Route::get('/thuoctinhdata/them-thuoc-tinh', [ThuocTinhController::class, 'addThuocTinh']);
     });
 
     Route::get('/login', function () {

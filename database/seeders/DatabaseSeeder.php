@@ -17,17 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             PhanQuyenSeeder::class,
-            DanhMucSeeder::class,
-            NhaCungCapSeeder::class,
-            SanPhamSeeder::class,
-            ThuocTinhSeeder::class,
-            HinhAnhSeeder::class,
-        ]);
-        \App\Models\User::factory(10)->create();
-        $this->call([
 
-            PhieuKhoSeeder::class,
-            ChiTietHoaDonSeeder::class
         ]);
     }
 }

@@ -282,6 +282,8 @@
     border-radius: 3px;
     line-height: normal;
 }
+
+
 	</style>
 </head>
 
@@ -466,10 +468,17 @@ function renderChild($item)
 									@auth
 									<a href="{{ route('xem-thong-in-ca-nhan') }}" class="info-user-login">
 										<div class="img-avatar online">
+											@php
+											if (Storage::disk('public')->exists(Auth()->user()->anhDaiDien)) {
+												$anhDaiDien = Auth()->user()->anhDaiDien;
+											} else {
+												$anhDaiDien = 'images/user-default.jpg';
+											}
+											@endphp
 											@if(Auth()->user()->social_type != null)
 											<img src="{{  Auth()->user()->anhDaiDien }}" alt="{{ Auth()->user()->hoTen }}">
 											@else
-											<img src="{{  asset('storage/'.Auth()->user()->anhDaiDien) }}" alt="{{ Auth()->user()->hoTen }}">
+											<img src="{{  asset('storage/'.$anhDaiDien) }}" alt="{{ Auth()->user()->hoTen }}">
 											@endif
 										</div>
 									</a>

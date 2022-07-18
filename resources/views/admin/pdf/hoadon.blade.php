@@ -5,7 +5,7 @@
 </head>
 <style type="text/css">
     body{
-        font-family: 'Roboto';
+        font-family: 'Roboto', 'san-serif';
     }
     .m-0{
         margin: 0px;
@@ -88,11 +88,40 @@
 <div class="head-title">
     <h1 class="text-center m-0 p-0">Chi Tiết Hoá Đơn</h1>
 </div>
+@php
+$tongTien = 0;
+$giamGia = 0;
+$tongThanhTien = 0;
+$trangThai = ""; 
+   switch ($hoadon->trangThai) {
+            case 0;
+                $trangThai = 'Chờ xác nhận';
+                break;
+            case 1;
+                $trangThai = 'Đã xác nhận';
+                break;
+            case 2;
+                $trangThai = 'Chờ giao hàng';
+                break;
+            case 3;
+                $trangThai = 'Đang giao hàng';
+                break;
+            case 4;
+                $trangThai = 'Hoàn thành';
+                break;
+            case 5;
+                $trangThai = 'Đã huỷ';
+                break;
+            default:
+                $trangThai = 'Chưa xác định';
+                break;
+        }
+@endphp
 <div class="add-detail mt-10">
     <div class="w-50 float-left mt-10">
-        <p class="m-0 pt-5 text-bold w-100">Mã đơn hàng: <span class="gray-color"></span></p>
-        <p class="m-0 pt-5 text-bold w-100">Trạng thái đơn hàng: <span class="gray-color"></span></p>
-        <p class="m-0 pt-5 text-bold w-100">Ngày tạo: <span class="gray-color">03-06-2022</span></p>
+        <p class="m-0 pt-5 text-bold w-100">Mã đơn hàng: <span class="gray-color">{{ $hoadon->id }}</span></p>
+        <p class="m-0 pt-5 text-bold w-100">Trạng thái đơn hàng: <span class="gray-color">{{ $trangThai }}</span></p>
+        <p class="m-0 pt-5 text-bold w-100">Ngày tạo: <span class="gray-color">{{ $ngayTao }}</span></p>
     </div>
     <div class="w-50 float-left logo mt-10">
         {{-- <img src="https://www.nicesnippets.com/image/imgpsh_fullsize.png"> <span>Nicesnippets.com</span>      --}}
@@ -108,17 +137,17 @@
         <tr>
             <td>
                 <div class="box-text">
-                    <p>Họ tên:: </p>
-                    <p>Email:</p>
-                    <p>Số điện thoại:</p>
+                    <p>Họ tên: {{ ($hoadon->khachhang ? $hoadon->khachhang->hoTen : '') }} </p>
+                    <p>Email: {{ ($hoadon->khachhang ? $hoadon->khachhang->email : '') }} </p>
+                    <p>Số điện thoại: {{ ($hoadon->khachhang ? $hoadon->khachhang->soDienThoai : '') }}</p>
                     
                 </div>
             </td>
             <td>
                 <div class="box-text">
-                    <p>Họ tên:: </p>
-                    <p>Email:</p>
-                    <p>Số điện thoại:</p>
+                    <p>Họ tên: {{ $hoadon->hoTen }}</p>
+                    <p>Địa chỉ: {{ $hoadon->diaChi }}</p>
+                    <p>Số điện thoại: {{ $hoadon->soDienThoai }}</p>
                 </div>
             </td>
         </tr>
@@ -135,13 +164,20 @@
             <th class="w-50">THÀNH TIỀN</th>
         </tr>
         
-        <tr align="center">
-            <td>A</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
+        
+            @foreach ($hoadon->chiTietHoaDons as $value => $item) 
+            @php
+            $tongTien = (int)$item->soLuong * (float)$item->donGia;
+            @endphp
+            <tr align="center">
+                <td>{{ $value + 1 }}</td>
+                <td>{{ $item->sanpham->tenSanPham }}</td>
+                <td>{{ $item->soLuong }}</td>
+                <td>{{ number_format($item->donGia, 0, ',', ',') }} ₫</td>
+                <td>{{ number_format($tongTien, 0, ',', ',') }} ₫</td>
+            </tr>
+            @endforeach
+            
         <tr>
             <td colspan="7">
                 <div class="total-part">
@@ -151,9 +187,9 @@
                         <p>Tổng cộng:</p>
                     </div>
                     <div class="total-right w-15 float-left text-bold" align="right">
-                        <p>10000</p>
-                        <p></p>
-                        <p></p>
+                        <p>{{ number_format($hoadon->tongTien, 0, ',', ',') }} ₫</p>
+                        <p>{{ number_format($hoadon->giamGia, 0, ',', ',') }} ₫</p>
+                        <p>{{ number_format($hoadon->tongThanhTien, 0, ',', ',')}} ₫</p>
                     </div>
                     <div style="clear: both;"></div>
                 </div> 

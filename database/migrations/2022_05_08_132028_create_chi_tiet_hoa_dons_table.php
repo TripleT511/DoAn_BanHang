@@ -19,6 +19,8 @@ return new class extends Migration
             $table->foreign('hoa_don_id')->references('id')->on('hoa_dons')->onUpdate('cascade')->onDelete('cascade');
             $table->unsignedBigInteger('san_pham_id');
             $table->foreign('san_pham_id')->references('id')->on('san_phams')->onUpdate('cascade')->onDelete('cascade');
+            $table->unsignedBigInteger('bien_the_san_pham_id')->nullable();
+            $table->foreign('bien_the_san_pham_id')->references('id')->on('bien_the_san_phams')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('soLuong');
             $table->double('donGia');
             $table->timestamps();

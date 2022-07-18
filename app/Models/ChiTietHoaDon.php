@@ -17,7 +17,8 @@ class ChiTietHoaDon extends Model
         'hoa_don_id',
         'san_pham_id',
         'soLuong',
-        'donGia'
+        'donGia',
+        'bien_the_san_pham_id'
     ];
 
     public function sanpham()

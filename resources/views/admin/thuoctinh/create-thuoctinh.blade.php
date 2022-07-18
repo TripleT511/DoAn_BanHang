@@ -62,7 +62,7 @@
                         <button type="button" id="themOption" class="btn btn-outline-success d-flex align-items-center" style="gap: 5px"><i class="bx bxs-plus-circle"></i> Thêm </button>
                     </div>
                 <button type="submit" class="btn btn-primary">Thêm</button>
-                <button type="button" class="btn btn-primary">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="history.back()">Đóng</button>
                 </form>
             </div>
             </div>

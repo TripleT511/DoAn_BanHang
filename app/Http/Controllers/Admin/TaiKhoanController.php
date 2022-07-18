@@ -34,11 +34,12 @@ class TaiKhoanController extends Controller
     }
     public function index(Request $request)
     {
-        $lstTaiKhoan = User::with('phanquyen')->paginate(5);
+        $lstTaiKhoan = User::with('phanquyen')->whereNot('id', 1)->paginate(5);
+
         if ($request->block) {
-            $lstTaiKhoan =  User::with('phanquyen')->onlyTrashed()->paginate(3);
+            $lstTaiKhoan =  User::with('phanquyen')->whereNot('id', 1)->onlyTrashed()->paginate(5);
         } elseif ($request->phan_quyen_id) {
-            $lstTaiKhoan =  User::with('phanquyen')->where('phan_quyen_id', '=', $request->phan_quyen_id)->paginate(5);
+            $lstTaiKhoan =  User::with('phanquyen')->whereNot('id', 1)->where('phan_quyen_id', '=', $request->phan_quyen_id)->paginate(5);
         }
 
 
@@ -51,13 +52,22 @@ class TaiKhoanController extends Controller
 
     public function searchTaiKhoan(Request $request)
     {
-        $lstTaiKhoan = User::with('phanquyen')->paginate(5);
-        if ($request->keyword != " ") {
-            $lstTaiKhoan = User::with('phanquyen')->where('hoTen', 'LIKE', '%' . $request->input('keyword') . '%')
-                ->orWhere('email', 'LIKE', '%' . $request->input('keyword') . '%')->orWhere('soDienThoai', '=', $request->input('keyword'))->withTrashed()->paginate(5);
+        if (!empty($request->keyword)) {
+            $lstTaiKhoan = User::with('phanquyen')->where([
+                ['hoTen', 'LIKE', '%' . $request->input('keyword') . '%'],
+                ['id', '<>', 1]
+            ])
+                ->orWhere([
+                    ['email', 'LIKE', '%' . $request->input('keyword') . '%'],
+                    ['id', '<>', 1]
+                ])->orWhere([
+                    ['soDienThoai', '=', $request->input('keyword')], ['id', '<>', 1]
+                ])->withTrashed()->paginate(5);
             foreach ($lstTaiKhoan as $item) {
                 $this->fixImage($item);
             }
+        } else {
+            return redirect()->back();
         }
         return View('admin.taikhoan.index-taikhoan', ['lstTaiKhoan' => $lstTaiKhoan]);
     }
@@ -124,6 +134,9 @@ class TaiKhoanController extends Controller
             'anhDaiDien' => '',
             'diaChi' => '',
         ]);
+        $user->save();
+
+        $user->email_verified_at = now();
         $user->save();
 
         if ($request->hasFile('anhDaiDien')) {
@@ -250,8 +263,9 @@ class TaiKhoanController extends Controller
      */
     public function destroy(User $user)
     {
+        if ($user->id == 0) return back();
         if (Auth()->user()->phan_quyen_id != 0) {
-            return back()->withError('Bạn không quyền sử dụng chức năng này');;
+            return back()->withError('Bạn không quyền sử dụng chức năng này');
         }
 
         $countAdmin = User::where('phan_quyen_id', 0)->count();
@@ -266,7 +280,7 @@ class TaiKhoanController extends Controller
     public function moKhoa($user)
     {
         if (Auth()->user()->phan_quyen_id != 0) {
-            return back()->withError('Bạn không quyền sử dụng chức năng này');;
+            return back()->withError('Bạn không quyền sử dụng chức năng này');
         }
         $user = User::withTrashed()->find($user)->restore();
         return Redirect::route('user.index');

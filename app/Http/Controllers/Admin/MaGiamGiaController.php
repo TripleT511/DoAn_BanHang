@@ -38,7 +38,7 @@ class MaGiamGiaController extends Controller
 
     public function indexDie()
     {
-        $lstDiscount = MaGiamGia::where('ngayKetThuc', '<', date('Y-m-d', strtotime(date('Y-m-d') . " +1 days")))::orderBy('created_at', 'desc')->paginate(4)->withQueryString();
+        $lstDiscount = MaGiamGia::where('ngayKetThuc', '<', date('Y-m-d', strtotime(date('Y-m-d') . " +1 days")))->orderBy('created_at', 'desc')->paginate(4)->withQueryString();
         foreach ($lstDiscount as $item)
             $this->fixImage($item);
         return view('admin.discount.index-discount', ['lstDiscount' => $lstDiscount]);

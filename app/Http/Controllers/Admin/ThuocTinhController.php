@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\TuyChonThuocTinh;
 use App\Models\ThuocTinh;
+use App\Models\TuyChonBienThe;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 
 
@@ -18,45 +20,7 @@ class ThuocTinhController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function addThuocTinh(Request $request)
-    {
-        $lstThuocTinh = Session::get("lstThuocTinh");
-        $thuoctinh = ThuocTinh::where('tenThuocTinh', $request->tenThuocTinh)->first();
-        $lstThuocTinh[$thuoctinh->tenThuocTinh] = array(
-            "id" => $thuoctinh->id,
-            "tenThuocTinh" => $thuoctinh->tenThuocTinh,
-            "loai" => $thuoctinh->loaiThuocTinh
-        );
-        Session::put("lstThuocTinh", $lstThuocTinh);
 
-        $lstNewThuocTinh =
-            Session::get("lstThuocTinh");
-        $output = '';
-        foreach ($lstNewThuocTinh as $item) {
-            $lstThuocTinhSanPham[$item['id']] = array();
-            Session::put("lstThuocTinhSanPham", $lstThuocTinhSanPham[$item['id']]);
-            $valueOptions = TuyChonThuocTinh::where('thuoc_tinh_id', $item["id"])->get();
-            $stringValueOption = "";
-            foreach ($valueOptions as $value) {
-                $stringValueOption .= '
-                <option value="' . $value->id . '">' . $value->tieuDe . '</option>';
-            }
-            $output .= '<div class="attr-item d-flex align-items-center ">
-                            <i class="bx bx-radio-circle"></i>
-                            ' . $item['tenThuocTinh'] . '
-                            <div class="tag-input tag-input-' . $item['id'] . '">
-                            
-                                <select id="valueOptions-' . $item['id'] . '" data-id="' . $item['id'] . '" name="valueOptions" class="form-select  form-select-value form-select-' . $item['id'] . '">
-                                    <option value="">Chọn giá trị thuộc tính</option>
-                                    ' . $stringValueOption . '
-                                </select>
-                            </div>
-                            <button type="button" class="btn btn-outline-danger d-flex align-items-center" style="gap: 5px"><i class="bx bx-trash"></i> Xoá</button>
-                        </div>';
-        }
-
-        return response()->json($output);
-    }
     public function index()
     {
         $lstThuocTinh = ThuocTinh::paginate(5)->withQueryString();
@@ -112,19 +76,12 @@ class ThuocTinhController extends Controller
         }
 
 
-        $slug = '';
-        if ($request->filled('slug')) {
-            $slug = $request->input('slug');
-        } else {
-            $slug = Str::of($request->input('tenThuocTinh'))->slug('-');
-        }
 
         $thuoctinh = new ThuocTinh();
 
         $thuoctinh->fill([
             'tenThuocTinh' => $request->input('tenThuocTinh'),
             'loaiThuocTinh' => $request->input('loaiThuocTinh'),
-            'slug' => $slug
         ]);
 
         $thuoctinh->save();
@@ -179,7 +136,57 @@ class ThuocTinhController extends Controller
      */
     public function update(Request $request, ThuocTinh $thuoctinh)
     {
-        dd($request);
+        $request->validate([
+            'tieuDe.*' => 'required',
+
+        ], [
+            'tieuDe.*.required' => "Tiêu đề không được bỏ trống",
+        ]);
+        if ($thuoctinh->loaiThuocTinh == "Color") {
+            $request->validate([
+                'mauSac.*' => 'required',
+            ], [
+                'mauSac.*.required' => "Màu sắc không được bỏ trống",
+
+            ]);
+        }
+
+        $lstNoneDelete = [];
+        $lstTieuDe = $request->input('tieuDe');
+        $lstmauSac = $request->input('mauSac');
+
+        foreach ($lstTieuDe as $key => $item) {
+
+            if (isset($request->idOption[$key])) {
+                $optionCurrent = TuyChonThuocTinh::where('id', $request->idOption[$key])->orWhere('tieuDe', $lstTieuDe[$key])->first();
+                if ($optionCurrent) {
+                    $optionCurrent->tieuDe = $lstTieuDe[$key];
+                    $optionCurrent->mauSac = $lstmauSac[$key] ?? '';
+                    $optionCurrent->save();
+
+                    array_push($lstNoneDelete, $optionCurrent->id);
+                }
+            } else {
+                $option = new TuyChonThuocTinh();
+
+                $option->fill([
+                    'thuoc_tinh_id' => $thuoctinh->id,
+                    'tieuDe' => $lstTieuDe[$key],
+                    'mauSac' => $lstmauSac[$key] ?? ''
+                ]);
+
+                $option->save();
+
+                array_push($lstNoneDelete, $option->id);
+            }
+        }
+
+        $lstOptionDelete = TuyChonThuocTinh::whereNotIn('id', $lstNoneDelete)->get();
+        foreach ($lstOptionDelete as $item) {
+            $item->delete();
+        }
+
+        return Redirect::route('thuoctinh.index');
     }
 
     /**

@@ -114,11 +114,10 @@
                               <i class='bx bxs-key'></i>
                             </a>
                             @if(Auth()->user()->phan_quyen_id == 0)
-                            <form class="d-inline-block" method="post" action="{{ route('user.destroy',['user'=>$item]) }}">
-                              @csrf
-                              @method("DELETE")
-                              <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class='bx bx-lock' ></i></button>
-                            </form>
+                            <button type="button"  class="btn btn-danger btn-delete-user" data-route="{{ route('user.destroy',['user'=>$item]) }}" data-bs-toggle="modal" data-bs-target="#basicModal">
+                            <i class="bx bx-trash me-1"></i>
+                            </button>
+                           
                             @endif
                             @elseif($item->deleted_at != null) 
                             @if(Auth()->user()->phan_quyen_id == 0)
@@ -190,10 +189,37 @@
               </div>
           </div>
 <div class="modal-backdrop fade "></div>
+{{-- Model Delete --}}
+<div class="modal fade" id="basicModal" tabindex="-1" aria-modal="true" role="dialog">
+  <div class="modal-dialog" role="document" style="max-width: 30%; width: 30%;">
+    <div class="modal-content">
+      <div class="modal-header justify-content-center py-4">
+        <h5 class="modal-title text-center w-100" id="exampleModalLabel1">Bạn có chắc chắn muốn khoá tài khoản này không ?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" >
+         Đóng
+        </button>
+         <form class="d-inline-block" method="post" id="form-delete" action="">
+          @csrf
+          @method("DELETE")
+          <button style="outline: none; border: none" class="btn btn-danger" type="submit"> Xác nhận </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
 @section('js')
 <script>
   $(function() {
+     let lstBtnDeleteRoute = document.querySelectorAll(".btn-delete-user");
+    lstBtnDeleteRoute.forEach((item) => item.addEventListener("click", function() {
+      let linkRoute = item.dataset.route;
+      let formDel = document.querySelector("#form-delete");
+      formDel.action  = linkRoute;
+    }));
     let lstRemoveProduct = document.querySelectorAll(".table-product tr");
     let lstSP = document.querySelectorAll(".product-search-item");
     let lstBtnDelete = document.querySelectorAll(".btn-xoa");

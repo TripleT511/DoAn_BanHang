@@ -31,7 +31,7 @@
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">
-                <div class="table-responsive text-nowrap">
+                <div class="table-responsive text-wrap">
                   <table class="table">
                     <thead>
                       <tr>
@@ -40,7 +40,7 @@
                         <th>Danh mục</th></th>
                         <th>Giá</th>
                         <th>Giá khuyến mãi</th>
-                        <th>Trạng thái</th>
+                        <th>Số lượng</th>
                         <th>Hành động</th>              
                       </tr>
                     </thead>
@@ -56,7 +56,7 @@
                           </div>
                           
                         </td>
-                        <td><strong>
+                        <td style="width: 20%;"><strong>
                           <a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}" target="_blank">
                           {{ $item->tenSanPham }}
                         </a>  
@@ -65,16 +65,21 @@
                           {{ $item->danhmuc->tenDanhMuc }}
                         </td>
                         <td>
-                          {{ number_format($item->gia, 0, '', ',') }} ₫
+                          {{ number_format($item->gia, 0, '', '.')  }} ₫
                         </td>
                         <td>
-                          {{ number_format($item->giaKhuyenMai, 0, '', ',') }} ₫
+                          {{ number_format($item->giaKhuyenMai, 0, '', '.')  }} ₫
                         </td>
                         <td>
-                          @if($item->tonKho > 0) 
-                            <span class="badge bg-label-success">Còn hàng</span>
+                          @if($item->soluongthuoctinh_count && $item->soluongthuoctinh_count > 1)
+                          @php
+                            unset($item->sizes[0]);
+                          @endphp
+                            @foreach ($item->sizes as $key => $size) 
+                               <span>{{ $size->tuychonbienthe->sizes->tieuDe }}: {{ $size->soLuong }} Cái</span><br>
+                            @endforeach
                           @else
-                            <span class="badge bg-label-danger">Hết hàng</span>
+                           {{ $item->tonKho }} Cái
                           @endif
                         </td>
                         <td>

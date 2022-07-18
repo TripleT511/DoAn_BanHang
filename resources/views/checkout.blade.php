@@ -79,7 +79,7 @@
 							</div>
 							<!-- /row -->
 							<div class="form-group">
-								<input type="email" class="form-control" id="email" name="email_billing" pattern="^[a-z][a-z0-9_\.]{5,32}@[a-z0-9]{2,}(\.[a-z0-9]{2,4}){1,2}$" placeholder="Email" value="{{ $user->email }}">
+								<input type="email" class="form-control" id="email" name="email_billing"  placeholder="Email" value="{{ $user->email }}">
 								<span class="text-validate" id="validate-email">
 									@if($errors->has('email_billing')) 
 										{{ $errors->first('email_billing') }}
@@ -138,17 +138,17 @@
 							<ul>
 								@foreach($Cart as $item) 
 									<li class="clearfix"><em>{{ $item['soluong'] }}x {{ $item['tenSanPham'] }}</em>  
-										<span>{{ number_format($item['tongTien'], 0, '', ',') }} ₫</span>
+										<span>{{ number_format($item['tongTien'], 0, '', '.')  }} ₫</span>
 									</li>
 								@endforeach
 							</ul>
 							<ul>
-								<li class="clearfix"><em><strong>Tạm tính</strong></em>  <span>{{ number_format($total, 0, '', ',') }} ₫</span></li>
+								<li class="clearfix"><em><strong>Tạm tính</strong></em>  <span>{{ number_format($total, 0, '', '.')  }} ₫</span></li>
 								<li class="clearfix"><em><strong>Giảm giá </strong></em> <span>{{ $discount }} ₫</span></li>
-								<li class="clearfix"><em><strong>Phí vận chuyển </strong></em> <span>{{ number_format(0, 0, '', ',') }} ₫</span></li>
+								<li class="clearfix"><em><strong>Phí vận chuyển </strong></em> <span>{{ number_format(0, 0, '', '.')  }} ₫</span></li>
 								
 							</ul>
-							<div class="total clearfix">Tổng tiền <span>{{ number_format($newTotal, 0, '', ',') }} ₫</span></div>
+							<div class="total clearfix">Tổng tiền <span>{{ number_format($newTotal, 0, '', '.')  }} ₫</span></div>
 							<input type="hidden" name="tongTien" value="{{ $total }}">
 							<input type="hidden" name="giamGia" value="{{ $discount }}">
 							<input type="hidden" name="tongThanhTien" value="{{ $newTotal }}">
@@ -214,7 +214,6 @@
 		}
 	})
 		let txtSoDienThoai = document.querySelector("#soDienThoai");
-		let txtEmail = document.querySelector("#email");
 
 		txtSoDienThoai.addEventListener("blur", function(event) {
 			if(!txtSoDienThoai.checkValidity()) {
@@ -230,15 +229,7 @@
 				document.getElementById("form-checkout").action = e.target.value;
 			})
 		);
-
-		txtEmail.addEventListener("blur", function(event) {
-			if(!txtEmail.checkValidity()) {
-			document.querySelector("#validate-email").innerHTML = "Địa chỉ email không hợp lệ";
-			} else {
-				document.querySelector("#validate-email").innerHTML = "";
-			}
-
-		})
+	
 		
     	// Other address Panel
 		$('#other_addr input').on("change", function (){

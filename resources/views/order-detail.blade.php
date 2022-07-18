@@ -195,10 +195,10 @@
                             {{ $item->soLuong }}
                         </td>
                         <td class="text-right">         
-                            {{ number_format($item->donGia, 0, ',', ',') }} đ
+                            {{ number_format($item->donGia, 0, ',', ',') }} ₫
                         </td>
                         <td class="text-right">
-                            {{ number_format($tongTien, 0, ',', ',') }} đ
+                            {{ number_format($tongTien, 0, ',', ',') }} ₫
                         </td>
 					</tr>
 					@endforeach
@@ -211,14 +211,14 @@
                     <ul class="info-cart">
                         <li>
                             <span>Tạm tính:</span> 
-                            <p class="cart-price">{{ number_format($hoadon->tongTien, 0, '', ',') }} ₫</p>
+                            <p class="cart-price">{{ number_format($hoadon->tongTien, 0, '', '.')  }} ₫</p>
                         </li>
                         <li>
-                            <span>Giảm giá:</span> <p class="discount" style="margin: 0;">{{ number_format($hoadon->giamGia, 0, '', ',') }} ₫</p> 
+                            <span>Giảm giá:</span> <p class="discount" style="margin: 0;">{{ number_format($hoadon->giamGia, 0, '', '.')  }} ₫</p> 
                         </li>
                         <li>
                             <span>Tổng cộng:</span> 
-                            <b  class="cart-total">{{ number_format($hoadon->tongThanhTien, 0, '', ',') }} ₫</b>
+                            <b  class="cart-total">{{ number_format($hoadon->tongThanhTien, 0, '', '.')  }} ₫</b>
                         </li>
                     </ul>
                 </div>

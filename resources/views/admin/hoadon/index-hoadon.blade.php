@@ -106,7 +106,7 @@
                           @endif
                         </td>
                        <td class="text-right">
-                          {{ number_format($item->tongThanhTien, 0, '', ',') }} ₫
+                          {{ number_format($item->tongThanhTien, 0, '', '.')  }} ₫
                         </td>
                         <td>
                           @if($item->trangThai == 0)
@@ -175,7 +175,7 @@
         
       </div>
       <div class="modal-footer">
-        <a type="button" href="{{ route('admin.hoadonPDF') }}" class="btn btn-primary">Print</a>
+        <a type="button" href="{{ route('admin.hoadonPDF') }}" class="btn btn-primary">In đơn hàng</a>
         <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">
           Đóng
         </button>

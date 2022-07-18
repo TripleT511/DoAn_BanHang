@@ -141,7 +141,7 @@
                                             
                                             </div>
                                             <span class="fw-semibold d-block mb-1">Doanh thu</span>
-                                            <h3 class="card-title mb-2 text-success" id="tongDoanhThu">{{ number_format($tongDoanhThu, 0, '', ',') }} ₫</h3>
+                                            <h3 class="card-title mb-2 text-success" id="tongDoanhThu">{{ number_format($tongDoanhThu, 0, '', '.')  }} ₫</h3>
                                         </div>
                                     </div>
                                 </div>
@@ -230,22 +230,22 @@
                                         {{ $item->chi_tiet_hoa_dons_sum_so_luong }}
                                     </td>
                                     <td class="text-right">
-                                        {{ number_format($item->tongTien, 0, '', ',') }} ₫
+                                        {{ number_format($item->tongTien, 0, '', '.')  }} ₫
                                     </td>
                                     <td class="text-right">
-                                        {{ number_format($item->giamGia, 0, '', ',') }} ₫
+                                        {{ number_format($item->giamGia, 0, '', '.')  }} ₫
                                     </td>
                                     <td class="text-right">
-                                        {{ number_format($item->tongThanhTien, 0, '', ',') }} ₫
+                                        {{ number_format($item->tongThanhTien, 0, '', '.')  }} ₫
                                     </td>
                                 </tr>
                                 @endforeach
                                 <tr>
                                     <td class="text-left"><strong>Tổng:</strong></td>
                                     <td class="text-left"><strong>{{ $tongSLDonHang }}</strong></td>
-                                    <td class="text-right"><strong>{{ number_format($tongDoanhThuDonHang, 0, '', ',') }} ₫</strong></td>
-                                    <td class="text-right"><strong>{{ number_format($tongGiamGiaDonHang, 0, '', ',') }} ₫</strong></td>
-                                    <td class="text-right"><strong>{{ number_format($tongDoanhThu, 0, '', ',') }} ₫</strong></td>
+                                    <td class="text-right"><strong>{{ number_format($tongDoanhThuDonHang, 0, '', '.')  }} ₫</strong></td>
+                                    <td class="text-right"><strong>{{ number_format($tongGiamGiaDonHang, 0, '', '.')  }} ₫</strong></td>
+                                    <td class="text-right"><strong>{{ number_format($tongDoanhThu, 0, '', '.')  }} ₫</strong></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -321,7 +321,7 @@
                             {{ $soLuong }}
                         </td>
                         <td class="text-right">
-                           {{ number_format($thanhTien, 0, '', ',') }} ₫
+                           {{ number_format($thanhTien, 0, '', '.')  }} ₫
                         </td>
                         <td class="text-right">
                             {{ $donHang }}
@@ -332,7 +332,7 @@
                         <td><strong>Tổng:</strong></td>
                         <td></td>
                         <td class="text-right"><strong>{{ $tongSoLuongSanPham }}</strong></td>
-                        <td class="text-right"><strong>{{ number_format($tongThanhTien, 0, '', ',') }} ₫</strong></td>
+                        <td class="text-right"><strong>{{ number_format($tongThanhTien, 0, '', '.')  }} ₫</strong></td>
                         <td class="text-right"><strong>{{ $tongDonHang }}</strong></td>
                     </tr>
                     </tbody>

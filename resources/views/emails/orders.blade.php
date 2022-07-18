@@ -24,7 +24,7 @@
 |<span style="color: #202020;">STT</span>|<span style="color: #202020;">SẢN PHẨM</span>|<span style="color: #202020;">GIÁ</span>|<span style="color: #202020;">SỐ LƯỢNG</span>|<span style="color: #202020;">THÀNH TIỀN</span>|
 |:-----:|:--------:|:----:|:--------:|:----------:|
 @foreach($data as $key=>$dt)
-|<span style="color: #202020; font-size:14px; font-weight:normal;">{{ ++$key}}</span>|<span style="color: #202020; font-size:14px; font-weight:normal;">{{ $data[--$key]['tenSanPham'] }}</span>|<span style="color: #202020; font-size:14px; font-weight:normal;">{{number_format( $dt['donGia'], 0, '', ',') }} đ</span>|<span style="color: #202020; font-size:14px; font-weight:normal;"> {{$dt['soLuong']}}</span>|<span style="color: #202020; font-size:14px; font-weight:normal;">{{number_format( $dt['tongTien'], 0, '', ',') }} đ</span>|
+|<span style="color: #202020; font-size:14px; font-weight:normal;">{{ ++$key}}</span>|<span style="color: #202020; font-size:14px; font-weight:normal;">{{ $data[--$key]['tenSanPham'] }}</span>|<span style="color: #202020; font-size:14px; font-weight:normal;">{{number_format( $dt['donGia'], 0, '', '.')  }} ₫</span>|<span style="color: #202020; font-size:14px; font-weight:normal;"> {{$dt['soLuong']}}</span>|<span style="color: #202020; font-size:14px; font-weight:normal;">{{number_format( $dt['tongTien'], 0, '', '.')  }} ₫</span>|
 @endforeach
 @endcomponent
 @component('mail::table')

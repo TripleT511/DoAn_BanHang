@@ -129,7 +129,7 @@ class HomeController extends Controller
 
         $lstSanPhamBanChay = SanPham::where('dacTrung', 1)->with('hinhanhs')->with('danhmuc')->with('danhgias')->orderBy('created_at', 'desc')->take(8)->get();
 
-        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', 1)->with('childs')->orderBy('id', 'asc')->take(5)->get();
         $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
 
         return view('home', [
@@ -148,10 +148,13 @@ class HomeController extends Controller
 
     public function sanpham($slug)
     {
-        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', 1)->with('childs')->orderBy('id', 'desc')->take(5)->get();
         $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
 
-        $sanpham = SanPham::with('hinhanhs')->with('danhmuc')->where('slug', $slug)->first();
+        $sanpham = SanPham::with('hinhanhs')->with('danhmuc')->with('color')->with('sizes')->withCount('soluongthuoctinh')->where('slug', $slug)->orWhere('id', $slug)->first();
+
+        // return $sanpham;
+
         $lstDanhGia = DanhGia::with('sanpham')->with('taikhoan')->where('san_pham_id', $sanpham->id)->orderBy('created_at', 'desc')->get();
         $starActive = floor($lstDanhGia->avg('xepHang'));
         $starNonActive = 5 - $starActive;
@@ -176,15 +179,23 @@ class HomeController extends Controller
 
     public function danhmucsanpham($slug, Request $request)
     {
-        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', 1)->with('childs')->orderBy('id', 'desc')->take(5)->get();
         $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
         //
         $danhmucCha = DanhMuc::where('slug', $slug)->first();
-        $lstDanhMucCon = DanhMuc::where('idDanhMucCha', $danhmucCha->id)->get();
+        $lstDanhMucCon = DanhMuc::where('idDanhMucCha', $danhmucCha->id)->with('childs')->get();
         $lstIdDanhMucCon = [$danhmucCha->id];
-        foreach ($lstDanhMucCon as $danhmuc)
+
+
+        foreach ($lstDanhMucCon as $danhmuc) {
             array_push($lstIdDanhMucCon, $danhmuc->id);
-        $lstSanPham = SanPham::whereIn('danh_muc_id', $lstIdDanhMucCon)->with('hinhanhs')->with('danhmuc')->with('danhgias');
+        }
+
+        if ($danhmucCha->id == 1) {
+            $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->with('danhgias');
+        } else {
+            $lstSanPham = SanPham::whereIn('danh_muc_id', $lstIdDanhMucCon)->with('hinhanhs')->with('danhmuc')->with('danhgias');
+        }
 
         if ($request->has('sort') && !empty($request->sort)) {
             switch ($request->sort) {
@@ -384,7 +395,7 @@ class HomeController extends Controller
         }
 
 
-        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', 1)->with('childs')->orderBy('id', 'desc')->take(5)->get();
         $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
         return view('san-pham', ['lstSanPham' => $lstSanPham->paginate(8), 'lstDanhMuc' => $lstDanhMuc, 'lstDanhMucHeader' => $lstDanhMucHeader, 'page' => $request->page, 'sort' => $request->sort, 'danhmuc' => $request->danhmuc, 'price' => $request->price]);
     }
@@ -392,7 +403,7 @@ class HomeController extends Controller
 
     public function searchSP(Request $request)
     {
-        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', 1)->with('childs')->orderBy('id', 'desc')->take(5)->get();
         $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
 
         $stringSearch = $request->keyword;
@@ -461,7 +472,7 @@ class HomeController extends Controller
 
     public function myOrder()
     {
-        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', 1)->with('childs')->orderBy('id', 'desc')->take(5)->get();
         $lstDanhMucNew = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(3)->get();
         $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
         $lstDonHang = HoaDon::where('khach_hang_id', Auth()->user()->id)->with('chiTietHoaDons')->with(['chiTietHoaDons.sanpham' => function ($query) {
@@ -474,7 +485,7 @@ class HomeController extends Controller
 
     public function myOrderDetail(Request $request)
     {
-        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', 1)->with('childs')->orderBy('id', 'desc')->take(5)->get();
         $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
         $hoadon = HoaDon::whereId($request->id)->with('user')->with('khachhang')->with('chiTietHoaDons')->with('chiTietHoaDons.sanpham')->first();
         if (!$hoadon) {
@@ -486,7 +497,7 @@ class HomeController extends Controller
 
     public function huyDatHang(Request $request)
     {
-        $hoadon = HoaDon::find($request->hoadon)->first();
+        $hoadon = HoaDon::whereId($request->hoadon)->first();
         $hoadon->trangThai = 5;
         $hoadon->save();
         $this->dispatch(new SendMail3($hoadon));
@@ -585,7 +596,7 @@ class HomeController extends Controller
                         <a href="' . route('chitietsanpham', ['slug' => $cthd->sanpham->slug]) . '">
                             <div class="title">
                                 <h5>' . $cthd->sanpham->tenSanPham . ' x ' .  $cthd->soLuong . '</h5>
-                                <span>' . number_format($cthd->donGia, 0, '', ',') . ' ₫</span>
+                                <span>' . number_format($cthd->donGia, 0, '', '.')  . ' ₫</span>
                             </div>
                         </a>
                     </li>
@@ -606,7 +617,7 @@ class HomeController extends Controller
 							</ul>
 						</td>
 						<td>
-							<strong>' . number_format($item->tongThanhTien, 0, '', ',') . ' ₫</strong>
+							<strong>' . number_format($item->tongThanhTien, 0, '', '.')  . ' ₫</strong>
 						</td>
 						<td>
 							' . $trangThai . '
@@ -628,7 +639,7 @@ class HomeController extends Controller
 
     public function slider($slug)
     {
-        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', 1)->with('childs')->orderBy('id', 'desc')->take(5)->get();
         $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
 
         $slider = Slider::where('slug', $slug)->first();
@@ -638,7 +649,7 @@ class HomeController extends Controller
 
     public function formResetPassWord(Request $request)
     {
-        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', 1)->with('childs')->orderBy('id', 'desc')->take(5)->get();
         $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
         return view('user.reset-password', ['token' => $request->token, 'lstDanhMuc' => $lstDanhMuc, 'lstDanhMucHeader' => $lstDanhMucHeader]);
     }
@@ -785,7 +796,7 @@ class HomeController extends Controller
 
     public function xemThongTin()
     {
-        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', 1)->with('childs')->orderBy('id', 'desc')->take(5)->get();
         $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
         return view('user', ['lstDanhMuc' => $lstDanhMuc, 'lstDanhMucHeader' => $lstDanhMucHeader]);
     }
@@ -796,7 +807,7 @@ class HomeController extends Controller
             return Redirect::back();
         }
         $lstDanhMucHeader = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id')->take(1)->get();
-        $lstDanhMuc = DanhMuc::where('idDanhMucCha', null)->with('childs')->orderBy('id', 'desc')->take(5)->get();
+        $lstDanhMuc = DanhMuc::where('idDanhMucCha', 1)->with('childs')->orderBy('id', 'desc')->take(5)->get();
         return view('change-password', ['lstDanhMuc' => $lstDanhMuc, 'lstDanhMucHeader' => $lstDanhMucHeader]);
     }
 

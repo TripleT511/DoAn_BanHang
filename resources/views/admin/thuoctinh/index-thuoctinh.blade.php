@@ -6,15 +6,7 @@
                         
             <h4 class="fw-bold py-3">Thuộc tính</h4>
             <ul class="nav nav-pills flex-column flex-md-row mb-3">
-              <li class="nav-item">
-                  <a class="nav-link active" href="{{ route('thuoctinh.create') }}"><i class="bx bx-plus"></i> Thêm mới</a>
-              </li>
-              <li class="nav-item "  style="margin-left: 10px;">
-                <form action="{{ route('searchDanhMuc') }}" method="GET" class="form-search-custom">
-                    <input type="text" class="form-control" name="keyword" id="searchDanhMuc" placeholder="Từ khoá ..."  >
-                    <button type="submit" class="btn btn-success"><i class='bx bx-search'></i></button>
-                </form>
-            </li>
+             
             </ul>
               <!-- Basic Bootstrap Table -->
               <div class="card">
@@ -39,13 +31,8 @@
                         </td>
                         <td>
                           <a class="btn btn-success" href="{{ route('thuoctinh.edit', ['thuoctinh' => $item]) }}">
-                            <i class="bx bx-edit-alt me-1"></i>Sửa
+                            <i class="bx bx-edit-alt me-1"></i>
                           </a>
-                          <form class="d-inline-block" method="post" action="{{ route('thuoctinh.destroy', ['thuoctinh'=>$item]) }}">
-                            @csrf
-                            @method("DELETE")
-                            <button style="outline: none; border: none" class="btn btn-danger" type="submit"><i class="bx bx-trash me-1"></i> Xoá</button>
-                          </form>
                         </td>
                       </tr>
                      @endforeach

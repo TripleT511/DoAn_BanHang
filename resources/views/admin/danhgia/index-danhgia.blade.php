@@ -38,7 +38,6 @@
                         <th>Họ tên</th>
                         <th>Nội dung</th>
                         <th>Rating</th>
-                        <th>Hành động</th>
                       </tr>
                     </thead>
                     <tbody class="table-border-bottom-0" id="lstBinhLuan">
@@ -60,11 +59,7 @@
                       </td>
                         <td>{{ $item->xepHang }}</>
                       </td>
-                      <td>
-                        <button type="button"  class="btn btn-danger btn-delete-danhgia" data-route="{{ route('danhgia.destroy', ['danhgium' => $item]) }}" data-bs-toggle="modal" data-bs-target="#basicModal">
-                          <i class="bx bx-trash me-1"></i>
-                          </button>
-                        </td>
+                      
                       </tr>
                       @endforeach
                     </tbody>

@@ -302,7 +302,7 @@
 							<span class="item_cart">{{ $item['tenSanPham'] }}</span>
 						</td>
 						<td>
-							<strong>{{ number_format($item['gia'], 0, '', ',') }} ₫</strong>
+							<strong>{{ number_format($item['gia'], 0, '', '.')  }} ₫</strong>
 						</td>
 						<td>
 							<div class="numbers-row">
@@ -310,10 +310,10 @@
 						</div>
 						</td>
 						<td>
-							<strong>{{ number_format($item['tongTien'], 0, '', ',') }}  ₫</strong>
+							<strong>{{ number_format($item['tongTien'], 0, '', '.')  }}  ₫</strong>
 						</td>
 						<td class="options">
-							<a href="#" class="btn-trash" data-id="{{ $item['id'] }}"><i class="ti-trash"></i></a>
+							<a href="#" class="btn-trash"  data-id="{{ $item['sku'] }}"><i class="ti-trash"></i></a>
 						</td>
 					</tr>
 					@endforeach
@@ -352,7 +352,7 @@
 											@endif
 										</p>
 										<p class="des">
-											Áp dụng cho đơn hàng từ {{number_format($discount->giaTriToiThieu, 0, '', ',') }} ₫
+											Áp dụng cho đơn hàng từ {{number_format($discount->giaTriToiThieu, 0, '', '.')  }} ₫
 										</p>
 										</div>
 										<p class="date">
@@ -396,7 +396,7 @@
 			<ul class="info-cart">
 				<li>
 					<span>Tạm tính:</span> 
-					<p class="cart-price">{{ number_format($total, 0, '', ',') }} ₫</p>
+					<p class="cart-price">{{ number_format($total, 0, '', '.')  }} ₫</p>
 				</li>
 				<li>
 					<span>Giảm giá:</span> <p class="discount" style="margin: 0;">  0 ₫</p> 
@@ -406,7 +406,7 @@
 				</li>
 				<li>
 					<span>Tổng cộng:</span> 
-					<b  class="cart-total">{{ number_format($total, 0, '', ',') }} ₫</b>
+					<b  class="cart-total">{{ number_format($total, 0, '', '.')  }} ₫</b>
 				</li>
 			</ul>
 			<a href="{{ route('checkout') }}" class="btn_1 full-width cart">Đi đến trang thanh toán</a>

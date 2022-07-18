@@ -13,6 +13,5 @@ class ThuocTinh extends Model
     protected $fillable = [
         'tenThuocTinh',
         'loaiThuocTinh',
-        'slug',
     ];
 }

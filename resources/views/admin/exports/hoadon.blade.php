@@ -1,4 +1,4 @@
-<table>
+<table style="font-family: 'Roboto', sans-serif;">
     <thead>
     <tr>
         <th>Mã Đơn Hàng</th>

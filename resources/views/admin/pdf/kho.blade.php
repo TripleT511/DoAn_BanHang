@@ -89,34 +89,28 @@
 <div class="head-title">
     <h1 class="text-center m-0 p-0">Chi Tiết Phiếu Kho</h1>
 </div>
-<div class="add-detail mt-10">
-    <div class="w-50 float-left mt-10">
-        <p class="m-0 pt-5 text-bold w-100">Mã đơn hàng: <span class="gray-color"></span></p>
-        <p class="m-0 pt-5 text-bold w-100">Trạng thái đơn hàng: <span class="gray-color"></span></p>
-        <p class="m-0 pt-5 text-bold w-100">Ngày tạo: <span class="gray-color"> {{  $phieukho->created_at->format('d') }}-{{  $phieukho->created_at->format('m') }}-20{{  $phieukho->created_at->format('y') }}</span></p>
-    </div>
-    <div class="w-50 float-left logo mt-10">
-        {{-- <img src="https://www.nicesnippets.com/image/imgpsh_fullsize.png"> <span>Nicesnippets.com</span>      --}}
-    </div>
-    <div style="clear: both;"></div>
-</div>
+@php
+$trangThai = $phieukho->trangThai == 0 ? "Đang chờ duyệt" : "Đã thanh toán";
+$nhacungcap = ($phieukho->nha_cung_cap_id ? $phieukho->nhacungcap->tenNhaCungCap : '');
+$nguoiTao = ($phieukho->user ? $phieukho->user->hoTen : '');
+@endphp
 <div class="table-section bill-tbl w-100 mt-10">
     <table class="table w-100 mt-10">
        
         <tr>
             <td>
                 <div class="box-text">
-                    <p>Mã đơn hàng: </p>
-                    <p>Thời gian: </p>
-                    <p>Trạng thái: </p>
+                    <p>Mã đơn hàng: {{ $phieukho->maDonHang }}</p>
+                    <p>Thời gian: {{  $phieukho->created_at->format('d') }}-{{  $phieukho->created_at->format('m') }}-{{  $phieukho->created_at->format('Y') }}</p>
+                    <p>Trạng thái: {{ $trangThai }}</p>
                     
                 </div>
             </td>
             <td>
                 <div class="box-text">
-                    <p>Nhà cung cấp: </p>
-                    <p>Người tạo:</p>
-                    <p>Ghi chú</p>
+                    <p>Nhà cung cấp: {{ $nhacungcap }}</p>
+                    <p>Người tạo: {{ $nguoiTao }}</p>
+                    <p>Ghi chú: {{ $phieukho->ghiChu }}</p>
                 </div>
             </td>
         </tr>
@@ -133,28 +127,40 @@
             <th class="w-50">ĐƠN GIÁ</th>
             <th class="w-50">THÀNH TIỀN</th>
         </tr>
+        @php
+            $tongSL = 0;
+            $tongSP = 0;
+            $tongTien = 0;
+        @endphp
         @foreach($chitietphieukho as $key=>$item)
+        @php
+            $tongSL += $item->soLuong;
+            $tongSP += 1;
+            $tongTien += (int)$item->soLuong * (float)$item->gia;
+        @endphp
         <tr align="center">
           <td>{{ $key++ }}</td>
           <td>{{ $item->sku }}</td>
           <td>{{ $item->sanpham->tenSanPham }}</td>
           <td>{{ $item->soLuong }}</td>
-          <td>{{number_format($item->gia, 0, ',', ',') }} đ</td>
-          <td>{{number_format((float)$item->gia * (int)$item->soLuong, 0, ',', ',') }} đ</td>
+          <td>{{number_format($item->gia, 0, ',', ',') }} ₫</td>
+          <td>{{number_format((float)$item->gia * (int)$item->soLuong, 0, ',', ',') }} ₫</td>
         </tr>
         @endforeach
         <tr>
             <td colspan="7">
                 <div class="total-part">
-                    <div class="total-left w-85 float-left" align="right">
-                        <p>Thành tiền:</p>
-                        <p>Giảm giá:</p>
+                    <div class="total-left w-60 float-left" align="right">
+                        <p>Tổng số lượng:</p>
+                        <p>Tổng số mặt hàng:</p>
+                        <p>Tổng tiền hàng:</p>
                         <p>Tổng cộng:</p>
                     </div>
-                    <div class="total-right w-15 float-left text-bold" align="right">
-                        <p>10000</p>
-                        <p></p>
-                        <p></p>
+                    <div class="total-right w-40 float-left text-bold" align="right">
+                        <p>{{ $tongSL }}</p>
+                        <p>{{ $tongSP }}</p>
+                        <p>{{ number_format($tongTien, 0, ',', ',') }} ₫</p>
+                        <p>{{ number_format($tongTien, 0, ',', ',') }} ₫</p>
                     </div>
                     <div style="clear: both;"></div>
                 </div> 

@@ -33,7 +33,7 @@
               <!-- Basic Bootstrap Table -->
               <div class="card">
                 
-                <div class="table-responsive text-nowrap">
+                <div class="table-responsive text-wrap">
                   <table class="table">
                     <thead>
                       <tr>

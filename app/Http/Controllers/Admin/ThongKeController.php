@@ -61,7 +61,7 @@ class ThongKeController extends Controller
         );
         $lstData = [];
         foreach ($lstLabel as $key => $value) {
-            $doanhThu = HoaDon::with('chiTietHoaDons')->whereDate('created_at', $value)->where('trangThai', 4)->sum('tongTien');
+            $doanhThu = HoaDon::with('chiTietHoaDons')->whereDate('created_at', $value)->where('trangThai', 4)->sum('tongThanhTien');
             array_push($lstData, $doanhThu);
             $lstLabel[$key] =
                 $value->format('d/m');
@@ -152,7 +152,7 @@ class ThongKeController extends Controller
                         ' . $soLuong . '
                     </td>
                     <td class="text-right">
-                        ' . number_format($thanhTien, 0, '', ',') . ' ₫
+                        ' . number_format($thanhTien, 0, '', '.')  . ' ₫
                     </td>
                     <td class="text-right">
                         ' . $donHang . '
@@ -165,7 +165,7 @@ class ThongKeController extends Controller
                 <td><strong>Tổng:</strong></td>
                 <td></td>
                 <td class="text-right"><strong>' . $tongSoLuongSanPham . '</strong></td>
-                <td class="text-right"><strong>' . number_format($tongThanhTien, 0, '', ',') . ' ₫</strong></td>
+                <td class="text-right"><strong>' . number_format($tongThanhTien, 0, '', '.')  . ' ₫</strong></td>
                 <td class="text-right"><strong>' . $tongDonHang . '</strong></td>
             </tr>
         ';
@@ -484,13 +484,13 @@ class ThongKeController extends Controller
                 ' . $item->chi_tiet_hoa_dons_sum_so_luong . '
             </td>
             <td class="text-right">
-                ' . number_format($item->tongTien, 0, '', ',') . ' ₫
+                ' . number_format($item->tongTien, 0, '', '.')  . ' ₫
             </td>
             <td class="text-right">
-                ' . number_format($item->giamGia, 0, '', ',') . ' ₫
+                ' . number_format($item->giamGia, 0, '', '.')  . ' ₫
             </td>
             <td class="text-right">
-                ' . number_format($item->tongThanhTien, 0, '', ',') . ' ₫
+                ' . number_format($item->tongThanhTien, 0, '', '.')  . ' ₫
             </td>
         </tr>
         ';
@@ -499,9 +499,9 @@ class ThongKeController extends Controller
         <tr>
             <td class="text-left"><strong>Tổng:</strong></td>
             <td class="text-left"><strong>' . $tongSLDonHang . '</strong></td>
-            <td class="text-right"><strong>' . number_format($tongDoanhThuDonHang, 0, '', ',') . ' ₫</strong></td>
-            <td class="text-right"><strong>' . number_format($tongGiamGiaDonHang, 0, '', ',') . ' ₫</strong></td>
-            <td class="text-right"><strong>' . number_format($tongDoanhThu, 0, '', ',') . ' ₫</strong></td>
+            <td class="text-right"><strong>' . number_format($tongDoanhThuDonHang, 0, '', '.')  . ' ₫</strong></td>
+            <td class="text-right"><strong>' . number_format($tongGiamGiaDonHang, 0, '', '.')  . ' ₫</strong></td>
+            <td class="text-right"><strong>' . number_format($tongDoanhThu, 0, '', '.')  . ' ₫</strong></td>
         </tr>
         ';
 
@@ -514,7 +514,7 @@ class ThongKeController extends Controller
 
         $lstData = [];
         foreach ($lstDate as $key => $value) {
-            $doanhThu = HoaDon::whereDate('created_at', $value)->where('trangThai', 4)->sum('tongTien');
+            $doanhThu = HoaDon::whereDate('created_at', $value)->where('trangThai', 4)->sum('tongThanhTien');
             array_push($lstData, $doanhThu);
             if ($request->type == "thisyear" || $request->type == "lastyear") {
                 $lstDate[$key] =
@@ -546,7 +546,7 @@ class ThongKeController extends Controller
             'dataDonHang' => $dataDonHang,
             'dataSanPham' => $dataSanPham,
             'dataDoanhThu' => $dataDoanhThu,
-            'tongDoanhThu' => number_format($tongDoanhThu, 0, '', ',') . ' ₫',
+            'tongDoanhThu' => number_format($tongDoanhThu, 0, '', '.')  . ' ₫',
             'tongSanPham' => $tongSanPham,
             'tongDonHang' => $tongHoaDon,
         ]);
@@ -632,13 +632,13 @@ class ThongKeController extends Controller
                 ' . $item->chi_tiet_hoa_dons_sum_so_luong . '
             </td>
             <td class="text-right">
-                ' . number_format($item->tongTien, 0, '', ',') . ' ₫
+                ' . number_format($item->tongTien, 0, '', '.')  . ' ₫
             </td>
             <td class="text-right">
-                ' . number_format($item->giamGia, 0, '', ',') . ' ₫
+                ' . number_format($item->giamGia, 0, '', '.')  . ' ₫
             </td>
             <td class="text-right">
-                ' . number_format($item->tongThanhTien, 0, '', ',') . ' ₫
+                ' . number_format($item->tongThanhTien, 0, '', '.')  . ' ₫
             </td>
         </tr>
         ';
@@ -647,9 +647,9 @@ class ThongKeController extends Controller
         <tr>
             <td class="text-left"><strong>Tổng:</strong></td>
             <td class="text-left"><strong>' . $tongSLDonHang . '</strong></td>
-            <td class="text-right"><strong>' . number_format($tongDoanhThuDonHang, 0, '', ',') . ' ₫</strong></td>
-            <td class="text-right"><strong>' . number_format($tongGiamGiaDonHang, 0, '', ',') . ' ₫</strong></td>
-            <td class="text-right"><strong>' . number_format($tongDoanhThu, 0, '', ',') . ' ₫</strong></td>
+            <td class="text-right"><strong>' . number_format($tongDoanhThuDonHang, 0, '', '.')  . ' ₫</strong></td>
+            <td class="text-right"><strong>' . number_format($tongGiamGiaDonHang, 0, '', '.')  . ' ₫</strong></td>
+            <td class="text-right"><strong>' . number_format($tongDoanhThu, 0, '', '.')  . ' ₫</strong></td>
         </tr>
         ';
 
@@ -657,7 +657,7 @@ class ThongKeController extends Controller
 
         $lstData = [];
         foreach ($lstDate as $key => $value) {
-            $doanhThu = HoaDon::whereDate('created_at', $value)->where('trangThai', 4)->sum('tongTien');
+            $doanhThu = HoaDon::whereDate('created_at', $value)->where('trangThai', 4)->sum('tongThanhTien');
             array_push($lstData, $doanhThu);
             $lstDate[$key] =
                 $value->format('d/m');
@@ -690,7 +690,7 @@ class ThongKeController extends Controller
             'dataDonHang' => $dataDonHang,
             'dataDoanhThu' => $dataDoanhThu,
             'dataSanPham' => $dataSanPham,
-            'tongDoanhThu' => number_format($tongDoanhThu, 0, '', ',') . ' ₫',
+            'tongDoanhThu' => number_format($tongDoanhThu, 0, '', '.')  . ' ₫',
             'tongSanPham' => $tongSanPham,
             'tongDonHang' => $tongHoaDon,
         ]);

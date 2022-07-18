@@ -62,7 +62,7 @@
               <li class="card-description" style="color: #fc424a;">{{ $err }}</li>
           @endforeach
       @endif
-      <form method="post" action="{{ route('danhmuc.store') }}">
+      <form method="post" action="{{ route('danhmuc.store') }}" enctype="multipart/form-data">
           @csrf
       <div class="mb-3">
           <label class="form-label" for="basic-default-fullname">Tên Danh Mục Sản Phẩm</label>
@@ -161,7 +161,12 @@ function dequyDanhMuc($danhmuc, $idDanhMucCha = 0, $char = '')
                     <img src="{{ asset('storage/'.$item->hinhAnh) }}" alt="{{ $item->tenDanhMuc }}">
                   </div>
                 </td>
-                <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $char . $item->tenDanhMuc }}</strong></td>
+                <td>
+                  <a href="{{ route('danhmucsanpham', ['slug' => $item->slug]) }}" target="_blank">
+                    <i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{ $char . $item->tenDanhMuc }}</strong>
+                  </a>
+                  
+                </td>
                 <td>
                   <a class="btn btn-success" href="{{ route('danhmuc.edit', ['danhmuc' => $item]) }}">
                     <i class="bx bx-edit-alt me-1"></i>

@@ -52,6 +52,11 @@
     <script src="{{ asset('ad/assets/js/config.js') }}"></script>
    
     <style>
+      .avatar img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain;
+}
       #search-form {
         display: none;
       }
@@ -117,6 +122,51 @@
   .item-keyword {
     padding: 10px 0;
   }
+  .attr-item {
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tag-input {
+            width: 100%;
+            height: auto;
+            border: 1px solid #d9dee3;
+            border-radius: 0.375rem;
+            display: flex;
+            padding: 5px;
+            align-items: center;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .tag-item {
+            width: fit-content;
+            padding: 5px 10px;
+            background: #000;
+            display: flex;
+            align-items: center;
+            color: #fff;
+            padding: 10px;
+            border-radius: 7px; 
+        }
+
+        .tag-item i {
+            padding: 2px;
+            cursor: pointer;
+        }
+
+        .form-select-size {
+            border: none;flex:1; min-width: 100px;
+        }
+
+        .nav-align-top .nav-tabs ~ .tab-content {
+            box-shadow: none;
+        }
+
+        .tab-content {
+            padding: 15px 0 0 0 !important;
+        }
     </style>
     @yield('css')
   </head>
@@ -232,6 +282,11 @@
                     <div data-i18n="Layouts">Danh mục</div>
                   </a>
                 </li>
+                <li class="menu-item {{  request()->routeIs('thuoctinh.*') ? 'active' : '' }}">
+                  <a href="{{ route('thuoctinh.index') }}" class="menu-link">
+                    <div data-i18n="Layouts">Thuộc tính</div>
+                  </a>
+                </li>
               </ul>
             </li>
             <li class="menu-item {{  request()->routeIs('hoadon.*') ? 'active' : '' }}">
@@ -322,7 +377,14 @@
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">
                   <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                      <img src="{{  asset('storage/'.Auth()->user()->anhDaiDien) }}" alt class="w-px-40 h-auto rounded-circle" />
+                      @php
+                      if (Storage::disk('public')->exists(Auth()->user()->anhDaiDien)) {
+                        $anhDaiDien = Auth()->user()->anhDaiDien;
+                    } else {
+                        $anhDaiDien = 'images/user-default.jpg';
+                    }
+                      @endphp
+                      <img src="{{  asset('storage/'.  $anhDaiDien) }}" alt class="w-px-40 h-auto rounded-circle" />
                     </div>
                   </a>
                   <ul class="dropdown-menu dropdown-menu-end">
@@ -331,7 +393,7 @@
                         <div class="d-flex">
                           <div class="flex-shrink-0 me-3">
                             <div class="avatar avatar-online">
-                              <img src="{{  asset('storage/'.Auth()->user()->anhDaiDien) }}" alt class="w-px-40 h-auto rounded-circle" />
+                              <img src="{{  asset('storage/'. $anhDaiDien) }}" alt class="w-px-40 h-auto rounded-circle" />
                             </div>
                           </div>
                           <div class="flex-grow-1">
@@ -430,7 +492,7 @@
     <script src="{{ asset('ad/assets/js/ui-toasts.js') }}"></script>
 
     <!-- endbuild -->
-   <script src="https://cdn.tiny.cloud/1/e1b3imuv3rdzjvyslp1u32g6lzzf6t3fbrn24a6r2nnyep7x/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+   <script src="https://cdn.tiny.cloud/1/2kakzm24wtme8hxduklb91oyhtb1xg7lvu4z4tiyxpuy7s73/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     @yield('js')
    
     <!-- Vendors JS -->

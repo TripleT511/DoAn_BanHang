@@ -80,6 +80,24 @@
 	.toast {
 		z-index: 110000 !important;
 	}
+
+	.prod_options .colors ul li a.color {
+		display: none;
+	}
+
+	.prod_options .colors ul li a.color.active:before {
+		display: none !important;
+	}
+
+	.all .slider .item-box, .all .slider-two .item-box,
+	.all .slider-two .item {
+		background-size: contain !important;
+    	background-repeat: no-repeat !important;
+	}
+
+	.new_price {
+		font-weight: bold;
+	}
 </style>
 @endsection
 @section('content')
@@ -142,11 +160,42 @@
 							@endfor
 							
 						</span>
-						<em class="count-rating rating">( {{ $countRating }} đánh giá )</em>
+						<em class="count-rating rating">( {{ $countRating }} ₫ánh giá )</em>
 						@if($sanpham->sku != null)
 	                    <p><small>SKU: {{ $sanpham->sku }}</small><br>{!! $sanpham->moTa !!}</p>
 						@endif
 	                    <div class="prod_options">
+							<div class="row">
+	                            <label class="col-xl-5 col-lg-5  col-md-6 col-6 pt-0"><strong>Màu sắc</strong></label>
+	                            <div class="col-xl-4 col-lg-5 col-md-6 col-6 colors">
+	                                <ul>
+										@php
+										@endphp
+	                                    <li><a href="#0" class="color active" style="background-color:{{ $sanpham->color->tuychonbienthe->color->mauSac }}; border: 1px solid #ccc; display: block;"></a></li>
+	                                </ul>
+	                            </div>
+	                        </div>
+							@if($sanpham->soluongthuoctinh_count && $sanpham->soluongthuoctinh_count > 1)
+								<div class="row">
+									<label class="col-xl-5 col-lg-5 col-md-6 col-6"><strong>Size</strong></label>
+									<div class="col-xl-4 col-lg-5 col-md-6 col-6">
+										<div class="custom-select-form">
+											@php
+												unset($sanpham->sizes[0]);
+											@endphp
+											<select class="wide form-control" id="size" >
+												@foreach ($sanpham->sizes as $key => $size) 
+													@if($size->tuychonbienthe)
+														<option data-price="{{ $size->gia }}" data-pricesale="{{ $size->giaKhuyenMai }}" value="{{ $size->id }}" {{($key == 1) ? 'selected' : ''}}>
+															{{ $size->tuychonbienthe->sizes->tieuDe }}
+														</option>
+													@endif
+												@endforeach
+											</select>
+										</div>
+									</div>
+								</div>
+							@endif
 	                        <div class="row">
 								@if($sanpham->tonKho > 0)
 	                            <label class="col-xl-5 col-lg-5  col-md-6 col-6"><strong>Số lượng</strong></label>
@@ -165,21 +214,44 @@
 	                    <div class="row">
 	                        <div class="col-lg-5 col-md-6">
 	                            <div class="price_main">
+								@if($sanpham->soluongthuoctinh_count && $sanpham->soluongthuoctinh_count > 1)
+									@php
+										unset($sanpham->sizes[0]);
+									@endphp
+									@foreach ($sanpham->sizes as $key => $size) 
+										@if($size->giaKhuyenMai == 0)
+										<span class="new_price">{{ number_format($size->gia, 0, '', '.')  }} ₫
+										</span>
+										@elseif($size->giaKhuyenMai != 0)
+										<span class="new_price">{{ number_format($size->giaKhuyenMai, 0, '', '.')  }} ₫
+										</span>
+										<span class="percentage">
+										-{{ round((($size->gia - $size->giaKhuyenMai) / $size->gia) * 100) }}%
+										</span>
+										<span class="old_price">
+											{{ number_format($size->gia, 0, '', '.')  }} ₫
+										</span>
+										@endif
+									@php
+									break;
+									@endphp
+									@endforeach
+								@else
 									@if($sanpham->giaKhuyenMai == 0)
-									<span class="new_price">{{ number_format($sanpham->gia, 0, '', ',') }} đ
+									<span class="new_price">{{ number_format($sanpham->gia, 0, '', '.')  }} ₫
 									</span>
 									@elseif($sanpham->giaKhuyenMai != 0)
-									<span class="new_price">{{ number_format($sanpham->giaKhuyenMai, 0, '', ',') }} đ
+									<span class="new_price">{{ number_format($sanpham->giaKhuyenMai, 0, '', '.')  }} ₫
 									</span>
 									<span class="percentage">
 									-{{ round((($sanpham->gia - $sanpham->giaKhuyenMai) / $sanpham->gia) * 100) }}%
 									</span>
 									<span class="old_price">
-										{{ number_format($sanpham->gia, 0, '', ',') }} đ
+										{{ number_format($sanpham->gia, 0, '', '.')  }} ₫
 									</span>
 									@endif
+								@endif
 								</div>
-								
 	                        </div>
 							@if($sanpham->tonKho > 0)
 	                        <div class="col-lg-4 col-md-6">
@@ -390,10 +462,10 @@
 	                    </a>
 	                    <div class="price_box">
 							@if($item->giaKhuyenMai == 0)
-							<span class="new_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
+							<span class="new_price">{{ number_format($item->gia, 0, '', '.')  }} ₫</span>
 							@elseif($item->giaKhuyenMai != 0)
-							<span class="new_price">{{ number_format($item->giaKhuyenMai, 0, '', ',') }} đ</span>
-							<span class="old_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
+							<span class="new_price">{{ number_format($item->giaKhuyenMai, 0, '', '.')  }} ₫</span>
+							<span class="old_price">{{ number_format($item->gia, 0, '', '.')  }} ₫</span>
 							@endif
 	                    </div>
 	                </div>
@@ -497,6 +569,34 @@
 	let btnReview = document.querySelector("#review_btn");
 	let lstBtnRatingStart = document.querySelectorAll(".rating-input");
 	let toast = document.querySelector(".toast");
+	let lstOptionSize = document.querySelectorAll(".list li.option");
+
+	let newprice = document.querySelector(".new_price");
+	let oldPrice = document.querySelector(".new_price");
+	let percentage = document.querySelector(".percentage");
+
+
+	lstOptionSize && lstOptionSize.forEach((item) => item.addEventListener("click", () => {
+		let itemCurrent = document.querySelector(`option[value="${item.dataset.value}"]`);
+		if(itemCurrent) {
+			let priceVariant = itemCurrent.dataset.price;
+			let priceSaleVariant = itemCurrent.dataset.pricesale;
+
+			if(priceSaleVariant != 0) {
+				let percent = Math.round(((priceVariant - priceSaleVariant) / priceVariant) * 100);
+				console.log(percent);
+				$(".percentage").show();
+				$(".old_price").show();
+				$(".new_price").text(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(itemCurrent.dataset.pricesale));
+				$(".percentage").text(`-${percent}%`);
+				$(".old_price").text(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(itemCurrent.dataset.price));
+			} else {
+				$(".percentage").hide();
+				$(".old_price").hide();
+				$(".new_price").text(new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(itemCurrent.dataset.price));
+			}
+		}
+	}));
 
 	lstBtnRatingStart && lstBtnRatingStart.forEach(item => item.addEventListener('click', function() {
 		$("#ratingStart").val(item
@@ -567,9 +667,10 @@
 				url: "/add-to-cart",
 				dataType: "json",
 				data: {
-					_token: $("#token").val(),
-					sanphamId: $("#sanphamId").val(),
+					_token: "{{ csrf_token() }}",
+					sanphamId: '{{ $sanpham->id }}',
 					soLuong: soLuong,
+					size: $("#size").val()
 				},
 				success: function (response) {
 					let toast = document.querySelector(".toast");
@@ -604,8 +705,8 @@
 			url: "/review",
 			dataType: "json",
 			data: {
-				_token: $("#token").val(),
-				sanphamId: $("#sanphamId").val(),
+				_token: "{{ csrf_token() }}",
+				sanphamId: '{{ $sanpham->id }}',
 				user_id: $("#userId").val(),
 				noiDung: $("#review-content").val(),
 				xepHang: $("#ratingStart").val() != '' ? $("#ratingStart").val() : null,
@@ -650,6 +751,8 @@
 
 					lstBtnUpdateRating.forEach((item) => item.addEventListener("click", function () {
 						btnUpdateRatingAjax.setAttribute("data-id", item.dataset.id);
+						let contentRating = document.querySelector(`.content-rating-${item.dataset.id}`);
+						$("#noiDungDanhGia").val(contentRating.innerText);
 					}));
 				}
 			}
@@ -686,7 +789,7 @@
 			url: "/xoa-danh-gia",
 			dataType: "json",
 			data: {
-				_token: $("#token").val(),
+				_token: "{{ csrf_token() }}",
 				id: this.dataset.id,
 				sanphamId: '{{ $sanpham->id }}'
 			},
@@ -740,7 +843,7 @@
 			url: "/cap-nhat-danh-gia",
 			dataType: "json",
 			data: {
-				_token: $("#token").val(),
+				_token: "{{ csrf_token() }}",
 				id: this.dataset.id,
 				sanphamId: '{{ $sanpham->id }}',
 				noiDung: $("#noiDungDanhGia").val(),

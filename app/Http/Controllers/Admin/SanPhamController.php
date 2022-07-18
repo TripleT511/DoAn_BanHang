@@ -10,7 +10,10 @@ use App\Models\DanhMuc;
 
 use App\Http\Requests\StoreSanPhamRequest;
 use App\Http\Requests\UpdateSanPhamRequest;
+use App\Models\BienTheSanPham;
 use App\Models\ThuocTinh;
+use App\Models\ThuocTinhSanPham;
+use App\Models\TuyChonBienThe;
 use App\Models\TuyChonThuocTinh;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -36,7 +39,7 @@ class SanPhamController extends Controller
     }
     public function index()
     {
-        $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->orderBy('created_at', 'desc')->paginate(5);
+        $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->with('color')->with('sizes')->withCount('soluongthuoctinh')->orderBy('created_at', 'desc')->paginate(5);
         foreach ($lstSanPham as $key => $item) {
             foreach ($item->hinhanhs as $item2) {
                 $this->fixImage($item2);
@@ -48,10 +51,10 @@ class SanPhamController extends Controller
 
     public function searchSanPham(Request $request)
     {
-        $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->paginate(5);
+        $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->with('color')->with('sizes')->withCount('soluongthuoctinh')->paginate(5);
         $stringSearch = $request->keyword;
         if ($request->keyword != "") {
-            $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->whereHas('danhmuc', function ($query) use ($stringSearch) {
+            $lstSanPham = SanPham::with('hinhanhs')->with('danhmuc')->with('color')->with('sizes')->withCount('soluongthuoctinh')->whereHas('danhmuc', function ($query) use ($stringSearch) {
                 $query->where('tenDanhMuc', 'LIKE', '%' . $stringSearch . '%');
             })->orWhere('tenSanPham', 'LIKE', '%' . $stringSearch . '%')->orWhere('sku', 'LIKE', '%' . $stringSearch . '%')->paginate(5);
             foreach ($lstSanPham as $key => $item) {
@@ -71,7 +74,11 @@ class SanPhamController extends Controller
     public function create()
     {
         $lstDanhMucCha = DanhMuc::all();
-        return View('admin.sanpham.create-sanpham', ['lstDanhMuc' => $lstDanhMucCha]);
+
+        $lstMauSac = TuyChonThuocTinh::where('thuoc_tinh_id', 2)->get();
+        $lstSize = TuyChonThuocTinh::where('thuoc_tinh_id', 1)->get();
+
+        return View('admin.sanpham.create-sanpham', ['lstDanhMuc' => $lstDanhMucCha, 'lstMauSac' => $lstMauSac, 'lstSize' => $lstSize]);
     }
 
     /**
@@ -84,16 +91,49 @@ class SanPhamController extends Controller
     {
 
         $request->validate([
-            'tenSanPham' => 'required|unique:san_phams',
+            'tenSanPham' => 'required|unique:san_phams,tenSanPham',
             'maSKU' => 'required|unique:san_phams,sku',
             'danhmucid' => 'required',
+            'mausac' => 'required'
         ], [
             'tenSanPham.required' => "Tên sản phẩm không được bỏ trống",
             'tenSanPham.unique' => "Tên sản phẩm bị trùng",
             'maSKU.required' => "Mã sản phẩm không được bỏ trống",
             'maSKU.unique' => "Mã sản phẩm đã tồn tại",
-            'danhmucid.required' => "Bắt buộc chọn danh mục"
+            'danhmucid.required' => "Bắt buộc chọn danh mục",
+            'mausac.required' => "Màu sắc sản phẩm cần được chọn"
         ]);
+
+        if ($request->has('giaTriThuocTinh') && $request->filled('giaTriThuocTinh')) {
+            $request->validate([
+                'giaTriThuocTinh' => 'required',
+                'giaTriThuocTinh.*' => 'required',
+                'variant_sku.*' => 'required|unique:bien_the_san_phams,sku',
+                'variant_price.*' => 'required|integer',
+                'variant_price_sale.*' => "integer",
+            ], [
+                'giaTriThuocTinh.required' => "Size bắt buộc chọn",
+                'giaTriThuocTinh.*.required' => "Giá trị của Size không được bỏ trống",
+                'variant_sku.*.required' => "Mã sản phẩm biến thể không được bỏ trống",
+                'variant_sku.*.unique' => "Mã sản phẩm biến thể không được trùng",
+                'variant_price.*.required' => "Giá sản phẩm biến thể không được bỏ trống",
+                'variant_price.*.integer' => "Giá sản phẩm biến thể phải là số",
+                'variant_price_sale.*.integer' => "Giá khuyến mãi sản phẩm biến thể phải là số",
+            ]);
+
+            foreach ($request->variant_price as $key => $value) {
+                if ($value != 0) {
+                    $request->validate(
+                        [
+                            "variant_price_sale.$key" => "max:$value",
+                        ],
+                        [
+                            "variant_price_sale.$key.max" => "Giá khuyến mãi không được lớn hơn giá gốc",
+                        ]
+                    );
+                }
+            }
+        }
 
 
         if ($request->filled('giaKhuyenMai')) {
@@ -156,8 +196,60 @@ class SanPhamController extends Controller
             }
         }
 
-        Session::flush("lstThuocTinh");
+        // Thêm biến thể sản phẩm
 
+        $thuoctinhSanPham = new ThuocTinhSanPham();
+        $thuoctinhSanPham->fill([
+            'san_pham_id' => $sanpham->id,
+            'thuoc_tinh_id' => 2,
+        ]);
+        $thuoctinhSanPham->save();
+
+        $bienTheSanPham = new BienTheSanPham();
+        $bienTheSanPham->fill([
+            'san_pham_id' => $sanpham->id,
+            'sku' => $sanpham->sku,
+            'gia' => $sanpham->gia,
+            'giaKhuyenMai' => $sanpham->giaKhuyenMai,
+            'soLuong' => 0,
+        ]);
+        $bienTheSanPham->save();
+
+        $tuyChonBienThe = new TuyChonBienThe();
+        $tuyChonBienThe->fill([
+            'bien_the_san_pham_id' => $bienTheSanPham->id,
+            'tuy_chon_thuoc_tinh_id' => $request->mausac
+        ]);
+        $tuyChonBienThe->save();
+
+        // Size
+        if ($request->has('giaTriThuocTinh') && $request->filled('giaTriThuocTinh')) {
+            $thuoctinhSanPhamSize = new ThuocTinhSanPham();
+            $thuoctinhSanPhamSize->fill([
+                'san_pham_id' => $sanpham->id,
+                'thuoc_tinh_id' => 1,
+            ]);
+            $thuoctinhSanPhamSize->save();
+
+            foreach ($request->giaTriThuocTinh as $key => $value) {
+                $bienTheSanPhamSize = new BienTheSanPham();
+                $bienTheSanPhamSize->fill([
+                    'san_pham_id' => $sanpham->id,
+                    'sku' => $request->variant_sku[$key],
+                    'gia' => $request->variant_price[$key],
+                    'giaKhuyenMai' => $request->variant_price_sale[$key],
+                    'soLuong' => 0,
+                ]);
+                $bienTheSanPhamSize->save();
+
+                $tuyChonBienTheSize = new TuyChonBienThe();
+                $tuyChonBienTheSize->fill([
+                    'bien_the_san_pham_id' => $bienTheSanPhamSize->id,
+                    'tuy_chon_thuoc_tinh_id' => $value
+                ]);
+                $tuyChonBienTheSize->save();
+            }
+        }
 
         return Redirect::route('sanpham.index');
     }
@@ -187,7 +279,16 @@ class SanPhamController extends Controller
             $this->fixImage($item);
         }
 
-        return View('admin.sanpham.edit-sanpham', ['sanpham' => $sanpham, 'lstDanhMuc' => $lstDanhMucCha, 'lstHinhAnh' => $lstHinhAnh]);
+        $lstMauSac = TuyChonThuocTinh::where('thuoc_tinh_id', 2)->get();
+        $lstSize = TuyChonThuocTinh::where('thuoc_tinh_id', 1)->get();
+
+
+        $mauSacSanPham =
+            BienTheSanPham::where('san_pham_id', $sanpham->id)->with('tuychonbienthe.color')->first();
+        $lstBienTheSanPham = BienTheSanPham::where('san_pham_id', $sanpham->id)->with('tuychonbienthe.sizes')->get();
+        $idMauSac = $mauSacSanPham->tuychonbienthe->color->id;
+
+        return View('admin.sanpham.edit-sanpham', ['sanpham' => $sanpham, 'lstDanhMuc' => $lstDanhMucCha, 'lstHinhAnh' => $lstHinhAnh, 'lstMauSac' => $lstMauSac, 'lstSize' => $lstSize, 'lstBienTheSanPham' => $lstBienTheSanPham, 'idMauSac' => $idMauSac]);
     }
 
     /**
@@ -199,15 +300,64 @@ class SanPhamController extends Controller
      */
     public function update(UpdateSanPhamRequest $request, SanPham $sanpham)
     {
+
         $request->validate([
             'tenSanPham' => 'required',
             'maSKU' => 'required',
-            'danhmucid' => 'required'
+            'danhmucid' => 'required',
+            'mausac' => 'required'
         ], [
             'tenSanPham.required' => "Tên sản phẩm không được bỏ trống",
             'maSKU.required' => "Mã sản phẩm không được bỏ trống",
-            'danhmucid.required' => "Danhg mục sản phẩm không được bỏ trống"
+            'danhmucid.required' => "Danh mục sản phẩm không được bỏ trống",
+            'mausac.required' => "Màu sắc sản phẩm không được bỏ trống",
         ]);
+
+        if ($request->has('giaTriThuocTinh') && $request->filled('giaTriThuocTinh')) {
+            $request->validate([
+                'giaTriThuocTinh' => 'required',
+                'giaTriThuocTinh.*' => 'required',
+                'variant_sku.*' => 'required',
+                'variant_price.*' => 'required|integer',
+                'variant_price_sale.*' => "integer",
+            ], [
+                'giaTriThuocTinh.required' => "Size bắt buộc chọn",
+                'giaTriThuocTinh.*.required' => "Giá trị của Size không được bỏ trống",
+                'variant_sku.*.required' => "Mã sản phẩm biến thể không được bỏ trống",
+                'variant_price.*.required' => "Giá sản phẩm biến thể không được bỏ trống",
+                'variant_price.*.integer' => "Giá sản phẩm biến thể phải là số",
+                'variant_price_sale.*.integer' => "Giá khuyến mãi sản phẩm biến thể phải là số",
+            ]);
+
+            foreach ($request->variant_price as $key => $value) {
+                if ($value != 0) {
+                    $request->validate(
+                        [
+                            "variant_price_sale.$key" => "max:$value",
+                        ],
+                        [
+                            "variant_price_sale.$key.max" => "Giá khuyến mãi không được lớn hơn giá gốc",
+                        ]
+                    );
+                }
+            }
+        }
+
+        if ($request->filled('tenSanPham') && $request->tenSanPham != $sanpham->tenSanPham) {
+            $request->validate([
+                'tenSanPham' => 'unique:san_phams,tenSanPham',
+            ], [
+                'tenSanPham.unique' => "Tên sản phẩm đã tồn tại",
+            ]);
+        }
+
+        if ($request->filled('maSKU') && $request->maSKU != $sanpham->sku) {
+            $request->validate([
+                'maSKU' => 'unique:san_phams,sku',
+            ], [
+                'maSKU.unique' => "Mã sản phẩm đã tồn tại",
+            ]);
+        }
 
         if ($request->filled('giaKhuyenMai')) {
             $gia = $request->filled('gia') ? $request->gia : 0;
@@ -261,6 +411,68 @@ class SanPhamController extends Controller
                 $hinhAnh->save();
                 $hinhAnh->hinhAnh = $item->store('images/san-pham', 'public');
                 $hinhAnh->save();
+            }
+        }
+
+        // Cập nhật biến thể sản phẩm
+        $bienTheMauSac = BienTheSanPham::where('san_pham_id', $sanpham->id)->with('tuychonbienthe.color')->first();
+        $bienTheMauSac->sku = $sanpham->sku;
+        $bienTheMauSac->gia = $sanpham->gia;
+        $bienTheMauSac->giaKhuyenMai = $sanpham->giaKhuyenMai;
+        $bienTheMauSac->save();
+
+        $tuyChonBienTheMauSac = TuyChonBienThe::where('bien_the_san_pham_id', $bienTheMauSac->id)->first();
+        $tuyChonBienTheMauSac->tuy_chon_thuoc_tinh_id = $request->mausac;
+        $tuyChonBienTheMauSac->save();
+
+        // Size
+
+        if ($request->has('giaTriThuocTinh') && $request->filled('giaTriThuocTinh')) {
+            $lstSizeNoneDelete = [];
+            foreach ($request->giaTriThuocTinh as $key => $value) {
+
+                $BienTheSizeExist = BienTheSanPham::where('san_pham_id', $sanpham->id)->whereHas('tuychonbienthe', function ($query) use ($value) {
+                    $query->where('tuy_chon_thuoc_tinh_id', $value);
+                })->first();
+
+                if ($BienTheSizeExist) {
+                    $BienTheSizeExist->sku = $request->variant_sku[$key];
+                    $BienTheSizeExist->gia = $request->variant_price[$key];
+                    $BienTheSizeExist->giaKhuyenMai = $request->variant_price_sale[$key];
+                    $BienTheSizeExist->save();
+                } else {
+                    $bienTheSanPhamSize = new BienTheSanPham();
+                    $bienTheSanPhamSize->fill([
+                        'san_pham_id' => $sanpham->id,
+                        'sku' => $request->variant_sku[$key],
+                        'gia' => $request->variant_price[$key],
+                        'giaKhuyenMai' => $request->variant_price_sale[$key],
+                        'soLuong' => 0,
+                    ]);
+                    $bienTheSanPhamSize->save();
+
+
+
+                    $tuyChonBienTheSize = new TuyChonBienThe();
+                    $tuyChonBienTheSize->fill([
+                        'bien_the_san_pham_id' => $bienTheSanPhamSize->id,
+                        'tuy_chon_thuoc_tinh_id' => $value
+                    ]);
+                    $tuyChonBienTheSize->save();
+                }
+
+                array_push($lstSizeNoneDelete, (int)$value);
+            }
+
+            $bienTheDelete =
+                BienTheSanPham::where('san_pham_id', $sanpham->id)->whereHas('tuychonbienthe', function ($query) use ($lstSizeNoneDelete, $sanpham) {
+                    $query->whereNot('sku', $sanpham->sku)->whereNotIn('tuy_chon_thuoc_tinh_id', $lstSizeNoneDelete);
+                })->get();
+            if ($bienTheDelete) {
+                foreach ($bienTheDelete as $size) {
+                    $tuychonBienTheDelete = TuyChonBienThe::where('bien_the_san_pham_id', $size->id)->delete();
+                    $size->delete();
+                }
             }
         }
 

@@ -37,7 +37,7 @@
             {{ $soLuong }}
         </td>
         <td class="text-right">
-           {{ number_format($thanhTien, 0, '', ',') }} ₫
+           {{ number_format($thanhTien, 0, '', '.')  }} ₫
         </td>
         <td class="text-right">
             {{ $donHang }}
@@ -48,7 +48,7 @@
         <td><strong>Tổng:</strong></td>
         <td></td>
         <td class="text-right"><strong>{{ $tongSoLuongSanPham }}</strong></td>
-        <td class="text-right"><strong>{{ number_format($tongThanhTien, 0, '', ',') }} ₫</strong></td>
+        <td class="text-right"><strong>{{ number_format($tongThanhTien, 0, '', '.')  }} ₫</strong></td>
         <td class="text-right"><strong>{{ $tongDonHang }}</strong></td>
     </tr>
     </tbody>

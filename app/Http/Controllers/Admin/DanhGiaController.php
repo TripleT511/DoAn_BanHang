@@ -9,6 +9,7 @@ use App\Models\SanPham;
 use App\Models\User;
 use App\Http\Requests\StoreDanhGiaRequest;
 use App\Http\Requests\UpdateDanhGiaRequest;
+use App\Models\HoaDon;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -85,6 +86,14 @@ class DanhGiaController extends Controller
                 ';
             }
             return response()->json(['error' => $error]);
+        }
+
+        $checkMuaSanPham = HoaDon::with('chitiethoadons')->whereHas('chitiethoadons', function ($query) use ($request) {
+            $query->where('san_pham_id', $request->sanphamId);
+        })->where('khach_hang_id', $request->user_id)->count();
+
+        if ($checkMuaSanPham == 0) {
+            return response()->json(['error' => '<li class="card-description" style="color: #fff;">Bạn cần phải mua sản phẩm này mới được phép đánh giá </li>']);
         }
 
         $existDanhGia = DanhGia::where('user_id', $request->user_id)->count();

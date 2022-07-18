@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\HinhAnh;
 use App\Models\DanhMuc;
 use App\Models\ChiTietPhieuKho;
+use App\Models\BienTheSanPham;
 
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,7 +25,6 @@ class SanPham extends Model
         'dacTrung',
         'gia',
         'giaKhuyenMai',
-        'giaNhap',
         'slug',
     ];
 
@@ -51,5 +51,20 @@ class SanPham extends Model
     public function chitiethoadons()
     {
         return $this->hasMany(ChiTietHoaDon::class, 'san_pham_id', 'id')->withTrashed();
+    }
+
+    public function soluongthuoctinh()
+    {
+        return $this->hasMany(ThuocTinhSanPham::class, 'san_pham_id', 'id');
+    }
+
+    public function color()
+    {
+        return $this->hasOne(BienTheSanPham::class, 'san_pham_id', 'id')->with('tuychonbienthe.color');
+    }
+
+    public function sizes()
+    {
+        return $this->hasMany(BienTheSanPham::class, 'san_pham_id', 'id')->with('tuychonbienthe.sizes');
     }
 }

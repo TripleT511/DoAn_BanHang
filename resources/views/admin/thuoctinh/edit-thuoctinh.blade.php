@@ -6,7 +6,7 @@
 @endsection
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Thuộc tính/</span> Thêm thuộc tính</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Sửa thuộc tính</h4>
     <!-- Basic Layout -->
     <div class="row">
         
@@ -25,7 +25,7 @@
                     @method("PATCH")
                     <div class="mb-3">
                         <label for="thuocTinh" class="form-label">Tên thuộc tính</label>
-                        <select id="thuocTinh" name="tenThuocTinh" class="form-select">
+                        <select id="thuocTinh" name="tenThuocTinh" class="form-select" disabled>
                             @foreach ($lstThuocTinh as $item)
                                 <option value="{{$item->tenThuocTinh}}" {{ ($item->tenThuocTinh == $thuoctinh->tenThuocTinh) ? 'selected' : ''}}>{{ $item->tenThuocTinh }}</option>
                             @endforeach
@@ -33,7 +33,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="loaiThuocTinh" class="form-label">Loại thuộc tính</label>
-                        <select id="loaiThuocTinh" name="loaiThuocTinh" class="form-select">
+                        <select id="loaiThuocTinh" name="loaiThuocTinh" class="form-select" disabled>
                             <option value="Text" {{ ($thuoctinh->loaiThuocTinh == "Text" ? "selected" : '')}}>Chữ</option>
                             <option value="Color" {{ ($thuoctinh->loaiThuocTinh == "Color" ? "selected" : '')}}>Màu sắc</option>
                         </select>
@@ -52,6 +52,7 @@
                         <tbody class="table-border-bottom-0 lstOption">
                             @foreach($lstTuyChonThuocTinh as $item)
                                 <tr class="option-item">
+                                    <input type="hidden" name="idOption[]" value="{{ $item->id }}">
                                 <td>
                                 <input class="form-control" type="text" id="tieuDe" name="tieuDe[]" value="{{ $item->tieuDe }}">
                                 </td>
@@ -59,7 +60,7 @@
                                 <input class="form-control color-picker" type="text" id="mauSac" name="mauSac[]" value="{{ $item->mauSac }}">
                                 </td>
                                 <td>
-                                    <button style="outline: none; border: none" class="btn btn-danger btn-trash" type="button"><i class="bx bx-trash me-1"></i> Xoá</button>
+                                    <button style="outline: none; border: none" class="btn btn-danger btn-trash" type="button"><i class="bx bx-trash me-1"></i> </button>
                                 </td>
                             </tr>
                             @endforeach
@@ -107,7 +108,7 @@
                                 <input class="form-control color-picker" type="text" id="mauSac" name="mauSac[]">
                                 </td>
                                 <td>
-                                    <button style="outline: none; border: none" class="btn btn-danger btn-trash" type="button"><i class="bx bx-trash me-1"></i> Xoá</button>
+                                    <button style="outline: none; border: none" class="btn btn-danger btn-trash" type="button"><i class="bx bx-trash me-1"></i> </button>
                                 </td>
                             </tr>`;
             $(".lstOption").append(output);

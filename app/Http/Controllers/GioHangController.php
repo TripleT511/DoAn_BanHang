@@ -7,6 +7,7 @@ use App\Http\Requests\StoreGioHangRequest;
 use App\Http\Requests\UpdateGioHangRequest;
 use App\Jobs\SendMail;
 use App\Mail\OrderMail;
+use App\Models\BienTheSanPham;
 use App\Models\ChiTietHoaDon;
 use App\Models\ChiTietPhieuKho;
 use App\Models\DanhMuc;
@@ -14,6 +15,7 @@ use App\Models\HoaDon;
 use App\Models\MaGiamGia;
 use App\Models\PhieuKho;
 use App\Models\SanPham;
+use App\Models\TuyChonBienThe;
 use Carbon\Carbon;
 use Illuminate\Bus\Dispatcher;
 use Illuminate\Http\Request;
@@ -37,6 +39,7 @@ class GioHangController extends Controller
     protected function renderCart()
     {
         $newCart = Session::get('Cart');
+
         $output = '';
         $total = 0;
         if ($newCart)
@@ -51,66 +54,141 @@ class GioHangController extends Controller
                         <strong>
                             <span>' . $item['soluong'] . 'x ' . $item['tenSanPham'] . '
                             </span>
-                            ' . number_format($item['gia'], 0, '', ',') . ' ₫
+                            ' . number_format($item['gia'], 0, '', '.')  . ' ₫
                         </strong>
                     </a>
-                    <a href="#" class="btn-trash action" data-id="' . $item['id'] . '"><i class="ti-trash"></i></a>
+                    <a href="#" class="btn-trash action" data-id="' . $item['sku'] . '"><i class="ti-trash"></i></a>
                 </li>
             ';
             }
         return response()->json([
             'newCart' => $output,
             'numberCart' => $newCart ? count($newCart) : 0,
-            'total' => number_format($total, 0, '', ','),
+            'total' => number_format($total, 0, '', '.'),
         ]);
     }
     public function themgiohang(Request $request)
     {
         $lstCart = Session::get('Cart');
         $idSanPham = $request->sanphamId;
-        $sanpham = SanPham::whereId($idSanPham)->first();
-        $countProductinCart = isset($lstCart[$idSanPham]) ? $lstCart[$idSanPham]['soluong'] : 0;
+        $countProductinCart = 0;
+        $soLuongTon = 0;
+        $sanpham = SanPham::whereId($idSanPham)->with('color')->with('sizes')->withCount('soluongthuoctinh')->first();
+        $BienTheSizeExist = '';
+        $tuyChonBienThe = '';
 
-        $soLuongTon = $sanpham->tonKho - $countProductinCart;
+        $stringTenSanPham = $sanpham->tenSanPham . " - " . $sanpham->color->tuychonbienthe->color->tieuDe;
+        if ($sanpham->soluongthuoctinh_count && $sanpham->soluongthuoctinh_count > 1) {
+            if (!$request->has('size') || empty($request->size)) {
+                return response()->json([
+                    'error' => "Cần chọn size cho sản phẩm này",
+                ]);
+            }
+
+            $BienTheSizeExist = BienTheSanPham::where([
+                'san_pham_id' => $sanpham->id,
+                'id' => $request->size
+            ])->with('tuychonbienthe')->first();
+
+            $tuyChonBienThe = TuyChonBienThe::where('bien_the_san_pham_id', $BienTheSizeExist->id)->with('thuoctinh')->first();
+
+            if (!$BienTheSizeExist) {
+                return response()->json([
+                    'error' => "Size sản phẩm không tồn tại hoặc đã bị xoá khỏi hệ thống",
+                ]);
+            }
+
+            $stringTenSanPham .= " - " . $tuyChonBienThe->thuoctinh->tieuDe;
+
+            $countProductinCart =
+                isset($lstCart[$BienTheSizeExist->sku]) ? $lstCart[$BienTheSizeExist->sku]['soluong'] : 0;
+            $soLuongTon = $BienTheSizeExist->soLuong - $countProductinCart;
+        } else {
+            $countProductinCart = isset($lstCart[$sanpham->sku]) ? $lstCart[$sanpham->sku]['soluong'] : 0;
+            $soLuongTon = $sanpham->tonKho - $countProductinCart;
+        }
 
         if ($request->soLuong > $soLuongTon) {
             return response()->json([
-                'error' => "Sản phẩm " . $sanpham->tenSanPham . " hiện chỉ còn " . $soLuongTon . " sản phẩm",
+                'error' => $stringTenSanPham . " hiện chỉ còn " . $soLuongTon . " sản phẩm",
             ]);
         }
 
         if ($lstCart) {
-            if (isset($lstCart[$idSanPham])) {
-                $lstCart[$idSanPham]['soluong'] = (int)$lstCart[$idSanPham]['soluong'] +  $request->soLuong;
-                $lstCart[$idSanPham]['tongTien'] = (int)$lstCart[$idSanPham]['soluong'] *  (float)$lstCart[$idSanPham]['gia'];
+
+            if ($sanpham->soluongthuoctinh_count && $sanpham->soluongthuoctinh_count > 1) {
+
+                if (isset($lstCart[$BienTheSizeExist->sku])) {
+
+                    $lstCart[$BienTheSizeExist->sku]['soluong'] = (int)$lstCart[$BienTheSizeExist->sku]['soluong'] +  $request->soLuong;
+                    $lstCart[$BienTheSizeExist->sku]['tongTien'] = (int)$lstCart[$BienTheSizeExist->sku]['soluong'] *  (float)$lstCart[$BienTheSizeExist->sku]['gia'];
+                } else {
+                    $lstCart[$BienTheSizeExist->sku] = array(
+                        "id" => $sanpham->id,
+                        "tenSanPham" => $stringTenSanPham,
+                        'slug' => $sanpham->slug,
+                        "hinhAnh" => $sanpham->hinhanhs->first()->hinhAnh,
+                        "sku" => $BienTheSizeExist->sku,
+                        "soluong" => $request->soLuong,
+                        "gia" => $BienTheSizeExist->giaKhuyenMai != 0 ?  $BienTheSizeExist->giaKhuyenMai : $BienTheSizeExist->gia,
+                        "tongTien" => 0,
+                        "bien_the_san_pham_id" => $BienTheSizeExist->id
+                    );
+                    $lstCart[$BienTheSizeExist->sku]['tongTien'] = (int)$lstCart[$BienTheSizeExist->sku]['soluong'] *  (float)$lstCart[$BienTheSizeExist->sku]['gia'];
+                }
+                Session::put("Cart", $lstCart);
             } else {
-                $lstCart[$idSanPham] = array(
-                    "id" => $idSanPham,
-                    "tenSanPham" => $sanpham->tenSanPham,
+                if (isset($lstCart[$sanpham->sku])) {
+                    $lstCart[$sanpham->sku]['soluong'] = (int)$lstCart[$sanpham->sku]['soluong'] +  $request->soLuong;
+                    $lstCart[$sanpham->sku]['tongTien'] = (int)$lstCart[$sanpham->sku]['soluong'] *  (float)$lstCart[$sanpham->sku]['gia'];
+                } else {
+                    $lstCart[$sanpham->sku] = array(
+                        "id" => $sanpham->id,
+                        "tenSanPham" => $sanpham->tenSanPham,
+                        'slug' => $sanpham->slug,
+                        "hinhAnh" => $sanpham->hinhanhs->first()->hinhAnh,
+                        "sku" => $sanpham->sku,
+                        "soluong" => $request->soLuong,
+                        "gia" => $sanpham->giaKhuyenMai != 0 ?  $sanpham->giaKhuyenMai : $sanpham->gia,
+                        "tongTien" => 0,
+                        "bien_the_san_pham_id" => null
+                    );
+
+                    $lstCart[$sanpham->sku]['tongTien'] = (int)$lstCart[$sanpham->sku]['soluong'] *  (float)$lstCart[$sanpham->sku]['gia'];
+                }
+                Session::put("Cart", $lstCart);
+            }
+        } else {
+
+            if ($sanpham->soluongthuoctinh_count && $sanpham->soluongthuoctinh_count > 1) {
+                $lstCart[$BienTheSizeExist->sku] = array(
+                    "id" => $sanpham->id,
+                    "tenSanPham" => $stringTenSanPham,
+                    'slug' => $sanpham->slug,
+                    "hinhAnh" => $sanpham->hinhanhs->first()->hinhAnh,
+                    "sku" => $BienTheSizeExist->sku,
+                    "soluong" => $request->soLuong,
+                    "gia" => $BienTheSizeExist->giaKhuyenMai != 0 ?  $BienTheSizeExist->giaKhuyenMai : $BienTheSizeExist->gia,
+                    "tongTien" => 0,
+                    "bien_the_san_pham_id" => $BienTheSizeExist->id
+                );
+                $lstCart[$BienTheSizeExist->sku]['tongTien'] = (int)$lstCart[$BienTheSizeExist->sku]['soluong'] *  (float)$lstCart[$BienTheSizeExist->sku]['gia'];
+                Session::put("Cart", $lstCart);
+            } else {
+                $lstCart[$sanpham->sku] = array(
+                    "id" => $sanpham->id,
+                    "tenSanPham" => $stringTenSanPham,
                     'slug' => $sanpham->slug,
                     "hinhAnh" => $sanpham->hinhanhs->first()->hinhAnh,
                     "sku" => $sanpham->sku,
                     "soluong" => $request->soLuong,
                     "gia" => $sanpham->giaKhuyenMai != 0 ?  $sanpham->giaKhuyenMai : $sanpham->gia,
-                    "tongTien" => 0
+                    "tongTien" => 0,
+                    "bien_the_san_pham_id" => null
                 );
-
-                $lstCart[$idSanPham]['tongTien'] = (int)$lstCart[$idSanPham]['soluong'] *  (float)$lstCart[$idSanPham]['gia'];
+                $lstCart[$sanpham->sku]['tongTien'] = (int)$lstCart[$sanpham->sku]['soluong'] *  (float)$lstCart[$sanpham->sku]['gia'];
+                Session::put("Cart", $lstCart);
             }
-            Session::put("Cart", $lstCart);
-        } else {
-            $lstCart[$idSanPham] = array(
-                "id" => $idSanPham,
-                "tenSanPham" => $sanpham->tenSanPham,
-                'slug' => $sanpham->slug,
-                "hinhAnh" => $sanpham->hinhanhs->first()->hinhAnh,
-                "sku" => $sanpham->sku,
-                "soluong" => $request->soLuong,
-                "gia" => $sanpham->giaKhuyenMai != 0 ?  $sanpham->giaKhuyenMai : $sanpham->gia,
-                "tongTien" => 0
-            );
-            $lstCart[$idSanPham]['tongTien'] = (int)$lstCart[$idSanPham]['soluong'] *  (float)$lstCart[$idSanPham]['gia'];
-            Session::put("Cart", $lstCart);
         }
 
         $newCart = Session::get('Cart');
@@ -128,49 +206,61 @@ class GioHangController extends Controller
                         <strong>
                             <span>' .  $item['soluong'] . 'x ' . $item['tenSanPham'] . '
                             </span>
-                            ' . number_format($item['gia'], 0, '', ',') . ' ₫
+                            ' . number_format($item['gia'], 0, '', '.')  . ' ₫
                         </strong>
                     </a>
-                    <a href="#" class="btn-trash action" data-id="' . $item['id'] . '"><i class="ti-trash"></i></a>
+                    <a href="#" class="btn-trash action" data-id="' . $item['sku'] . '"><i class="ti-trash"></i></a>
                 </li>
             ';
             }
         return response()->json([
-            'message' => 'Sản phẩm ' . $sanpham->tenSanPham . ' đã được thêm vào giỏ hàng',
+            'message' => 'Sản phẩm ' . $stringTenSanPham . ' đã được thêm vào giỏ hàng',
             'newCart' => $output,
             'numberCart' => $newCart ? count($newCart) : 0,
-            'total' => number_format($total, 0, '', ','),
+            'total' => number_format($total, 0, '', '.'),
 
         ]);
     }
 
     public function capNhatGioHang(Request $request)
     {
+
         $lstCart = Session::get('Cart');
-        $idSanPham = $request->sanphamId;
-        $sanpham = SanPham::whereId($idSanPham)->first();
+        $sku = $request->sanphamId;
 
         if ($request->type == "incre") {
-            $countProductinCart = isset($lstCart[$idSanPham]) ? $lstCart[$idSanPham]['soluong'] : 0;
             // Số lượng tồn kho
-            $soLuongTon = $sanpham->tonKho - $countProductinCart;
+            $countProductinCart =
+                isset($lstCart[$sku]) ? $lstCart[$sku]['soluong'] : 0;
+
+            if ($lstCart[$sku]['bien_the_san_pham_id']) {
+                $bienTheSanPhamCurrent = BienTheSanPham::where([
+                    'san_pham_id' => $lstCart[$sku]['id'],
+                    'id' => $lstCart[$sku]['bien_the_san_pham_id']
+                ])->first();
+
+                $soLuongTon = $bienTheSanPhamCurrent->soLuong - $countProductinCart;
+            } else {
+                $sanpham = SanPham::where('id', $lstCart[$sku]['id'])->first();
+                $soLuongTon = $sanpham->tonKho - $countProductinCart;
+            }
 
             if ($request->soLuong > $soLuongTon) {
-                $stringError = "Sản phẩm " . SanPham::find($idSanPham)->tenSanPham . " hiện chỉ còn " . $soLuongTon . " sản phẩm";
+                $stringError = "Sản phẩm " . $lstCart[$sku]['tenSanPham'] . " hiện chỉ còn " . $soLuongTon . " sản phẩm ";
                 return $this->renderCartTemplate($stringError);
             }
         }
 
         if ($request->soLuong > 0) {
             if ($request->type == "incre") {
-                $lstCart[$idSanPham]['soluong'] += (int)$request->soLuong;
-                $lstCart[$idSanPham]['tongTien'] = (int)$lstCart[$idSanPham]['soluong'] *  (float)$lstCart[$idSanPham]['gia'];
+                $lstCart[$sku]['soluong'] += (int)$request->soLuong;
+                $lstCart[$sku]['tongTien'] = (int)$lstCart[$sku]['soluong'] *  (float)$lstCart[$sku]['gia'];
             } else if ($request->type == "decre") {
-                $lstCart[$idSanPham]['soluong'] = (int)$lstCart[$idSanPham]['soluong'] - (int)$request->soLuong;
-                $lstCart[$idSanPham]['tongTien'] = (int)$lstCart[$idSanPham]['soluong'] *  (float)$lstCart[$idSanPham]['gia'];
+                $lstCart[$sku]['soluong'] = (int)$lstCart[$sku]['soluong'] - (int)$request->soLuong;
+                $lstCart[$sku]['tongTien'] = (int)$lstCart[$sku]['soluong'] *  (float)$lstCart[$sku]['gia'];
             }
         } else {
-            unset($lstCart[$idSanPham]);
+            unset($lstCart[$sku]);
         }
         Session::put("Cart", $lstCart);
         return $this->renderCartTemplate();
@@ -181,6 +271,7 @@ class GioHangController extends Controller
 
         $newCart = Session::get('Cart');
         $discountCode = Session::get('DiscountCode');
+
         $output = '';
         $outputMain = '';
         $total = 0;
@@ -200,7 +291,7 @@ class GioHangController extends Controller
                             ' . $item['gia'] . ' ₫
                         </strong>
                     </a>
-                    <a href="#"  class="btn-trash action" data-id="' . $item['id'] . '"><i class="ti-trash"></i></a>
+                    <a href="#"  class="btn-trash action" data-id="' . $item['sku'] . '"><i class="ti-trash"></i></a>
                 </li>
                 ';
                 $outputMain .= '
@@ -212,7 +303,7 @@ class GioHangController extends Controller
                             <span class="item_cart">' . $item['tenSanPham']  . '</span>
                         </td>
                         <td>
-                            <strong>' . number_format($item['gia'], 0, '', ',')  . ' ₫</strong>
+                            <strong>' . number_format($item['gia'], 0, '', '.')   . ' ₫</strong>
                         </td>
                         <td>
                             <div class="numbers-row">
@@ -220,10 +311,10 @@ class GioHangController extends Controller
                             <div class="inc button_inc">+</div><div class="dec button_inc">-</div></div>
                         </td>
                         <td>
-                            <strong>' . number_format($item['tongTien'], 0, '', ',') . '  ₫</strong>
+                            <strong>' . number_format($item['tongTien'], 0, '', '.')  . '  ₫</strong>
                         </td>
                         <td class="options">
-                            <a href="#" class="btn-trash" data-id="' . $item['id'] . '"><i class="ti-trash"></i></a>
+                            <a href="#" class="btn-trash" data-id="' . $item['sku'] . '"><i class="ti-trash"></i></a>
                         </td>
                     </tr>
                 ';
@@ -249,6 +340,22 @@ class GioHangController extends Controller
         }
         $valueDiscount = 0;
         $newTotal = $total;
+
+
+        if ($discountCode) {
+            $code = MaGiamGia::where('id', (int)$discountCode["id"])->first();
+
+            if ($code->soLuong <= 0 && $code->soLuong != null && $code->soLuong) {
+                Session::forget('DiscountCode');
+                $discountCode = null;
+            }
+
+            if ($code->giaTriToiThieu != null && $total < $code->giaTriToiThieu) {
+                Session::forget('DiscountCode');
+                $discountCode = null;
+            }
+        }
+
         if ($discountCode) {
             $loaiKhuyenMai = $discountCode['type'];
             $value =  $discountCode['value'];
@@ -277,23 +384,23 @@ class GioHangController extends Controller
             'cartMain' => $outputMain,
             'newCart' => $output,
             'numberCart' => $newCart ? count($newCart) : 0,
-            'total' => number_format($total, 0, '', ','),
+            'total' => number_format($total, 0, '', '.'),
             'discount' =>
-            number_format($valueDiscount, 0, '', ','),
+            number_format($valueDiscount, 0, '', '.'),
             'success' => $valueDiscount != 0 ? 'Áp dụng mã giảm giá thành công' : 'Cập nhật giỏ hàng thành công',
             'newTotal' =>
-            number_format($newTotal, 0, '', ','),
+            number_format($newTotal, 0, '', '.'),
             'error' => $error
         ]);
     }
 
     public function xoaGioHang(Request $request)
     {
-        $idSanPham = $request->sanphamId;
+        $sku = $request->sanphamId;
         $lstCart = Session::get('Cart');
         if ($lstCart) {
-            if (isset($lstCart[$idSanPham])) {
-                unset($lstCart[$idSanPham]);
+            if (isset($lstCart[$sku])) {
+                unset($lstCart[$sku]);
             }
             Session::put("Cart", $lstCart);
         }
@@ -311,6 +418,7 @@ class GioHangController extends Controller
 
         Session::forget("DiscountCode");
         $Cart = Session::get('Cart');
+
         $countCart = $Cart ? count($Cart) : 0;
         $total = 0;
         $lstDiscount = MaGiamGia::where('ngayKetThuc', '>=', date('Y-m-d H:i:s'))->where('ngayBatDau', '<=', date('Y-m-d H:i:s'))->where('soLuong', '>', 0)->orWhereNull('soLuong')->get();
@@ -377,7 +485,7 @@ class GioHangController extends Controller
                 'total' => $total,
                 'newTotal' => $newTotal,
                 'discount' =>
-                number_format($valueDiscount != 0 ? -$valueDiscount : $valueDiscount, 0, '', ','),
+                number_format($valueDiscount != 0 ? -$valueDiscount : $valueDiscount, 0, '', '.'),
                 'lstDanhMuc' => $lstDanhMuc,
                 'lstDanhMucHeader' => $lstDanhMucHeader
             ]);
@@ -437,6 +545,11 @@ class GioHangController extends Controller
             ]);
             $hoadon->save();
 
+            if ($discountCode) {
+                $hoadon->ma_giam_gia_id = $discountCode['id'];
+                $hoadon->save();
+            }
+
             $newArray = [];
 
             foreach ($Cart as $item) {
@@ -448,30 +561,40 @@ class GioHangController extends Controller
                 ]);
 
                 // Sản phẩm
-                $sanpham = SanPham::whereId($item['id'])->where('tonKho', '>', 0)->first();
-                $sanpham->tonKho = $sanpham->tonKho - $item['soluong'];
-                $sanpham->save();
-                // Thêm chi tiết hoá đơn
-                $chiTietHoaDon = new ChiTietHoaDon();
-                $chiTietHoaDon->fill([
-                    'hoa_don_id' => $hoadon->id,
-                    'san_pham_id' => $item['id'],
-                    'soLuong' => $item['soluong'],
-                    'donGia' => $item['gia'],
-                    'tongTien' => $item['gia'] * $item['soluong'],
-                ]);
-                $chiTietHoaDon->save();
+                if ($item['bien_the_san_pham_id'] != null) {
+                    $bienTheSanPham = BienTheSanPham::where([
+                        'id' => $item['bien_the_san_pham_id'],
+                        'san_pham_id' => $item['id']
+                    ])->where('soLuong', '>', 0)->first();
+                    $bienTheSanPham->soLuong = $bienTheSanPham->soLuong -
+                        $item['soluong'];
 
-                // Thêm giỏ hàng
-                $gioHang = new GioHang();
-                $gioHang->fill([
-                    'san_pham_id' => $item['id'],
-                    'user_id' => $user->id,
-                    'soLuong' => $item['soluong'],
-                ]);
-                $gioHang->save();
-
-
+                    // Thêm chi tiết hoá đơn
+                    $chiTietHoaDon = new ChiTietHoaDon();
+                    $chiTietHoaDon->fill([
+                        'hoa_don_id' => $hoadon->id,
+                        'san_pham_id' => $item['id'],
+                        'soLuong' => $item['soluong'],
+                        'donGia' => $item['gia'],
+                        'tongTien' => $item['gia'] * $item['soluong'],
+                        'bien_the_san_pham_id' => $item['bien_the_san_pham_id']
+                    ]);
+                    $chiTietHoaDon->save();
+                } else {
+                    $sanpham = SanPham::whereId($item['id'])->where('tonKho', '>', 0)->first();
+                    $sanpham->tonKho = $sanpham->tonKho - $item['soluong'];
+                    $sanpham->save();
+                    // Thêm chi tiết hoá đơn
+                    $chiTietHoaDon = new ChiTietHoaDon();
+                    $chiTietHoaDon->fill([
+                        'hoa_don_id' => $hoadon->id,
+                        'san_pham_id' => $item['id'],
+                        'soLuong' => $item['soluong'],
+                        'donGia' => $item['gia'],
+                        'tongTien' => $item['gia'] * $item['soluong'],
+                    ]);
+                    $chiTietHoaDon->save();
+                }
 
                 $total += (int)$item['soluong'] * (float)$item['gia'];
             }
@@ -485,27 +608,20 @@ class GioHangController extends Controller
             // all good
         } catch (\Exception $e) {
             DB::rollback();
-            $lstSanPhamHetHang = "";
-            foreach ($Cart as $item) {
-                $sanpham = SanPham::whereId($item['id'])->first();
-                if ($sanpham->tonKho = 0) {
-                    $lstSanPhamHetHang .= $sanpham->tenSanPham;
-                }
-            }
+
             return
                 back()->withErrors([
-                    'error' => 'Đã xảy ra lỗi. Chúng tôi thành thật xin lỗi vì điều này !',
-                    'lstSanPhamHetHang' => $lstSanPhamHetHang . "đã hết hàng",
+                    'error' => 'Đã xảy ra lỗi. Chúng tôi thành thật xin lỗi vì điều này !. Một vài sản phẩm trong giỏ hàng của bạn có thể đã hết hàng',
                 ]);
         }
 
 
         $valueDiscount = 0;
         $infoPayMent = array(
-            "thanhTien" => number_format($total, 0, '', ',') . " đ",
-            "vanChuyen" => number_format(0, 0, '', ',') . " đ",
-            "giamGia" => number_format(0, 0, '', ',') . " đ",
-            "tongCong" => number_format(0, 0, '', ',') . " đ",
+            "thanhTien" => number_format($total, 0, '', '.')  . " ₫",
+            "vanChuyen" => number_format(0, 0, '', '.')  . " ₫",
+            "giamGia" => number_format(0, 0, '', '.')  . " ₫",
+            "tongCong" => number_format(0, 0, '', '.')  . " ₫",
             "hinhThuc" => "Thanh toán khi nhận hàng"
         );
         if ($discountCode) {
@@ -537,8 +653,8 @@ class GioHangController extends Controller
         $hoadon->tongThanhTien = $total;
         $hoadon->save();
 
-        $infoPayMent["giamGia"] = number_format($valueDiscount, 0, '', ',') . " đ";
-        $infoPayMent["tongCong"] = number_format($total, 0, '', ',') . " đ";
+        $infoPayMent["giamGia"] = number_format($valueDiscount, 0, '', '.')  . " ₫";
+        $infoPayMent["tongCong"] = number_format($total, 0, '', '.')  . " ₫";
 
         $this->dispatch(new SendMail($user, $hoadon, $newArray, $infoPayMent));
 
@@ -582,6 +698,16 @@ class GioHangController extends Controller
         }
 
         $code = MaGiamGia::where('code', $request->code)->first();
+        $checkUseDiscount = HoaDon::where([
+            'khach_hang_id' => Auth()->user()->id,
+            'ma_giam_gia_id' => $code->id
+        ])->first();
+
+        if ($checkUseDiscount) {
+            return response()->json([
+                'error' => 'Bạn đã sử dụng mã giảm giá này rồi !',
+            ]);
+        }
         $currentDate = date('Y-m-d H:i:s');
         if ($code->ngayBatDau > $currentDate) {
             return response()->json([
@@ -599,11 +725,18 @@ class GioHangController extends Controller
             ]);
         }
 
+        $Cart = Session::get('Cart');
+        $total = 0;
+        if ($Cart)
+            foreach ($Cart as $item) {
+                $total += (float)$item['gia'] * (int)$item['soluong'];
+            }
+
         if ($code->soLuong <= 0 && $code->soLuong != null && $code->soLuong) {
             return response()->json(['error' => 'Lượt sử dụng mã đã hết, vui lòng sử dụng mã khác']);
         }
 
-        if ($code->giaTriToiThieu != null && $request->total < $code->giaTriToiThieu) {
+        if ($code->giaTriToiThieu != null && $total < $code->giaTriToiThieu) {
             return response()->json(['error' => 'Đơn hàng chưa đủ điều kiện để sử dụng mã này']);
         }
 
@@ -636,53 +769,4 @@ class GioHangController extends Controller
      * @param  \App\Http\Requests\StoreGioHangRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreGioHangRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\GioHang  $gioHang
-     * @return \Illuminate\Http\Response
-     */
-    public function show(GioHang $gioHang)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\GioHang  $gioHang
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(GioHang $gioHang)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateGioHangRequest  $request
-     * @param  \App\Models\GioHang  $gioHang
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateGioHangRequest $request, GioHang $gioHang)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\GioHang  $gioHang
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(GioHang $gioHang)
-    {
-        //
-    }
 }

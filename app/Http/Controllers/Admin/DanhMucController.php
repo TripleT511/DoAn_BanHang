@@ -100,6 +100,7 @@ class DanhMucController extends Controller
 
         $danhmuc->save();
 
+
         if ($request->hasFile('hinhAnh')) {
             $danhmuc->hinhAnh = $request->file('hinhAnh')->store('images/danh-muc', 'public');
         }

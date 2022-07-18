@@ -171,10 +171,10 @@
 						
 						<div class="price_box">
 							@if($item->giaKhuyenMai == 0)
-							<span class="new_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
+							<span class="new_price">{{ number_format($item->gia, 0, '', '.')  }} ₫</span>
 							@elseif($item->giaKhuyenMai != 0)
-							<span class="new_price">{{ number_format($item->giaKhuyenMai, 0, '', ',') }} đ</span>
-							<span class="old_price">{{ number_format($item->gia, 0, '', ',') }} đ</span>
+							<span class="new_price">{{ number_format($item->giaKhuyenMai, 0, '', '.')  }} ₫</span>
+							<span class="old_price">{{ number_format($item->gia, 0, '', '.')  }} ₫</span>
 							@endif
 							
 						</div>

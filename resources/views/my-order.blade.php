@@ -207,7 +207,7 @@
 									<a href="{{ route('chitietsanpham', ['slug' =>$cthd->sanpham->slug]) }}">
 										<div class="title">
 											<h5>{{ $cthd->sanpham->tenSanPham }} x {{ $cthd->soLuong }}</h5>
-											<span>{{ number_format($cthd->donGia, 0, '', ',') }} ₫</span>
+											<span>{{ number_format($cthd->donGia, 0, '', '.')  }} ₫</span>
 										</div>
 									</a>
 								</li>
@@ -215,7 +215,7 @@
 							</ul>
 						</td>
 						<td>
-							<strong>{{ number_format($item->tongThanhTien, 0, '', ',') }} ₫</strong>
+							<strong>{{ number_format($item->tongThanhTien, 0, '', '.')  }} ₫</strong>
 						</td>
 						<td>
 							@if($item->trangThai == 0)

@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Session;
 use App\Exports\HoaDonExport;
 use App\Exports\HoaDonTrongKhoangThoiGianExport;
 use App\Imports\HoaDonImport;
+use App\Models\BienTheSanPham;
+use App\Models\TuyChonBienThe;
 use Maatwebsite\Excel\Excel;
 
 class HoaDonController extends Controller
@@ -197,7 +199,7 @@ class HoaDonController extends Controller
         $tongThanhTien = 0;
         $trangThai = "";
 
-        $hoadon = HoaDon::whereId($request->id)->with('user')->with('khachhang')->with('chiTietHoaDons')->with('chiTietHoaDons.sanpham')->first();
+        $hoadon = HoaDon::whereId($request->id)->with('user')->with('khachhang')->with('chiTietHoaDons')->with('chiTietHoaDons.sanpham.color')->with('chiTietHoaDons.sanpham.soluongthuoctinh')->first();
         switch ($hoadon->trangThai) {
             case 0;
                 $trangThai = 'Chờ xác nhận';
@@ -253,7 +255,7 @@ class HoaDonController extends Controller
                         <dd class="col-sm-3" id="sdt_pay">' . ($hoadon->khachhang ? $hoadon->khachhang->soDienThoai : '') . '</dd>
                         <dt class="col-sm-3">Số điện thoại:</dt>
                         <dd class="col-sm-3" id="sdt_billing">' . $hoadon->soDienThoai . '</dd>
-                        
+
                     </dl>';
         $output .= '<table class="table">
                         <thead>
@@ -268,23 +270,33 @@ class HoaDonController extends Controller
                         <tbody class="table-border-bottom-0">';
         foreach ($hoadon->chiTietHoaDons as $value => $item) {
             $tongTien = (int)$item->soLuong * (float)$item->donGia;
+            $tieuDeColor = $item->sanpham->color->tuychonbienthe->color->tieuDe;
+            $countThuonTinh = count($item->sanpham->soluongthuoctinh);
+            $tieuDeSize = "";
+            if ($countThuonTinh > 1) {
+
+                $bienTheSize = TuyChonBienThe::where('bien_the_san_pham_id', $item->bien_the_san_pham_id)->with('thuoctinh')->first();
+
+                $tieuDeSize = ' - ' . $bienTheSize->thuoctinh->tieuDe;
+            }
+            $item->sanpham->tenSanPham = $item->sanpham->tenSanPham . " - " . $tieuDeColor . $tieuDeSize;
             $output .=
                 '<tr>
                     <td class="text-left">
                         ' .  $value + 1 . '
                     </td>
                     <td class="text-left">
-                        ' . $item->sanpham->tenSanPham .  '
+                        ' . $item->sanpham->tenSanPham .   '
                     </td>
-                    
+
                     <td class="text-right">
                         ' .  $item->soLuong . '
                     </td>
-                    <td class="text-right">         
-                        ' .  number_format($item->donGia, 0, ',', ',') . ' đ
+                    <td class="text-right">
+                        ' .  number_format($item->donGia, 0, ',', ',') . ' ₫
                     </td>
                     <td class="text-right">
-                        ' .  number_format($tongTien, 0, ',', ',') . ' đ
+                        ' .  number_format($tongTien, 0, ',', ',') . ' ₫
                     </td>
                 </tr>';
         }
@@ -292,16 +304,16 @@ class HoaDonController extends Controller
                     </table>
                     <div class="row">
                         <div class="col-md-8">
-                            
+
                         </div>
                         <div class="col-md-4">
                             <div class="row">
                                 <dt class="col-sm-5 text-right">Thành tiền: </dt>
-                                <dd class="col-sm-7 text-right">' . number_format($hoadon->tongTien, 0, ',', ',') . ' đ</dd>
+                                <dd class="col-sm-7 text-right">' . number_format($hoadon->tongTien, 0, ',', ',') . ' ₫</dd>
                                 <dt class="col-sm-5 text-right">Giảm giá: </dt>
-                                <dd class="col-sm-7 text-right">' . number_format($hoadon->giamGia, 0, ',', ',') . ' đ</dd>
+                                <dd class="col-sm-7 text-right">' . number_format($hoadon->giamGia, 0, ',', ',') . ' ₫</dd>
                                 <dt class="col-sm-5 text-right">Tổng cộng: </dt>
-                                <dd class="col-sm-7 text-right">' . number_format($hoadon->tongThanhTien, 0, ',', ',') .  ' đ</dd>
+                                <dd class="col-sm-7 text-right">' . number_format($hoadon->tongThanhTien, 0, ',', ',') .  ' ₫</dd>
                             </div>
                         </div>
                     </div>
@@ -315,13 +327,13 @@ class HoaDonController extends Controller
 
     public function HoaDonPDF()
     {
-        $data = Session::get('pdfHpaDon');
-
-        // $data = [
-        //     'hoadon'     => $data,
-        //     'chitiethoadon' => $chitiethoadon
-        // ];
-        $pdf = PDF::loadView('admin.pdf.hoadon');
+        $data = Session::get('pdfHoaDon');
+        $ngayTao = Carbon::createFromFormat('Y-m-d H:i:s', $data->ngayXuatHD)->format('d/m/Y');
+        $data = [
+            'hoadon'     => $data,
+            'ngayTao' => $ngayTao,
+        ];
+        $pdf = PDF::loadView('admin.pdf.hoadon', $data);
 
         return $pdf->stream();
     }

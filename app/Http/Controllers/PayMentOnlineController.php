@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Jobs\SendMail;
 use App\Models\ChiTietHoaDon;
 use App\Models\DanhMuc;
-use App\Models\GioHang;
 use App\Models\HoaDon;
 use App\Models\MaGiamGia;
 use App\Models\SanPham;
@@ -62,10 +61,10 @@ class PayMentOnlineController extends Controller
         $oldTotal = $total;
         $valueDiscount = 0;
         $infoPayMent = array(
-            "thanhTien" => number_format($total, 0, '', ',') . " đ",
-            "vanChuyen" => number_format(0, 0, '', ',') . " đ",
-            "giamGia" => number_format(0, 0, '', ',') . " đ",
-            "tongCong" => number_format(0, 0, '', ',') . " đ",
+            "thanhTien" => number_format($total, 0, '', '.')  . " ₫",
+            "vanChuyen" => number_format(0, 0, '', '.')  . " ₫",
+            "giamGia" => number_format(0, 0, '', '.')  . " ₫",
+            "tongCong" => number_format(0, 0, '', '.')  . " ₫",
             "hinhThuc" => "Thanh toán qua VNPAY"
         );
 
@@ -93,8 +92,8 @@ class PayMentOnlineController extends Controller
                 $total = $newTotal;
             }
         }
-        $infoPayMent["giamGia"] = number_format($valueDiscount, 0, '', ',') . " đ";
-        $infoPayMent["tongCong"] = number_format($total, 0, '', ',') . " đ";
+        $infoPayMent["giamGia"] = number_format($valueDiscount, 0, '', '.')  . " ₫";
+        $infoPayMent["tongCong"] = number_format($total, 0, '', '.')  . " ₫";
         Session::put("infoPayMent", $infoPayMent);
 
         //  Thanh toán VN PAY
@@ -103,8 +102,8 @@ class PayMentOnlineController extends Controller
         if ($request->socialite != null) {
             $vnp_Returnurl = "http://localhost:8000/thanh-toan-thanh-cong/?khach_hang_id=$user->id&hoTen=$request->hoTen_billing&email=$request->email_billing&diaChi=$request->diaChi_billing&soDienThoai=$request->soDienThoai_billing&ghiChu=$request->ghiChu_billing&thanhtien=$oldTotal&giamgia=$valueDiscount";
         }
-        $vnp_TmnCode = ""; //Mã website tại VNPAY 
-        $vnp_HashSecret = ""; //Chuỗi bí mật
+        $vnp_TmnCode = "D0D9N7LY"; //Mã website tại VNPAY 
+        $vnp_HashSecret = "MQWFQOJLSODQKYSYZEWXEFXDKIJGSEQN"; //Chuỗi bí mật
 
         $vnp_TxnRef = Str::random(30); //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
         $vnp_OrderInfo = 'Thanh toán đơn hàng qua VNPAY';
@@ -230,15 +229,6 @@ class PayMentOnlineController extends Controller
                         'tongTien' => $item['gia'] * $item['soluong'],
                     ]);
                     $chiTietHoaDon->save();
-
-                    // Thêm giỏ hàng
-                    $gioHang = new GioHang();
-                    $gioHang->fill([
-                        'san_pham_id' => $item['id'],
-                        'user_id' => $user->id,
-                        'soLuong' => $item['soluong'],
-                    ]);
-                    $gioHang->save();
                 }
 
                 DB::commit();
@@ -254,10 +244,10 @@ class PayMentOnlineController extends Controller
 
 
             $infoPayMent = array(
-                "thanhTien" => number_format($request->thanhtien, 0, '', ',') . " đ",
-                "vanChuyen" => number_format(0, 0, '', ',') . " đ",
-                "giamGia" => number_format($request->giamgia, 0, '', ',') . " đ",
-                "tongCong" => number_format($request->vnp_Amount / 100, 0, '', ',') . " đ",
+                "thanhTien" => number_format($request->thanhtien, 0, '', '.')  . " ₫",
+                "vanChuyen" => number_format(0, 0, '', '.')  . " ₫",
+                "giamGia" => number_format($request->giamgia, 0, '', '.')  . " ₫",
+                "tongCong" => number_format($request->vnp_Amount / 100, 0, '', '.')  . " ₫",
                 "hinhThuc" => "Thanh toán qua VNPAY"
             );
 

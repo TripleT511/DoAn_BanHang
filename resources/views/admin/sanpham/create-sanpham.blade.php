@@ -25,48 +25,7 @@
             height: 100%;
             object-fit: contain;
         }
-        .attr-item {
-            gap: 10px;
-            flex-wrap: wrap;
-            margin: 10px;
-        }
-
-        .tag-input {
-            width: 100%;
-            height: auto;
-            border: 1px solid #d9dee3;
-            border-radius: 0.375rem;
-            display: flex;
-            padding: 5px;
-            align-items: center;
-            justify-content: flex-start;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-
-        .tag-item {
-            width: fit-content;
-            padding: 5px 10px;
-            background: #000;
-            display: flex;
-            align-items: center;
-            color: #fff;
-            padding: 10px;
-            border-radius: 7px; 
-        }
-
-        .tag-item i {
-            padding: 2px;
-            cursor: pointer;
-        }
-
-        .form-select-value {
-            border: none;flex:1; min-width: 100px;
-        }
-
-        .nav-align-top .nav-tabs ~ .tab-content {
-            box-shadow: none;
-        }
+        
     </style>
 @endsection
 @section('content')
@@ -93,7 +52,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="basic-default-fullname">Mã sản phẩm</label>
-                            <input type="text" name="maSKU" class="form-control" id="basic-default-fullname" placeholder="Nhập mã sản phẩm (SKU) nếu có..." />
+                            <input type="text" name="maSKU" class="form-control" id="basic-default-fullname" placeholder="Nhập mã sản phẩm (SKU)" />
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="basic-default-fullname">Mô Tả</label>
@@ -126,11 +85,20 @@
                             <input type="text" name="slug" class="form-control" id="basic-default-fullname" placeholder="Nhập slug ..." />
                         </div>
                         <div class="mb-3">
-                            <label for="defaultSelect" class="form-label">Danh mục sản phẩm</label>
-                            <select id="defaultSelect" name="danhmucid" class="form-select">
+                            <label for="danhmucid" class="form-label">Danh mục sản phẩm</label>
+                            <select id="danhmucid" name="danhmucid" class="form-select">
                                 <option value="">Chọn danh mục sản phẩm</option>
                                 @foreach($lstDanhMuc as $dm)
                                 <option value="{{$dm->id}}">{{$dm->tenDanhMuc}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="mausac" class="form-label">Màu sắc</label>
+                            <select id="mausac" name="mausac" class="form-select">
+                                <option value="">Chọn màu sắc</option>
+                                @foreach($lstMauSac as $color)
+                                <option value="{{$color->id}}">{{$color->tieuDe}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -143,7 +111,58 @@
                                
                             </div>
                         </div>
-                        
+                        <div class="mb-3">
+                            <div class="nav-align-top mb-4">
+                                <ul class="nav nav-tabs" role="tablist">
+                                    <li class="nav-item">
+                                        <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-top-home" aria-controls="navs-top-home" aria-selected="true">
+                                        Size
+                                        </button>
+                                    </li>
+                                    <li class="nav-item">
+                                        <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-top-profile" aria-controls="navs-top-profile" aria-selected="false">
+                                        Biến thể
+                                        </button>
+                                    </li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="navs-top-home" role="tabpanel">
+                                        <div class="lstOptionValue">
+
+                                        </div>
+                                        <div class="mb-3">
+                                                <div class="attr-item align-items-center d-flex">
+                                                    <div class="tag-input">
+                                                        <select id="valueOptions"  class="form-select form-select-size">
+                                                            <option value="">Chọn size</option>
+                                                            @foreach($lstSize as $size)
+                                                                <option value="{{$size->id}}">{{$size->tieuDe}}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="navs-top-profile" role="tabpanel">
+                                            <div class="table-responsive text-nowrap">
+                                                <table class="table text-left">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Tên biến thể</th>
+                                                        <th>Mã SKU</th>
+                                                        <th>Giá</th>
+                                                        <th>Giá khuyến mãi</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody class="table-border-bottom-0 text-left table-product" id="tableVariants">
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                            </div>
+                        </div>
                         
                     </div>
                 </div>
@@ -156,8 +175,6 @@
 @endsection
 @section('js')
     <script>
-
-       
         // === Preview Image === // 
        
         $("#hinhAnh").on("change", function (e) {
@@ -232,5 +249,75 @@
             toolbar_mode: 'floating',
             language: 'vi'
         });
+
+        // === Attribute Option  === //
+       let lstOption = document.querySelectorAll("#option");
+       let arrayOptionsLabel = [];
+
+        let lstSelect = document.querySelectorAll(".form-select-size");
+
+        lstSelect.forEach(item => item.addEventListener('change', function (e) {
+            console.log(e);
+
+            let issetTag = document.querySelector(`.tag-item-${e.target.value}`);
+            if(issetTag) {
+                item.value = "";
+                return;
+            }
+            var tag = document.createElement("span");
+            var tagClose = document.createElement("i");
+            tagClose.classList.add("bx", "bx-x", "btn-del-value");
+            tagClose.setAttribute('data-valueid', e.target.value);
+            
+            tag.classList.add("tag-item","bg-primary",`tag-item-${e.target.value}`,`tag-option-${item.dataset.id}`);
+            var text = document.createTextNode($(`#valueOptions option:selected`).text());
+            tag.appendChild(text);
+            tag.appendChild(tagClose);
+
+            
+            $(tag).insertBefore(`#valueOptions`);
+            var optionValue = document.createElement("input");
+            optionValue.setAttribute("type", "hidden");
+            optionValue.setAttribute("name", "giaTriThuocTinh[]");
+            optionValue.setAttribute("id", `giaTriThuocTinh-${e.target.value}`);
+            optionValue.setAttribute("value", e.target.value);
+            document.querySelector(".lstOptionValue").appendChild(optionValue);
+          
+
+            // Thêm biến thể
+            let table = document.querySelector("#tableVariants");
+            let trTag = document.createElement("tr");
+            trTag.setAttribute("id", `variant-item-${e.target.value}`);
+            let nameBienThe = $(`#valueOptions option:selected`).text()
+            trTag.innerHTML = `
+                <td>${nameBienThe}</td>
+                <td><input type="text" name="variant_sku[]" value="" class="form-control input-sl" placeholder="Nhập mã sản phẩm"></td>
+                <td><input type="number" name="variant_price[]" value="0" class="form-control input-sl" placeholder="Nhập giá"></td>
+                <td><input type="number" name="variant_price_sale[]" value="0" class="form-control input-gia" placeholder="Nhập giá khuyến mãi">
+                </td>
+            `;
+
+            table.appendChild(trTag);
+
+            //
+            removeOptionValue();
+            item.value = "";
+        }));
+
+        function removeOptionValue() {
+            // Remove Value Option
+            let lstBtnDelValue = document.querySelectorAll(".btn-del-value");
+            lstBtnDelValue.forEach(item => item.addEventListener("click", function(e) {
+                    const valueOptionItem = document.querySelector(`.tag-item-${item.dataset.valueid}`);
+                    const inputValue = document.querySelector(`#giaTriThuocTinh-${item.dataset.valueid}`);
+                    const variantItem = document.querySelector(`#variant-item-${item.dataset.valueid}`);
+                    if(valueOptionItem && inputValue) {
+                        valueOptionItem.remove();
+                        inputValue.remove();
+                        variantItem.remove();
+                    }
+            }));
+        }
+       
     </script>
 @endsection

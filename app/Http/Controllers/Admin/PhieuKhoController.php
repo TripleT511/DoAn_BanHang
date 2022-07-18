@@ -9,12 +9,16 @@ use App\Http\Controllers\Controller;
 use App\Models\PhieuKho;
 use App\Http\Requests\StorePhieuKhoRequest;
 use App\Http\Requests\UpdatePhieuKhoRequest;
+use App\Models\BienTheSanPham;
 use App\Models\ChiTietHoaDon;
 use App\Models\ChiTietPhieuKho;
 use App\Models\DanhMuc;
 use App\Models\HinhAnh;
 use App\Models\NhaCungCap;
 use App\Models\SanPham;
+use App\Models\ThuocTinhSanPham;
+use App\Models\TuyChonBienThe;
+use App\Models\TuyChonThuocTinh;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -113,22 +117,82 @@ class PhieuKhoController extends Controller
 
     public function themSanPham(Request $request)
     {
+
         $validator = Validator::make(
             $request->all(),
             [
                 'tenSanPham' => 'required|unique:san_phams',
-                'sku' => 'unique:san_phams,sku',
+                'sku' => 'required|unique:san_phams,sku',
                 'danhmucid' => 'required',
-                'hinhAnh' => 'required'
+                'mausac' => 'required',
+                'mausac.required' => "Màu sắc sản phẩm cần được chọn"
             ],
             [
                 'tenSanPham.required' => "Tên sản phẩm không được bỏ trống",
                 'tenSanPham.unique' => "Tên sản phẩm bị trùng",
                 'sku.unique' => "Mã sản phẩm bị trùng",
+                'sku.required' => "Mã sản phẩm không được bỏ trống",
                 'danhmucid.required' => "Danh mục bắt buộc chọn",
-                'hinhAnh.required' => "Hình ảnh bắt buộc chọn",
+                'mausac.required' => "Màu sắc sản phẩm cần được chọn"
             ]
         );
+
+        if ($request->has('giaTriThuocTinh') && $request->filled('giaTriThuocTinh')) {
+
+            $validator2 = Validator::make(
+                $request->all(),
+                [
+                    'giaTriThuocTinh' => 'required',
+                    'giaTriThuocTinh.*' => 'required',
+                    'variant_sku.*' => 'required|unique:bien_the_san_phams,sku',
+                    'variant_price.*' => 'required|integer',
+                    'variant_price_sale.*' => "integer",
+                ],
+                [
+                    'giaTriThuocTinh.required' => "Size bắt buộc chọn",
+                    'giaTriThuocTinh.*.required' => "Giá trị của Size không được bỏ trống",
+                    'variant_sku.*.required' => "Mã sản phẩm biến thể không được bỏ trống",
+                    'variant_sku.*.unique' => "Mã sản phẩm biến thể không được trùng",
+                    'variant_price.*.required' => "Giá sản phẩm biến thể không được bỏ trống",
+                    'variant_price.*.integer' => "Giá sản phẩm biến thể phải là số",
+                    'variant_price_sale.*.integer' => "Giá khuyến mãi sản phẩm biến thể phải là số",
+                ]
+            );
+
+            if ($validator2->fails()) {
+                $error = '';
+                foreach ($validator2->errors()->all() as $item) {
+                    $error .= '
+                    <li class="card-description" style="color: #fff;">' . $item . '</li>
+                ';
+                }
+                return response()->json(['error' => $error]);
+            }
+
+            foreach ($request->variant_price as $key => $value) {
+                if ($value != 0) {
+                    $validator3 = Validator::make(
+                        $request->all(),
+                        [
+                            "variant_price_sale.$key" => "max:$value",
+                        ],
+                        [
+                            "variant_price_sale.$key.max" => "Giá khuyến mãi không được lớn hơn giá gốc",
+                        ]
+                    );
+
+                    if ($validator3->fails()) {
+                        $error = '';
+                        foreach ($validator3->errors()->all() as $item) {
+                            $error .= '
+                    <li class="card-description" style="color: #fff;">' . $item . '</li>
+                ';
+                        }
+                        return response()->json(['error' => $error]);
+                    }
+                }
+            }
+        }
 
         if ($request->filled('gia')) {
             $validator2 = Validator::make(
@@ -204,17 +268,20 @@ class PhieuKhoController extends Controller
             $sku = $request->sku;
         }
 
+        $moTa = str_replace("../../", "../../../", $request->moTa);
+        $noiDung = str_replace("../../", "../../../", $request->noiDung);
+
         $sanpham = new SanPham();
         $sanpham->fill([
             'sku' => $sku,
             'tenSanPham' => $request->tenSanPham,
-            'moTa' => $request->moTa,
-            'noiDung' => $request->noiDung,
+            'moTa' => $moTa,
+            'noiDung' => $noiDung,
             'dacTrung' => $request->dacTrung,
             'gia' => $request->gia,
             'giaKhuyenMai' => $request->giaKhuyenMai,
             'danh_muc_id' => $request->danhmucid,
-            'slug' => $slug
+            'slug' => $slug,
         ]);
         $sanpham->save();
 
@@ -233,40 +300,122 @@ class PhieuKhoController extends Controller
                 $hinhAnh->hinhAnh = $item->store('images/san-pham', 'public');
                 $hinhAnh->save();
             }
+        } else {
+            $hinhAnh = new HinhAnh();
+
+            $hinhAnh->fill([
+                'san_pham_id' => $sanpham->id,
+                'hinhAnh' => 'images/no-image-available.jpg',
+            ]);
+
+            $hinhAnh->save();
         }
 
+        // Thêm biến thể sản phẩm
+
+        $thuoctinhSanPham = new ThuocTinhSanPham();
+        $thuoctinhSanPham->fill([
+            'san_pham_id' => $sanpham->id,
+            'thuoc_tinh_id' => 2,
+        ]);
+        $thuoctinhSanPham->save();
+
+        $bienTheSanPham = new BienTheSanPham();
+        $bienTheSanPham->fill([
+            'san_pham_id' => $sanpham->id,
+            'sku' => $sanpham->sku,
+            'gia' => $sanpham->gia,
+            'giaKhuyenMai' => $sanpham->giaKhuyenMai,
+            'soLuong' => 0,
+        ]);
+        $bienTheSanPham->save();
+
+        $tuyChonBienThe = new TuyChonBienThe();
+        $tuyChonBienThe->fill([
+            'bien_the_san_pham_id' => $bienTheSanPham->id,
+            'tuy_chon_thuoc_tinh_id' => $request->mausac
+        ]);
+        $tuyChonBienThe->save();
+
+        // 
         $idSanPham = $sanpham->id;
-        $sanpham = SanPham::whereId($idSanPham)->first();
+        $sanpham = SanPham::whereId($idSanPham)->with('color')->first();
         $sanpham['soluong'] = 1;
         $lstSP = Session::get('lstSanPham');
-        if ($lstSP) {
-            if (isset($lstSP[$idSanPham])) {
-                $lstSP[$idSanPham]['soluong'] = (int)$lstSP[$idSanPham]['soluong'] +  1;
-                $lstSP[$idSanPham]['tongTien'] = (int)$lstSP[$idSanPham]['soluong'] * (float)$lstSP[$idSanPham]['gia'];
-            } else {
-                $lstSP[$idSanPham] = array(
+        $stringTenSanPham = $sanpham->tenSanPham . " - " . $sanpham->color->tuychonbienthe->color->tieuDe;
+        //
+
+        // Size
+        if ($request->has('giaTriThuocTinh') && $request->filled('giaTriThuocTinh')) {
+            $thuoctinhSanPhamSize = new ThuocTinhSanPham();
+            $thuoctinhSanPhamSize->fill([
+                'san_pham_id' => $sanpham->id,
+                'thuoc_tinh_id' => 1,
+            ]);
+            $thuoctinhSanPhamSize->save();
+
+            foreach ($request->giaTriThuocTinh as $key => $value) {
+                $bienTheSanPhamSize = new BienTheSanPham();
+                $bienTheSanPhamSize->fill([
+                    'san_pham_id' => $sanpham->id,
+                    'sku' => $request->variant_sku[$key],
+                    'gia' => $request->variant_price[$key],
+                    'giaKhuyenMai' => $request->variant_price_sale[$key],
+                    'soLuong' => 0,
+                ]);
+                $bienTheSanPhamSize->save();
+
+                $tuyChonBienTheSize = new TuyChonBienThe();
+                $tuyChonBienTheSize->fill([
+                    'bien_the_san_pham_id' => $bienTheSanPhamSize->id,
+                    'tuy_chon_thuoc_tinh_id' => $value
+                ]);
+                $tuyChonBienTheSize->save();
+
+                $tuyChonThuocTinhName = TuyChonThuocTinh::where('id', $value)->first();
+
+                $lstSP[$bienTheSanPhamSize->sku] = array(
                     "id" => $idSanPham,
-                    "tenSanPham" => $sanpham->tenSanPham,
+                    "tenSanPham" => $stringTenSanPham . " - " . $tuyChonThuocTinhName->tieuDe,
+                    "sku" => $bienTheSanPhamSize->sku,
+                    "soluong" => 1,
+                    "giaBan" => $bienTheSanPhamSize->gia,
+                    "tongTien" => $bienTheSanPhamSize->gia,
+                );
+
+                Session::put("lstSanPham", $lstSP);
+            }
+        } else {
+            if ($lstSP) {
+                if (isset($lstSP[$sanpham->sku])) {
+                    $lstSP[$sanpham->sku]['soluong'] = (int)$lstSP[$sanpham->sku]['soluong'] +  1;
+                    $lstSP[$sanpham->sku]['tongTien'] = (int)$lstSP[$sanpham->sku]['soluong'] * (float)$lstSP[$sanpham->sku]['gia'];
+                } else {
+                    $lstSP[$sanpham->sku] = array(
+                        "id" => $idSanPham,
+                        "tenSanPham" => $stringTenSanPham,
+                        "sku" => $sanpham->sku,
+                        "soluong" => 1,
+                        "giaBan" => $sanpham->gia,
+                        "tongTien" => $sanpham->gia,
+                    );
+                }
+                Session::put("lstSanPham", $lstSP);
+            } else {
+                $lstSP[$sanpham->sku] = array(
+                    "id" => $idSanPham,
+                    "tenSanPham" => $stringTenSanPham,
                     "sku" => $sanpham->sku,
                     "soluong" => 1,
-                    "gia" => 0,
                     "giaBan" => $sanpham->gia,
-                    "tongTien" => 0,
+                    "tongTien" => $sanpham->gia,
                 );
+                Session::put("lstSanPham", $lstSP);
             }
-            Session::put("lstSanPham", $lstSP);
-        } else {
-            $lstSP[$idSanPham] = array(
-                "id" => $idSanPham,
-                "tenSanPham" => $sanpham->tenSanPham,
-                "sku" => $sanpham->sku,
-                "soluong" => 1,
-                "gia" => 0,
-                "giaBan" => $sanpham->gia,
-                "tongTien" => 0,
-            );
-            Session::put("lstSanPham", $lstSP);
         }
+
+
+
         return response()->json(['success' => "Thêm sản phẩm thành công", "error" => null]);
     }
 
@@ -274,35 +423,73 @@ class PhieuKhoController extends Controller
     {
 
         $idSanPham = $request->sanpham;
-        $sanpham = SanPham::whereId($idSanPham)->first();
+        $sanpham = SanPham::whereId($idSanPham)->with('color')->with('sizes')->withCount('soluongthuoctinh')->first();
         $sanpham['soluong'] = 1;
         $lstSP = Session::get('lstSanPham');
+
+        $stringTenSanPham = $sanpham->tenSanPham . " - " . $sanpham->color->tuychonbienthe->color->tieuDe;
+
         if ($lstSP) {
-            if (isset($lstSP[$idSanPham])) {
-                $lstSP[$idSanPham]['soluong'] = (int)$lstSP[$idSanPham]['soluong'] +  1;
-                $lstSP[$idSanPham]['tongTien'] = (int)$lstSP[$idSanPham]['soluong'] * (float)$lstSP[$idSanPham]['gia'];
+            if ($sanpham->soluongthuoctinh_count && $sanpham->soluongthuoctinh_count > 1) {
+                unset($sanpham->sizes[0]);
+                foreach ($sanpham->sizes as $size) {
+                    if (isset($lstSP[$size->sku])) {
+                        $lstSP[$size->sku]['soluong'] = (int)$lstSP[$size->sku]['soluong'] +  1;
+                        $lstSP[$size->sku]['tongTien'] = (int)$lstSP[$size->sku]['soluong'] * (float)$lstSP[$size->sku]['giaBan'];
+                    } else {
+                        $lstSP[$size->sku] = array(
+                            "id" => $sanpham->id,
+                            "tenSanPham" => $stringTenSanPham . " - " . $size->tuychonbienthe->sizes->tieuDe,
+                            "sku" => $size->sku,
+                            "soluong" => 1,
+                            "giaBan" => $size->gia,
+                            "tongTien" => $size->gia,
+                        );
+                    }
+                }
             } else {
-                $lstSP[$idSanPham] = array(
-                    "id" => $idSanPham,
-                    "tenSanPham" => $sanpham->tenSanPham,
-                    "sku" => $sanpham->sku,
-                    "soluong" => 1,
-                    "gia" => 0,
-                    "giaBan" => $sanpham->gia,
-                    "tongTien" => 0,
-                );
+                if (isset($lstSP[$sanpham->sku])) {
+                    $lstSP[$sanpham->sku]['soluong'] = (int)$lstSP[$sanpham->sku]['soluong'] +  1;
+                    $lstSP[$sanpham->sku]['tongTien'] = (int)$lstSP[$sanpham->sku]['soluong'] * (float)$lstSP[$sanpham->sku]['giaBan'];
+                } else {
+                    $lstSP[$sanpham->sku] = array(
+                        "id" => $sanpham->id,
+                        "tenSanPham" => $sanpham->tenSanPham,
+                        "sku" => $sanpham->sku,
+                        "soluong" => 1,
+                        "giaBan" => $sanpham->gia,
+                        "tongTien" => $sanpham->gia,
+                    );
+                }
             }
+
             Session::put("lstSanPham", $lstSP);
         } else {
-            $lstSP[$idSanPham] = array(
-                "id" => $idSanPham,
-                "tenSanPham" => $sanpham->tenSanPham,
-                "sku" => $sanpham->sku,
-                "soluong" => 1,
-                "gia" => 0,
-                "giaBan" => $sanpham->gia,
-                "tongTien" => 0,
-            );
+
+            if ($sanpham->soluongthuoctinh_count && $sanpham->soluongthuoctinh_count > 1) {
+                unset($sanpham->sizes[0]);
+                foreach ($sanpham->sizes as $size) {
+                    $lstSP[$size->sku] = array(
+                        "id" => $sanpham->id,
+                        "tenSanPham" => $stringTenSanPham . " - " . $size->tuychonbienthe->sizes->tieuDe,
+                        "sku" => $size->sku,
+                        "soluong" => 1,
+                        "giaBan" => $size->gia,
+                        "tongTien" => $size->gia,
+                    );
+                }
+            } else {
+
+                $lstSP[$sanpham->sku] = array(
+                    "id" => $sanpham->id,
+                    "tenSanPham" => $stringTenSanPham,
+                    "sku" => $sanpham->sku,
+                    "soluong" => 1,
+                    "giaBan" => $sanpham->gia,
+                    "tongTien" => $sanpham->gia,
+                );
+            }
+
             Session::put("lstSanPham", $lstSP);
         }
         return
@@ -312,15 +499,12 @@ class PhieuKhoController extends Controller
     public function updateChiTietPhieuKho(Request $request)
     {
 
-        $idSanPham = $request->id;
+        $sku = $request->id;
         $lstSP = Session::get('lstSanPham');
-        if ((float)$request->gia > (float)$lstSP[$idSanPham]['giaBan']) {
-            return response()->json(['error' => "Giá nhập không thể lớn hơn giá bán"]);
-        }
 
-        $lstSP[$idSanPham]['soluong'] = $request->soluong;
-        $lstSP[$idSanPham]['gia'] = $request->gia;
-        $lstSP[$idSanPham]['tongTien'] = (int)$lstSP[$idSanPham]['soluong'] * (float)$lstSP[$idSanPham]['gia'];
+
+        $lstSP[$sku]['soluong'] = $request->soluong;
+        $lstSP[$sku]['tongTien'] = (int)$lstSP[$sku]['soluong'] * (float)$lstSP[$sku]['giaBan'];
 
         Session::put('lstSanPham', $lstSP);
 
@@ -330,9 +514,9 @@ class PhieuKhoController extends Controller
 
     public function xoaChiTietPhieuKho(Request $request)
     {
-        $idSanPham = $request->id;
+        $sku = $request->id;
         $lstSP = Session::get('lstSanPham');
-        unset($lstSP[$idSanPham]);
+        unset($lstSP[$sku]);
 
         Session::put('lstSanPham', $lstSP);
 
@@ -351,14 +535,12 @@ class PhieuKhoController extends Controller
                     <td>' . $item['sku'] . '</td>
                     <td class="name">' . $item['tenSanPham'] . '</td>
                     <td><input type="text" name="soLuongSP" value="' . $item['soluong'] . '" class="form-control input-sl"  placeholder="Nhập số lượng" /></td>
-                    <td><input type="text" name="soLuongSP" value="' . $item['gia'] . '" class="form-control input-gia"  placeholder="Nhập giá" />
-                    <input type="hidden" name="giaBan" value="' . $item['giaBan'] . '" class="form-control" />
-                    </td>
+                    <td>' . $item['giaBan'] . '</td>
                     <td>' . $item['tongTien'] . '</td>
                     <td>
-                        <button type="button" class="btn btn-danger btn-xoa" data-id="' . $item['id'] . '" 
+                        <button type="button" class="btn btn-danger btn-xoa" data-id="' . $item['sku'] . '" 
                             >Xoá</button>
-                        <button type="button" class="btn btn-primary btn-update" data-id="' . $item['id'] . '" 
+                        <button type="button" class="btn btn-primary btn-update" data-id="' . $item['sku'] . '" 
                             >Cập nhật</button>
                     </td>
                 </tr>
@@ -425,9 +607,13 @@ class PhieuKhoController extends Controller
      */
     public function create()
     {
-        $lstDanhMucCha = DanhMuc::where('idDanhMucCha', null)->get();
+        $lstDanhMucCha = DanhMuc::all();
         $lstNCC = NhaCungCap::all();
-        return view('admin.kho.create-nhapkho', ['lstNCC' => $lstNCC, 'lstDanhMuc' => $lstDanhMucCha]);
+
+        $lstMauSac = TuyChonThuocTinh::where('thuoc_tinh_id', 2)->get();
+        $lstSize = TuyChonThuocTinh::where('thuoc_tinh_id', 1)->get();
+
+        return view('admin.kho.create-nhapkho', ['lstNCC' => $lstNCC, 'lstDanhMuc' => $lstDanhMucCha, 'lstMauSac' => $lstMauSac, 'lstSize' => $lstSize]);
     }
 
     /**
@@ -478,15 +664,10 @@ class PhieuKhoController extends Controller
                     'san_pham_id' => $value['id'],
                     'sku' => $value['sku'],
                     'soLuong' => $value['soluong'],
-                    'gia' => $value['gia'],
+                    'gia' => $value['giaBan'],
                     'tongTien' => $value['tongTien']
                 ]);
                 $chitietpk->save();
-
-                // Update giá nhập sản phẩm
-                $sanpham = SanPham::whereId($value['id'])->first();
-                $sanpham->giaNhap = $value['gia'];
-                $sanpham->save();
             }
         }
 
@@ -532,14 +713,19 @@ class PhieuKhoController extends Controller
 
             $phieukho->trangThai = 1;
 
-
             $phieukho->save();
 
             $chitietpk = ChiTietPhieuKho::where('phieu_kho_id', $phieukho->id)->get();
             foreach ($chitietpk as $item) {
-                $sanpham = SanPham::whereId($item->san_pham_id)->first();
-                $sanpham->tonKho = $item->soLuong;
-                $sanpham->save();
+                $sanpham = SanPham::whereId($item->san_pham_id)->withCount('soluongthuoctinh')->first();
+                if ($sanpham->soluongthuoctinh_count && $sanpham->soluongthuoctinh_count > 1) {
+                    $bienTheSanPham = BienTheSanPham::where('sku', $item->sku)->first();
+                    $bienTheSanPham->soLuong = (int)$bienTheSanPham->soLuong + $item->soLuong;
+                    $bienTheSanPham->save();
+                } else {
+                    $sanpham->tonKho = $sanpham->tonKho + $item->soLuong;
+                    $sanpham->save();
+                }
             }
         }
 
@@ -571,7 +757,7 @@ class PhieuKhoController extends Controller
         $tongTien = 0;
         $phieuKho =
             PhieuKho::whereId($request->id)->with('nhacungcap')->with('user')->first();
-        $chitietpk = ChiTietPhieuKho::where('phieu_kho_id', $phieuKho->id)->with('sanpham')->get();
+        $chitietpk = ChiTietPhieuKho::where('phieu_kho_id', $phieuKho->id)->with('sanpham')->with('sanpham.color')->with('sanpham.soluongthuoctinh')->get();
         $trangThai = $phieuKho->trangThai == 0 ? "Đang chờ duyệt" : "Đã thanh toán";
         $output .= ' <h3 class="text-center">Chi Tiết Phiếu Kho</h3>
                     <dl class="row mt-2">
@@ -583,7 +769,7 @@ class PhieuKhoController extends Controller
                         </dd>
                         <dt class="col-sm-3 text-truncate">Thời gian</dt>
                         <dd class="col-sm-3" id="ngayTao">
-                        ' . $phieuKho->ngayTao . '
+                        ' . $phieuKho->created_at->format('d') . '-' .  $phieuKho->created_at->format('m') . '-' .  $phieuKho->created_at->format('Y')  . '
                         </dd>
                         <dt class="col-sm-3">Người tạo:</dt>
                         <dd class="col-sm-3" id="nguoiNhap">
@@ -613,6 +799,22 @@ class PhieuKhoController extends Controller
             $tongSL += $item->soLuong;
             $tongSP += 1;
             $tongTien += (int)$item->soLuong * (float)$item->gia;
+            $tieuDeColor = $item->sanpham->color->tuychonbienthe->color->tieuDe;
+            $tieuDeSize = "";
+            $countThuonTinh = count($item->sanpham->soluongthuoctinh);
+            if ($countThuonTinh > 1) {
+
+                $bienTheSanPham = BienTheSanPham::where([
+                    'sku' => $item->sku,
+                    'san_pham_id' => $item->san_pham_id,
+                ])->first();
+                $bienTheSize = TuyChonBienThe::where('bien_the_san_pham_id', $bienTheSanPham->id)->with('thuoctinh')->first();
+
+                $tieuDeSize = ' - ' . $bienTheSize->thuoctinh->tieuDe;
+            }
+
+            $item->sanpham->tenSanPham = $item->sanpham->tenSanPham . " - " .
+                $tieuDeColor . $tieuDeSize;
             $output .=
                 '<tr>
                     <td>
@@ -622,17 +824,17 @@ class PhieuKhoController extends Controller
                         ' . $item->sku . '
                     </td>
                     <td>
-                        ' . $item->sanpham->tenSanPham .  '
+                        ' . $item->sanpham->tenSanPham . '
                     </td>
                     
                     <td>
                         ' .  $item->soLuong . '
                     </td>
                     <td>         
-                        ' .   number_format($item->gia, 0, ',', ',') . ' đ
+                        ' .   number_format($item->gia, 0, ',', ',') . ' ₫
                     </td>
                     <td>
-                        ' .  number_format((float)$item->gia * (int)$item->soLuong, 0, ',', ',') . ' đ
+                        ' .  number_format((float)$item->gia * (int)$item->soLuong, 0, ',', ',') . ' ₫
                     </td>
                 </tr>';
         }
@@ -649,9 +851,9 @@ class PhieuKhoController extends Controller
                                 <dt class="col-sm-5 text-right">Tổng số mặt hàng: </dt>
                                 <dd class="col-sm-7 text-right">' . $tongSP . '</dd>
                                 <dt class="col-sm-5 text-right">Tổng tiền hàng: </dt>
-                                <dd class="col-sm-7 text-right">' . number_format($tongTien, 0, ',', ',') . ' đ</dd>
+                                <dd class="col-sm-7 text-right">' . number_format($tongTien, 0, ',', ',') . ' ₫</dd>
                                 <dt class="col-sm-5 text-right">Tổng cộng: </dt>
-                                <dd class="col-sm-7 text-right">' . number_format($tongTien, 0, ',', ',') .  ' đ</dd>
+                                <dd class="col-sm-7 text-right">' . number_format($tongTien, 0, ',', ',') .  ' ₫</dd>
                             </div>
                         </div>
                     </div>

@@ -24,7 +24,6 @@ return new class extends Migration
             $table->integer('dacTrung')->nullable();
             $table->double('gia')->default(0);
             $table->double('giaKhuyenMai')->nullable()->default(0);
-            $table->double('giaNhap')->default(0);
             $table->integer('tonKho')->default(0);
             $table->string('slug')->unique();
             $table->timestamps();

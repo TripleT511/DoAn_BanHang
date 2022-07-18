@@ -19,6 +19,8 @@ return new class extends Migration
             $table->foreign('nhan_vien_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->unsignedBigInteger('khach_hang_id');
             $table->foreign('khach_hang_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->unsignedBigInteger('ma_giam_gia_id')->nullable();
+            $table->foreign('ma_giam_gia_id')->references('id')->on('ma_giam_gias')->onUpdate('cascade')->onDelete('cascade');
             $table->string('hoTen');
             $table->string('diaChi');
             $table->string('email');

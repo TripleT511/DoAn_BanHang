@@ -3,7 +3,7 @@
 @section('title','Sửa Nhà Cung Cấp')
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Nhà Cung Cấp/</span> Sửa Nhà Cung Cấp</h4>
+    <h4 class="fw-bold mb-4">Sửa Nhà Cung Cấp</h4>
     <!-- Basic Layout -->
     <div class="row">
         <div class="col-xl">

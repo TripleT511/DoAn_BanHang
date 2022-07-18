@@ -119,7 +119,6 @@
 </div>
 @endsection
 @section('js')
-    <script src="https://cdn.tiny.cloud/1/c4yq515bjllc9t8mkucpjw8rmw5jnuktk654ihvvk2k4ve5f/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
 
         // === Preview Image === // 
