@@ -74,9 +74,10 @@ class DashboardController extends Controller
         ]);
 
         $user = User::where('email', $request->email)->first();
-
-        if ($user->social_id != null) {
+        if ($user && $user->social_id != null) {
             return redirect()->back()->with("error", "Trang này không dành cho tài khoản mạng xã hội");
+        } else {
+            return redirect()->back()->with("error", "Tài khoản này không tồn tại hoặc đã bị xoá");
         }
 
         $token = strtoupper(Str::random(60));

@@ -8,13 +8,14 @@
         <th class="text-right">Tổng đơn hàng</th>
       </tr>
     </thead>
-    <tbody class="table-border-bottom-0" id="topSanPhamBanChay">
+    <tbody  class="table-border-bottom-0" id="topSanPhamBanChay">
     @php
         $tongSoLuongSanPham = 0;
         $tongThanhTien = 0;
         $tongDonHang = 0;
+       
     @endphp
-    @foreach($top5SanPhamBanChay as $key => $item)
+    @foreach($lstSanPham as $item)
         @php
             $thanhTien = 0;
             $soLuong = ($item->chitiethoadons_sum_so_luong) ? $item->chitiethoadons_sum_so_luong : 0;
@@ -25,23 +26,22 @@
             $tongDonHang += $donHang;
         @endphp
       <tr>
-        <td class="text-left">
-            {{ ++$key }}
-        </td class="text-left">
-        <td>
-            <a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}" class="text-primary" target="_blank" title="{{ $item->tenSanPham }}">
-                {{ $item->tenSanPham }}
-            </a>
-        </td>
-        <td class="text-right">
-            {{ $soLuong }}
-        </td>
-        <td class="text-right">
-           {{ number_format($thanhTien, 0, '', '.')  }} ₫
-        </td>
-        <td class="text-right">
-            {{ $donHang }}
-        </td>
+        <tr>
+          <td class="text-left">
+          </td class="text-left">
+          <td>
+             
+          </td>
+          <td class="text-right">
+              
+          </td>
+          <td class="text-right">
+             
+          </td>
+          <td class="text-right">
+              
+          </td>
+        </tr>
       </tr>
     @endforeach
     <tr>

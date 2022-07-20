@@ -43,6 +43,6 @@ class HoaDon extends Model
 
     public function chiTietHoaDons()
     {
-        return $this->hasMany(ChiTietHoaDon::class, 'hoa_don_id', 'id')->withTrashed();
+        return $this->hasMany(ChiTietHoaDon::class, 'hoa_don_id', 'id');
     }
 }

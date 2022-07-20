@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use App\Models\SanPham;
 use App\Models\HoaDon;
+use App\Models\BienTheSanPham;
 
 class ChiTietHoaDon extends Model
 {
@@ -31,6 +32,10 @@ class ChiTietHoaDon extends Model
         return $this->belongsTo(HoaDon::class, 'hoa_don_id', 'id')->withTrashed();
     }
 
+    public function bienthe()
+    {
+        return $this->belongsTo(BienTheSanPham::class, 'bien_the_san_pham_id', 'id')->withTrashed();
+    }
 
     public function hoadonSuccess()
     {

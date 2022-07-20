@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\BienTheSanPham;
 use App\Models\TuyChonThuocTinh;
 use App\Models\ThuocTinh;
 use App\Models\TuyChonBienThe;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 
@@ -65,6 +67,19 @@ class ThuocTinhController extends Controller
                     'mauSac.*.required' => "Màu sắc không được bỏ trống",
 
                 ]);
+            }
+
+            foreach ($request->tieuDe as $key => $value) {
+                $count = 0;
+
+                foreach ($request->tieuDe as $key => $value2) {
+                    if ($value == $value2) {
+                        ++$count;
+                    }
+                    if ($count > 1) {
+                        return back()->with("error2", "Tiêu đề thuộc tính là duy nhất không được trùng");
+                    }
+                }
             }
         } else {
             $request->validate([
@@ -150,41 +165,80 @@ class ThuocTinhController extends Controller
 
             ]);
         }
+        if ($request->has('tieuDe')) {
+            foreach ($request->tieuDe as $key => $value) {
+                $count = 0;
+
+                foreach ($request->tieuDe as $key => $value2) {
+                    if ($value == $value2) {
+                        ++$count;
+                    }
+                    if ($count > 1) {
+                        return back()->with("error2", "Tiêu đề thuộc tính là duy nhất không được trùng");
+                    }
+                }
+            }
+        } else {
+            return back()->with("error2", "Giá trị thuộc tính bên dưới không được bỏ trống");
+        }
 
         $lstNoneDelete = [];
+
         $lstTieuDe = $request->input('tieuDe');
         $lstmauSac = $request->input('mauSac');
 
-        foreach ($lstTieuDe as $key => $item) {
 
-            if (isset($request->idOption[$key])) {
-                $optionCurrent = TuyChonThuocTinh::where('id', $request->idOption[$key])->orWhere('tieuDe', $lstTieuDe[$key])->first();
-                if ($optionCurrent) {
-                    $optionCurrent->tieuDe = $lstTieuDe[$key];
-                    $optionCurrent->mauSac = $lstmauSac[$key] ?? '';
-                    $optionCurrent->save();
+        DB::beginTransaction();
 
-                    array_push($lstNoneDelete, $optionCurrent->id);
+        try {
+
+            foreach ($lstTieuDe as $key => $item) {
+
+                if (isset($request->idOption[$key])) {
+                    $optionCurrent = TuyChonThuocTinh::where('id', $request->idOption[$key])->orWhere('tieuDe', $lstTieuDe[$key])->first();
+                    if ($optionCurrent) {
+                        $optionCurrent->tieuDe = $lstTieuDe[$key];
+                        $optionCurrent->mauSac = $lstmauSac[$key] ?? '';
+                        $optionCurrent->save();
+
+                        array_push($lstNoneDelete, $optionCurrent->id);
+                    }
+                } else {
+                    $option = new TuyChonThuocTinh();
+
+                    $option->fill([
+                        'thuoc_tinh_id' => $thuoctinh->id,
+                        'tieuDe' => $lstTieuDe[$key],
+                        'mauSac' => $lstmauSac[$key] ?? ''
+                    ]);
+
+                    $option->save();
+
+                    array_push($lstNoneDelete, $option->id);
                 }
-            } else {
-                $option = new TuyChonThuocTinh();
-
-                $option->fill([
-                    'thuoc_tinh_id' => $thuoctinh->id,
-                    'tieuDe' => $lstTieuDe[$key],
-                    'mauSac' => $lstmauSac[$key] ?? ''
-                ]);
-
-                $option->save();
-
-                array_push($lstNoneDelete, $option->id);
             }
+
+            $lstOptionDelete = TuyChonThuocTinh::where('thuoc_tinh_id', $thuoctinh->id)->whereNotIn('id', $lstNoneDelete)->get();
+            foreach ($lstOptionDelete as $item) {
+                $checkMauSac = TuyChonThuocTinh::where('thuoc_tinh_id', 2)->get();
+                $tuychonbienthe = TuyChonBienThe::where('tuy_chon_thuoc_tinh_id', $item->id)->get();
+                foreach ($tuychonbienthe as $item2) {
+                    $bienTheSanPham = BienTheSanPham::where('id', $item2->bien_the_san_pham_id)->first();
+                    $bienTheSanPham->delete();
+                    $item2->delete();
+                }
+                $item->delete();
+            }
+
+            DB::commit();
+            // all good
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return back()->with("error2", "Không thể xoá toàn bộ màu sắc");
         }
 
-        $lstOptionDelete = TuyChonThuocTinh::whereNotIn('id', $lstNoneDelete)->get();
-        foreach ($lstOptionDelete as $item) {
-            $item->delete();
-        }
+
 
         return Redirect::route('thuoctinh.index');
     }

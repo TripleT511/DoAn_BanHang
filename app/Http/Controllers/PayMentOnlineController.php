@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendMail;
+use App\Models\BienTheSanPham;
 use App\Models\ChiTietHoaDon;
 use App\Models\DanhMuc;
 use App\Models\HoaDon;
@@ -58,6 +59,7 @@ class PayMentOnlineController extends Controller
         }
 
         $discountCode = Session::get('DiscountCode');
+        $idDiscount = null;
         $oldTotal = $total;
         $valueDiscount = 0;
         $infoPayMent = array(
@@ -69,6 +71,8 @@ class PayMentOnlineController extends Controller
         );
 
         if ($discountCode) {
+            $idDiscount =
+                $discountCode['id'];
             $loaiKhuyenMai = $discountCode['type'];
             $value =  $discountCode['value'];
             $maxValue = $discountCode['max_value'];
@@ -98,10 +102,8 @@ class PayMentOnlineController extends Controller
 
         //  Thanh toán VN PAY
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        $vnp_Returnurl = "http://127.0.0.1:8000/thanh-toan-thanh-cong/?khach_hang_id=$user->id&hoTen=$request->hoTen_billing&email=$request->email_billing&diaChi=$request->diaChi_billing&soDienThoai=$request->soDienThoai_billing&ghiChu=$request->ghiChu_billing&thanhtien=$oldTotal&giamgia=$valueDiscount";
-        if ($request->socialite != null) {
-            $vnp_Returnurl = "http://localhost:8000/thanh-toan-thanh-cong/?khach_hang_id=$user->id&hoTen=$request->hoTen_billing&email=$request->email_billing&diaChi=$request->diaChi_billing&soDienThoai=$request->soDienThoai_billing&ghiChu=$request->ghiChu_billing&thanhtien=$oldTotal&giamgia=$valueDiscount";
-        }
+        $vnp_Returnurl = "http://127.0.0.1:8000/thanh-toan-thanh-cong/?khach_hang_id=$user->id&hoTen=$request->hoTen_billing&email=$request->email_billing&diaChi=$request->diaChi_billing&soDienThoai=$request->soDienThoai_billing&ghiChu=$request->ghiChu_billing&thanhtien=$oldTotal&giamgia=$valueDiscount&idDiscount=$idDiscount";
+
         $vnp_TmnCode = "D0D9N7LY"; //Mã website tại VNPAY 
         $vnp_HashSecret = "MQWFQOJLSODQKYSYZEWXEFXDKIJGSEQN"; //Chuỗi bí mật
 
@@ -198,6 +200,11 @@ class PayMentOnlineController extends Controller
                     'trangThai' => 0,
                 ]);
 
+                if ($request->idDiscount) {
+                    $hoadon->ma_giam_gia_id = $request->idDiscount;
+                    $hoadon->save();
+                }
+
                 $hoadon->save();
 
                 $hoadon->giamGia = $request->giamgia;
@@ -215,20 +222,43 @@ class PayMentOnlineController extends Controller
                         'donGia' => $item['gia'],
                         'tongTien' => $item['gia'] * $item['soluong'],
                     ]);
+
+
                     // Sản phẩm
-                    $sanpham = SanPham::whereId($item['id'])->where('tonKho', '>', 0)->first();
-                    $sanpham->tonKho = $sanpham->tonKho - $item['soluong'];
-                    $sanpham->save();
-                    // Thêm chi tiết hoá đơn
-                    $chiTietHoaDon = new ChiTietHoaDon();
-                    $chiTietHoaDon->fill([
-                        'hoa_don_id' => $hoadon->id,
-                        'san_pham_id' => $item['id'],
-                        'soLuong' => $item['soluong'],
-                        'donGia' => $item['gia'],
-                        'tongTien' => $item['gia'] * $item['soluong'],
-                    ]);
-                    $chiTietHoaDon->save();
+                    if ($item['bien_the_san_pham_id'] != null) {
+                        $bienTheSanPham = BienTheSanPham::where([
+                            'id' => $item['bien_the_san_pham_id'],
+                            'san_pham_id' => $item['id']
+                        ])->where('soLuong', '>', 0)->first();
+                        $bienTheSanPham->soLuong = $bienTheSanPham->soLuong -
+                            $item['soluong'];
+
+                        // Thêm chi tiết hoá đơn
+                        $chiTietHoaDon = new ChiTietHoaDon();
+                        $chiTietHoaDon->fill([
+                            'hoa_don_id' => $hoadon->id,
+                            'san_pham_id' => $item['id'],
+                            'soLuong' => $item['soluong'],
+                            'donGia' => $item['gia'],
+                            'tongTien' => $item['gia'] * $item['soluong'],
+                            'bien_the_san_pham_id' => $item['bien_the_san_pham_id']
+                        ]);
+                        $chiTietHoaDon->save();
+                    } else {
+                        $sanpham = SanPham::whereId($item['id'])->where('tonKho', '>', 0)->first();
+                        $sanpham->tonKho = $sanpham->tonKho - $item['soluong'];
+                        $sanpham->save();
+                        // Thêm chi tiết hoá đơn
+                        $chiTietHoaDon = new ChiTietHoaDon();
+                        $chiTietHoaDon->fill([
+                            'hoa_don_id' => $hoadon->id,
+                            'san_pham_id' => $item['id'],
+                            'soLuong' => $item['soluong'],
+                            'donGia' => $item['gia'],
+                            'tongTien' => $item['gia'] * $item['soluong'],
+                        ]);
+                        $chiTietHoaDon->save();
+                    }
                 }
 
                 DB::commit();

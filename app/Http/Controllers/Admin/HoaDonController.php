@@ -101,9 +101,15 @@ class HoaDonController extends Controller
             $hoadon->save();
             $lstChiTietHoaDon = ChiTietHoaDon::where('hoa_don_id', $hoadon->id)->get();
             foreach ($lstChiTietHoaDon as $item) {
-                $sanpham = SanPham::whereId($item->san_pham_id)->first();
-                $sanpham->tonKho = $sanpham->tonKho + $item->soLuong;
-                $sanpham->save();
+                if ($item->bien_the_san_pham_id != null) {
+                    $bienthe = BienTheSanPham::where('id', $item->bien_the_san_pham_id)->first();
+                    $bienthe->soLuong = $bienthe->soLuong + $item->soLuong;
+                    $bienthe->save();
+                } else {
+                    $sanpham = SanPham::whereId($item->san_pham_id)->first();
+                    $sanpham->tonKho = $sanpham->tonKho + $item->soLuong;
+                    $sanpham->save();
+                }
             }
             $this->dispatch(new SendMail3($hoadon));
 
@@ -128,9 +134,15 @@ class HoaDonController extends Controller
                 $hoadon->trangThai = 5;
                 $lstChiTietHoaDon = ChiTietHoaDon::where('hoa_don_id', $hoadon->id)->get();
                 foreach ($lstChiTietHoaDon as $item) {
-                    $sanpham = SanPham::whereId($item->san_pham_id)->first();
-                    $sanpham->tonKho = $sanpham->tonKho + $item->soLuong;
-                    $sanpham->save();
+                    if ($item->bien_the_san_pham_id != null) {
+                        $bienthe = BienTheSanPham::where('id', $item->bien_the_san_pham_id)->first();
+                        $bienthe->soLuong = $bienthe->soLuong + $item->soLuong;
+                        $bienthe->save();
+                    } else {
+                        $sanpham = SanPham::whereId($item->san_pham_id)->first();
+                        $sanpham->tonKho = $sanpham->tonKho + $item->soLuong;
+                        $sanpham->save();
+                    }
                 }
                 $this->dispatch(new SendMail3($hoadon));
                 break;
@@ -275,18 +287,17 @@ class HoaDonController extends Controller
             $tieuDeSize = "";
             if ($countThuonTinh > 1) {
 
-                $bienTheSize = TuyChonBienThe::where('bien_the_san_pham_id', $item->bien_the_san_pham_id)->with('thuoctinh')->first();
+                $bienTheSize = TuyChonBienThe::where('bien_the_san_pham_id', $item->bien_the_san_pham_id)->with('thuoctinh')->withTrashed()->first();
 
-                $tieuDeSize = ' - ' . $bienTheSize->thuoctinh->tieuDe;
+                $tieuDeSize = $bienTheSize->thuoctinh->tieuDe;
             }
-            $item->sanpham->tenSanPham = $item->sanpham->tenSanPham . " - " . $tieuDeColor . $tieuDeSize;
             $output .=
                 '<tr>
                     <td class="text-left">
                         ' .  $value + 1 . '
                     </td>
                     <td class="text-left">
-                        ' . $item->sanpham->tenSanPham .   '
+                        ' . $item->sanpham->tenSanPham . '-' . $tieuDeColor . '-' . $tieuDeSize . '
                     </td>
 
                     <td class="text-right">
@@ -328,6 +339,21 @@ class HoaDonController extends Controller
     public function HoaDonPDF()
     {
         $data = Session::get('pdfHoaDon');
+        foreach ($data->chiTietHoaDons as $value => $item) {
+            $tongTien = (int)$item->soLuong * (float)$item->donGia;
+            $tieuDeColor = $item->sanpham->color->tuychonbienthe->color->tieuDe;
+            $countThuonTinh = count($item->sanpham->soluongthuoctinh);
+            $tieuDeSize = "";
+            if ($countThuonTinh > 1) {
+
+                $bienTheSize = TuyChonBienThe::where('bien_the_san_pham_id', $item->bien_the_san_pham_id)->with('thuoctinh')->withTrashed()->first();
+
+                $tieuDeSize = $bienTheSize->thuoctinh->tieuDe;
+            }
+
+            $item->tieuDeColor = $tieuDeColor;
+            $item->tieuDeSize = $tieuDeSize;
+        }
         $ngayTao = Carbon::createFromFormat('Y-m-d H:i:s', $data->ngayXuatHD)->format('d/m/Y');
         $data = [
             'hoadon'     => $data,

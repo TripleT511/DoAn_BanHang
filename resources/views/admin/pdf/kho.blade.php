@@ -87,7 +87,7 @@
 </style>
 <body>
 <div class="head-title">
-    <h1 class="text-center m-0 p-0">Chi Tiết Phiếu Kho</h1>
+    <h2 class="text-center m-0 p-0">PHIẾU NHẬP KHO</h2>
 </div>
 @php
 $trangThai = $phieukho->trangThai == 0 ? "Đang chờ duyệt" : "Đã thanh toán";
@@ -139,9 +139,9 @@ $nguoiTao = ($phieukho->user ? $phieukho->user->hoTen : '');
             $tongTien += (int)$item->soLuong * (float)$item->gia;
         @endphp
         <tr align="center">
-          <td>{{ $key++ }}</td>
+          <td>{{ ++$key }}</td>
           <td>{{ $item->sku }}</td>
-          <td>{{ $item->sanpham->tenSanPham }}</td>
+          <td>{{ $item->sanpham->tenSanPham }} - {{ $item->tieuDeColor }} {{ ($item->tieuDeSize != '') ? ' - ' . $item->tieuDeSize : '' }}</td>
           <td>{{ $item->soLuong }}</td>
           <td>{{number_format($item->gia, 0, ',', ',') }} ₫</td>
           <td>{{number_format((float)$item->gia * (int)$item->soLuong, 0, ',', ',') }} ₫</td>
@@ -150,13 +150,13 @@ $nguoiTao = ($phieukho->user ? $phieukho->user->hoTen : '');
         <tr>
             <td colspan="7">
                 <div class="total-part">
-                    <div class="total-left w-60 float-left" align="right">
+                    <div class="total-left w-85 float-left" align="right">
                         <p>Tổng số lượng:</p>
                         <p>Tổng số mặt hàng:</p>
                         <p>Tổng tiền hàng:</p>
                         <p>Tổng cộng:</p>
                     </div>
-                    <div class="total-right w-40 float-left text-bold" align="right">
+                    <div class="total-right w-15 float-left text-bold" align="right">
                         <p>{{ $tongSL }}</p>
                         <p>{{ $tongSP }}</p>
                         <p>{{ number_format($tongTien, 0, ',', ',') }} ₫</p>

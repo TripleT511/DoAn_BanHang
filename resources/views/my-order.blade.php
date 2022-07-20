@@ -157,6 +157,12 @@
 				<h1>Đơn hàng của tôi</h1>
 			</div>
 			<div class="row " style="margin-bottom:15px; display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
+				@if(session('message')) 
+				<label class="text-success mb-2" style="color: #71dd37;">{{ session('message') }}</label>
+				@endif
+				@if(session('error')) 
+				<label class="text-success mb-2" style="color: #fc424a;">{{ session('error') }}</label>
+				@endif
 				<div class="col-lg-4">
 					<div class="fillter-wrapper" style="display: flex; align-items: center;">
 						<select class="form-select form-control" style="margin-right: 10px;" id="filter-donhang">
@@ -233,7 +239,7 @@
 							@endif
 						</td>
 						<td>
-							@if($item->trangThai == 0 || $item->trangThai == 1)
+							@if(($item->trangThai == 0 || $item->trangThai == 1 )&& $item->trangThaiThanhToan != 1)
 							<form action="{{ route('huyDatHang', ['hoadon' => $item]) }}" method="post">
 								@csrf
 								@method("POST")

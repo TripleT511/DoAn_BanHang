@@ -20,6 +20,9 @@
                         <li class="card-description" style="color: #fc424a;">{{ $err }}</li>
                     @endforeach
                 @endif
+                @if(session('error2'))
+                    <li class="card-description" style="color: #fc424a;">{{ session('error2') }}</li>
+                @endif
                 <form method="post" action="{{ route('thuoctinh.update', ['thuoctinh' => $thuoctinh]) }}">
                     @csrf
                     @method("PATCH")
@@ -71,7 +74,7 @@
                         <button type="button" id="themOption" class="btn btn-outline-success d-flex align-items-center" style="gap: 5px"><i class="bx bxs-plus-circle"></i> Thêm </button>
                     </div>
                     <button type="submit" class="btn btn-primary">Cập nhật</button>
-                    <button type="button" class="btn btn-primary">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="history.back()">Thoát</button>
                 </form>
             </div>
             </div>

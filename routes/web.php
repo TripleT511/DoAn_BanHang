@@ -187,6 +187,11 @@ Route::prefix('admin')->group(function () {
         Route::get('/thong-ke-san-pham-ban-chay', [ThongKeController::class, 'thongKeTopSanPhamBanChay']);
 
         Route::get('/export-bao-cao', [ThongKeController::class, 'ExportBaoCao'])->name('admin.ExportBaoCao');
+
+
+        // Xuất excel sản phẩm bán chạy
+        Route::get('/export-top-product', [ThongKeController::class, 'exportTopProduct'])->name('admin.ExportTopProduct');
+
         // *** Thống Kê *** //
 
 

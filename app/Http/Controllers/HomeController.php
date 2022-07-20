@@ -12,6 +12,7 @@ use Dflydev\DotAccessData\Data;
 use App\Models\LuotTimKiem;
 use App\Jobs\SendMail2;
 use App\Jobs\SendMail3;
+use App\Models\BienTheSanPham;
 use App\Models\ChiTietHoaDon;
 use App\Models\ChiTietPhieuKho;
 use App\Models\HoaDon;
@@ -174,7 +175,11 @@ class HomeController extends Controller
             }
         }
 
-        return view('product-detail', ['sanpham' => $sanpham, 'lstDanhGia' => $lstDanhGia, 'lstDanhMuc' => $lstDanhMuc, 'lstSanPhamLienQuan' => $lstSanPhamLienQuan, 'countRating' => $countRating, 'starActive' => $starActive, 'starNonActive' => $starNonActive, 'lstDanhMucHeader' => $lstDanhMucHeader]);
+        $checkMuaSanPham = HoaDon::with('chitiethoadons')->whereHas('chitiethoadons', function ($query) use ($sanpham) {
+            $query->where('san_pham_id',  $sanpham->id);
+        })->where('khach_hang_id', Auth()->user()->id)->count();
+
+        return view('product-detail', ['sanpham' => $sanpham, 'lstDanhGia' => $lstDanhGia, 'lstDanhMuc' => $lstDanhMuc, 'lstSanPhamLienQuan' => $lstSanPhamLienQuan, 'countRating' => $countRating, 'starActive' => $starActive, 'starNonActive' => $starNonActive, 'lstDanhMucHeader' => $lstDanhMucHeader, 'checkRating' => $checkMuaSanPham]);
     }
 
     public function danhmucsanpham($slug, Request $request)
@@ -498,8 +503,26 @@ class HomeController extends Controller
     public function huyDatHang(Request $request)
     {
         $hoadon = HoaDon::whereId($request->hoadon)->first();
+        if ($hoadon->trangThaiThanhToan == 1) {
+            return back()->with('error', "Không thể huỷ đơn hàng đã thanh toán trước");
+        }
+        if ($hoadon->trangThai != 3) {
+            return back()->with('error', "Không thể huỷ đơn hàng khi ở trạng thái đang giao hàng");
+        }
         $hoadon->trangThai = 5;
         $hoadon->save();
+        $lstChiTietHoaDon = ChiTietHoaDon::where('hoa_don_id', $hoadon->id)->get();
+        foreach ($lstChiTietHoaDon as $item) {
+            if ($item->bien_the_san_pham_id != null) {
+                $bienthe = BienTheSanPham::where('id', $item->bien_the_san_pham_id)->first();
+                $bienthe->soLuong = $bienthe->soLuong + $item->soLuong;
+                $bienthe->save();
+            } else {
+                $sanpham = SanPham::whereId($item->san_pham_id)->first();
+                $sanpham->tonKho = $sanpham->tonKho + $item->soLuong;
+                $sanpham->save();
+            }
+        }
         $this->dispatch(new SendMail3($hoadon));
         return Redirect::route('myOrder');
     }

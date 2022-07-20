@@ -496,6 +496,11 @@ class GioHangController extends Controller
 
     public function checkout(Request $request)
     {
+        $Cart = Session::get('Cart');
+        if (!$Cart) {
+            return redirect()->route('gio-hang');
+        }
+
         $request->validate([
             'hoTen_billing' => 'required',
             'email_billing' => 'required|email',
@@ -517,10 +522,7 @@ class GioHangController extends Controller
             ]);
         }
 
-        $Cart = Session::get('Cart');
-        if (!$Cart) {
-            return redirect()->route('gio-hang');
-        }
+
 
         DB::beginTransaction();
 
@@ -568,6 +570,7 @@ class GioHangController extends Controller
                     ])->where('soLuong', '>', 0)->first();
                     $bienTheSanPham->soLuong = $bienTheSanPham->soLuong -
                         $item['soluong'];
+                    $bienTheSanPham->save();
 
                     // Thêm chi tiết hoá đơn
                     $chiTietHoaDon = new ChiTietHoaDon();

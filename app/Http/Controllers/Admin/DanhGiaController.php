@@ -428,7 +428,7 @@ class DanhGiaController extends Controller
         }
 
         return response()->json([
-            'success' => "Đánh giá sản phẩm thành công",
+            'success' => "Xoá Đánh giá sản phẩm thành công",
             'output' => $output,
             'outputMain1' => $outputMain1,
             'outputMain2' => $outputMain2,

@@ -197,18 +197,12 @@
 								</div>
 							@endif
 	                        <div class="row">
-								@if($sanpham->tonKho > 0)
 	                            <label class="col-xl-5 col-lg-5  col-md-6 col-6"><strong>Số lượng</strong></label>
 	                            <div class="col-xl-4 col-lg-5 col-md-6 col-6">
 	                                <div class="numbers-row">
 	                                    <input type="text" value="1" id="quantity_1" class="qty2" name="quantity_1">
 	                                </div>
 	                            </div>
-								@else
-								<div class="het-hang" >
-									Hết hàng
-								</div>
-								@endif
 	                        </div>
 	                    </div>
 	                    <div class="row">
@@ -253,11 +247,9 @@
 								@endif
 								</div>
 	                        </div>
-							@if($sanpham->tonKho > 0)
 	                        <div class="col-lg-4 col-md-6">
 								<a href="javascript:void(0)" id="add-cart" class="btn_1">Thêm vào giỏ hàng</a>
 	                        </div>
-							@endif
 	                    </div>
 	                </div>
 	                <!-- /prod_info -->
@@ -273,9 +265,16 @@
 	                <li class="nav-item">
 	                    <a id="tab-A" href="#pane-A" class="nav-link active" data-toggle="tab" role="tab">Nội dung chi tiết</a>
 	                </li>
-	                <li class="nav-item">
-	                    <a id="tab-B" href="#pane-B" class="nav-link" data-toggle="tab" role="tab">Đánh giá sản phẩm</a>
-	                </li>
+					@auth
+						
+						@if($checkRating > 0) 
+							<li class="nav-item">
+								<a id="tab-B" href="#pane-B" class="nav-link" data-toggle="tab" role="tab">Đánh giá sản phẩm</a>
+							</li>
+						@endif
+
+					@endauth
+	                
 	            </ul>
 	        </div>
 	    </div>
@@ -739,7 +738,7 @@
 						}, 2000);
 					$("#lstReview").html(response.output);
 					$(".avg-start").html(response.avg + " / 5");
-					$(".count-rating").html(response.count);
+					$(".count-rating").html(`( ${response.count} đánh giá )`);
 					$(".overview-bottom").html(response.outputMain2);
 					$(".top-rating").html(response.outputMain1);
 
@@ -811,7 +810,7 @@
 						}, 2000);
 					$("#lstReview").html(response.output);
 					$(".avg-start").html(response.avg + " / 5");
-					$(".count-rating").html(response.count);
+					$(".count-rating").html(`( ${response.count} đánh giá )`);
 					$(".overview-bottom").html(response.outputMain2);
 					$(".top-rating").html(response.outputMain1);
 					
@@ -863,7 +862,7 @@
 						}, 2000);
 					$("#lstReview").html(response.output);
 					$(".avg-start").html(response.avg + " / 5");
-					$(".count-rating").html(response.count);
+					$(".count-rating").html(`( ${response.count} đánh giá )`);
 					$(".overview-bottom").html(response.outputMain2);
 					$(".top-rating").html(response.outputMain1);
 					

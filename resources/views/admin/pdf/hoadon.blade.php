@@ -171,7 +171,7 @@ $trangThai = "";
             @endphp
             <tr align="center">
                 <td>{{ $value + 1 }}</td>
-                <td>{{ $item->sanpham->tenSanPham }}</td>
+                <td>{{ $item->sanpham->tenSanPham }} - {{ $item->tieuDeColor }} {{ ($item->tieuDeSize != '') ? ' - ' . $item->tieuDeSize : '' }}</td>
                 <td>{{ $item->soLuong }}</td>
                 <td>{{ number_format($item->donGia, 0, ',', ',') }} ₫</td>
                 <td>{{ number_format($tongTien, 0, ',', ',') }} ₫</td>
@@ -187,9 +187,9 @@ $trangThai = "";
                         <p>Tổng cộng:</p>
                     </div>
                     <div class="total-right w-15 float-left text-bold" align="right">
-                        <p>{{ number_format($hoadon->tongTien, 0, ',', ',') }} ₫</p>
-                        <p>{{ number_format($hoadon->giamGia, 0, ',', ',') }} ₫</p>
-                        <p>{{ number_format($hoadon->tongThanhTien, 0, ',', ',')}} ₫</p>
+                        <p> {{ number_format($hoadon->tongTien, 0, ',', ',') }} ₫</p>
+                        <p> {{ number_format($hoadon->giamGia, 0, ',', ',') }} ₫</p>
+                        <p> {{ number_format($hoadon->tongThanhTien, 0, ',', ',')}} ₫</p>
                     </div>
                     <div style="clear: both;"></div>
                 </div> 

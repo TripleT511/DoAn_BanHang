@@ -44,14 +44,19 @@
                                 <li class="card-description" style="color: #fc424a;">{{ $err }}</li>
                             @endforeach
                         @endif
-                            @method('POST')
-                            @csrf
+                      
+                        @if(session('error2'))
+                            <li class="card-description" style="color: #fc424a;">{{ session('error2') }}</li>
+                        @endif
+                        @method('POST')
+                        @csrf
+
                         <div class="mb-3">
                             <label class="form-label" for="basic-default-fullname">Tên Sản Phẩm</label>
                             <input type="text" name="tenSanPham" class="form-control" id="basic-default-fullname" placeholder="Nhập tên sản phẩm..." />
                         </div>
                         <div class="mb-3">
-                            <label class="form-label" for="basic-default-fullname">Mã sản phẩm</label>
+                            <label class="form-label" for="basic-default-fullname" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title="" data-bs-original-title="<span>SKU - Mã sản phẩm của mỗi sản phẩm là duy nhất, bao gồm cả chữ và số</span>">Mã sản phẩm</label>
                             <input type="text" name="maSKU" class="form-control" id="basic-default-fullname" placeholder="Nhập mã sản phẩm (SKU)" />
                         </div>
                         <div class="mb-3">
@@ -88,9 +93,9 @@
                             <label for="danhmucid" class="form-label">Danh mục sản phẩm</label>
                             <select id="danhmucid" name="danhmucid" class="form-select">
                                 <option value="">Chọn danh mục sản phẩm</option>
-                                @foreach($lstDanhMuc as $dm)
-                                <option value="{{$dm->id}}">{{$dm->tenDanhMuc}}</option>
-                                @endforeach
+                                @php
+                                    dequyDanhMuc($lstDanhMuc)
+                                @endphp
                             </select>
                         </div>
                         <div class="mb-3">
@@ -149,7 +154,8 @@
                                                     <thead>
                                                     <tr>
                                                         <th>Tên biến thể</th>
-                                                        <th>Mã SKU</th>
+                                                        <th data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="top" data-bs-html="true" title="" data-bs-original-title="<span>SKU - Mã sản phẩm của mỗi sản phẩm là duy nhất, bao gồm cả chữ và số</span>">Mã SKU
+                                                        </th>
                                                         <th>Giá</th>
                                                         <th>Giá khuyến mãi</th>
                                                     </tr>
@@ -172,6 +178,25 @@
         </div>
     </div>
 </div>
+<?php
+function dequyDanhMuc($danhmuc, $idDanhMucCha = 0, $char = '')
+    {
+        foreach ($danhmuc as $key => $item) {
+            // Nếu là chuyên mục con thì hiển thị
+            if ($item->idDanhMucCha == $idDanhMucCha) {
+              ?>
+                <option value="{{$item->id}}">{{$char . $item->tenDanhMuc}}</option>
+              <?php
+
+                // Xóa chuyên mục đã lặp
+                unset($danhmuc[$key]);
+
+                // Tiếp tục đệ quy để tìm chuyên mục con của chuyên mục đang lặp
+                dequyDanhMuc($danhmuc, $item->id, $char . '|-- ');
+            }
+        }
+    }
+?>
 @endsection
 @section('js')
     <script>

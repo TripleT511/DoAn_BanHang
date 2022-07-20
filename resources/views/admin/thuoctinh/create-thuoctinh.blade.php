@@ -20,6 +20,9 @@
                         <li class="card-description" style="color: #fc424a;">{{ $err }}</li>
                     @endforeach
                 @endif
+                @if(session('error2'))
+                    <li class="card-description" style="color: #fc424a;">{{ session('error2') }}</li>
+                @endif
                 <form method="post" action="{{ route('thuoctinh.store') }}">
                     @csrf
                 <div class="mb-3">

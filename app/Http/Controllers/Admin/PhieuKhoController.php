@@ -263,7 +263,7 @@ class PhieuKhoController extends Controller
         $sku = '';
 
         if (!$request->sku) {
-            $sku = "SP" .  Str::random(15);
+            $sku = "SP" .  Str::uuid(5);
         } else {
             $sku = $request->sku;
         }
@@ -632,24 +632,42 @@ class PhieuKhoController extends Controller
             'nhacungcapid.required' => "Nhà cung cấp bắt buộc chọn"
         ]);
 
+        $ngayTao =  Carbon::now();
+
+        if ($request->has('ngayTao') && $request->filled('ngayTao')) {
+            $request->validate([
+                'ngayTao' => 'date|before_or_equal:today',
+            ], [
+                'ngayTao.before_or_equal' => "Ngày tạo phiếu không được lớn hơn ngày hiện tại",
+                'ngayTao.date' => "Ngày tạo phiếu không hợp lệ",
+            ]);
+
+            $ngayTao = $request->ngayTao;
+        }
+
+        if ($request->has('maDonHang') && $request->filled('maDonHang')) {
+            $request->validate([
+                'maDonHang' => 'unique:phieu_khos,maDonHang',
+            ], [
+                'maDonHang.unique' => "Mã đơn hàng đã tồn tại",
+            ]);
+        }
 
         // === Thêm phiếu kho === //
         $maDonHang = '';
 
         if (!$request->input('maDonHang')) {
-            $maDonHang =
-                "PN" . Str::random(10);
+            $maDonHang = Str::uuid(10);
         } else {
             $maDonHang = $request->input('maDonHang');
         }
-
 
         $phieukho = new PhieuKho();
         $phieukho->fill([
             'maDonHang' => $maDonHang,
             'nha_cung_cap_id' => $request->input('nhacungcapid'),
             'user_id' => Auth::user()->id,
-            'ngayTao' => Carbon::now(),
+            'ngayTao' => $ngayTao,
             'ghiChu' => $request->input('ghiChu'),
             'trangThai' => 0
         ]);
@@ -759,7 +777,7 @@ class PhieuKhoController extends Controller
             PhieuKho::whereId($request->id)->with('nhacungcap')->with('user')->first();
         $chitietpk = ChiTietPhieuKho::where('phieu_kho_id', $phieuKho->id)->with('sanpham')->with('sanpham.color')->with('sanpham.soluongthuoctinh')->get();
         $trangThai = $phieuKho->trangThai == 0 ? "Đang chờ duyệt" : "Đã thanh toán";
-        $output .= ' <h3 class="text-center">Chi Tiết Phiếu Kho</h3>
+        $output .= ' <h3 class="text-center">PHIẾU NHẬP KHO</h3>
                     <dl class="row mt-2">
                         <dt class="col-sm-3">Mã đơn hàng:</dt>
                         <dd class="col-sm-3" id="maDonHang">' . $phieuKho->maDonHang . '</dd>
@@ -767,7 +785,7 @@ class PhieuKhoController extends Controller
                         <dd class="col-sm-3" id="nhaCungCap">
                           ' . ($phieuKho->nha_cung_cap_id ? $phieuKho->nhacungcap->tenNhaCungCap : '') . '
                         </dd>
-                        <dt class="col-sm-3 text-truncate">Thời gian</dt>
+                        <dt class="col-sm-3 text-truncate">Thời gian:</dt>
                         <dd class="col-sm-3" id="ngayTao">
                         ' . $phieuKho->created_at->format('d') . '-' .  $phieuKho->created_at->format('m') . '-' .  $phieuKho->created_at->format('Y')  . '
                         </dd>
@@ -807,14 +825,13 @@ class PhieuKhoController extends Controller
                 $bienTheSanPham = BienTheSanPham::where([
                     'sku' => $item->sku,
                     'san_pham_id' => $item->san_pham_id,
-                ])->first();
-                $bienTheSize = TuyChonBienThe::where('bien_the_san_pham_id', $bienTheSanPham->id)->with('thuoctinh')->first();
+                ])->withTrashed()->first();
 
-                $tieuDeSize = ' - ' . $bienTheSize->thuoctinh->tieuDe;
+                $bienTheSize = TuyChonBienThe::withTrashed()->where('bien_the_san_pham_id', $bienTheSanPham->id)->with('thuoctinh')->first();
+                if ($bienTheSize)
+                    $tieuDeSize = $bienTheSize->thuoctinh->tieuDe;
             }
 
-            $item->sanpham->tenSanPham = $item->sanpham->tenSanPham . " - " .
-                $tieuDeColor . $tieuDeSize;
             $output .=
                 '<tr>
                     <td>
@@ -824,7 +841,7 @@ class PhieuKhoController extends Controller
                         ' . $item->sku . '
                     </td>
                     <td>
-                        ' . $item->sanpham->tenSanPham . '
+                        ' . $item->sanpham->tenSanPham . '-' . $tieuDeColor . '-' . $tieuDeSize . '
                     </td>
                     
                     <td>
@@ -868,8 +885,28 @@ class PhieuKhoController extends Controller
     public function PhieuKhoPDF()
     {
         $data = Session::get('pdfPhieuKho');
+
         $chitietphieukho =
             ChiTietPhieuKho::where('phieu_kho_id', $data["id"])->with('sanpham')->get();
+        foreach ($chitietphieukho as $item) {
+            $tieuDeColor = $item->sanpham->color->tuychonbienthe->color->tieuDe;
+            $tieuDeSize = "";
+            $countThuonTinh = count($item->sanpham->soluongthuoctinh);
+            if ($countThuonTinh > 1) {
+
+                $bienTheSanPham = BienTheSanPham::where([
+                    'sku' => $item->sku,
+                    'san_pham_id' => $item->san_pham_id,
+                ])->withTrashed()->first();
+
+                $bienTheSize = TuyChonBienThe::withTrashed()->where('bien_the_san_pham_id', $bienTheSanPham->id)->with('thuoctinh')->first();
+                if ($bienTheSize)
+                    $tieuDeSize = $bienTheSize->thuoctinh->tieuDe;
+            }
+
+            $item->tieuDeColor = $tieuDeColor;
+            $item->tieuDeSize = $tieuDeSize;
+        }
         // $pdf = App::make('dompdf.wrapper');
         // $pdf->loadHTML($data);
         $data = [

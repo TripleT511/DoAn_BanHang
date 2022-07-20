@@ -270,7 +270,11 @@ class TaiKhoanController extends Controller
 
         $countAdmin = User::where('phan_quyen_id', 0)->count();
         if ($countAdmin == 1 && $user->phan_quyen_id == 0) {
-            return redirect()->route('user.index')->withError('Bạn không thể khoá tài khoán này');
+            return redirect()->route('user.index')->withError('Bạn không thể khoá tài khoản này');
+        }
+
+        if ($user->id == Auth()->user()->id) {
+            return redirect()->route('user.index')->withError('Bạn không thể khoá tài khoản này');
         }
 
         $user->delete();

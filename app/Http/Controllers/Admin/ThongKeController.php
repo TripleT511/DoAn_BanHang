@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Exports\BaoCaoThongKeExport;
+use App\Exports\topSanPhamBanChay;
 use App\Http\Controllers\Controller;
 use App\Models\HoaDon;
 use App\Models\LuotTimKiem;
@@ -11,6 +12,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -20,7 +22,7 @@ class ThongKeController extends Controller
     {
         $doanhThu = HoaDon::with('chiTietHoaDons')->withSum('chiTietHoaDons', 'soLuong')->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->where('trangThai', 4)->orderBy('created_at', 'desc')->get();
 
-        $top5SanPhamBanChay = SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
+        $top5SanPhamBanChay = SanPham::with('chitiethoadons.hoadonSuccess')->with('chitiethoadons.bienthe')->withSum(['chitiethoadons' => function ($query) {
             $query->with('hoadon')->whereHas('hoadon', function ($query) {
                 $query->where('trangThai', 4);
             });
@@ -29,6 +31,8 @@ class ThongKeController extends Controller
                 $query->where('trangThai', 4);
             });
         }], 'hoa_don_id')->orderBy('chitiethoadons_sum_so_luong', 'desc')->take(5)->get();
+
+        Session::put('topProduct', $top5SanPhamBanChay);
 
         $tongDoanhThu = $doanhThu->sum("tongThanhTien");
         $tongSanPham = DB::table('san_phams')->whereBetween('created_at', [Carbon::now()->subDays(6)->toDateString(), Carbon::now()->toDateString()])->get()->count();
@@ -79,7 +83,7 @@ class ThongKeController extends Controller
         switch ($request->type) {
             case 'top5':
                 $data =
-                    SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
+                    SanPham::with('chitiethoadons.hoadonSuccess')->with('color')->with('sizes')->withCount('soluongthuoctinh')->withSum(['chitiethoadons' => function ($query) {
                         $query->with('hoadon')->whereHas('hoadon', function ($query) {
                             $query->where('trangThai', 4);
                         });
@@ -91,7 +95,7 @@ class ThongKeController extends Controller
                 break;
             case 'top10':
                 $data =
-                    SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
+                    SanPham::with('chitiethoadons.hoadonSuccess')->with('color')->with('sizes')->withCount('soluongthuoctinh')->withSum(['chitiethoadons' => function ($query) {
                         $query->with('hoadon')->whereHas('hoadon', function ($query) {
                             $query->where('trangThai', 4);
                         });
@@ -103,7 +107,7 @@ class ThongKeController extends Controller
                 break;
             case 'top15':
                 $data =
-                    SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
+                    SanPham::with('chitiethoadons.hoadonSuccess')->with('color')->with('sizes')->withCount('soluongthuoctinh')->withSum(['chitiethoadons' => function ($query) {
                         $query->with('hoadon')->whereHas('hoadon', function ($query) {
                             $query->where('trangThai', 4);
                         });
@@ -115,7 +119,7 @@ class ThongKeController extends Controller
                 break;
             default:
                 $data =
-                    SanPham::with('chitiethoadons.hoadonSuccess')->withSum(['chitiethoadons' => function ($query) {
+                    SanPham::with('chitiethoadons.hoadonSuccess')->with('color')->with('sizes')->withCount('soluongthuoctinh')->withSum(['chitiethoadons' => function ($query) {
                         $query->with('hoadon')->whereHas('hoadon', function ($query) {
                             $query->where('trangThai', 4);
                         });
@@ -169,6 +173,8 @@ class ThongKeController extends Controller
                 <td class="text-right"><strong>' . $tongDonHang . '</strong></td>
             </tr>
         ';
+
+        Session::put('topProduct', $data);
 
         return response()->json([
             'success' => "Lấy dữ liệu thành công",
@@ -752,6 +758,16 @@ class ThongKeController extends Controller
     public function __construct(Excel $excel)
     {
         $this->excel = $excel;
+    }
+
+    public function exportTopProduct()
+    {
+        $dataProduct = Session::get('topProduct');
+        $data =  [
+            'success' => 'success',
+            'lstSanPham' => $dataProduct,
+        ];
+        return Excel::download(new topSanPhamBanChay($data), 'top-product.xlsx');
     }
 
     public function ExportBaoCao()

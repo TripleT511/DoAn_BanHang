@@ -77,7 +77,7 @@
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Lưu</button>
-                <button type="button" class="btn btn-dark"onclick="history.back()">Cancel</button>
+                <button type="button" class="btn btn-dark" onclick="history.back()">Cancel</button>
                 </form>
             </div>
             </div>

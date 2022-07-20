@@ -141,6 +141,10 @@
                     </select>
                 </div>
                 <div class="mb-3">
+                    <label class="form-label" for="ngayTao">Ngày tạo phiếu</label>
+                    <input class="form-control" name="ngayTao" type="date" id="ngayTao">
+                </div>
+                <div class="mb-3">
                     <label class="form-label" for="basic-default-fullname">Ghi Chú</label>
                     <textarea class="form-control" id="ghiCHu" name="ghiChu" rows="3"></textarea>
                 </div>

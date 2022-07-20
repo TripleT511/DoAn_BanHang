@@ -263,10 +263,10 @@
                         <div class="header-left">
                             <ul class="nav nav-pills" >
                                 <li class="nav-item">
-                                    <button type="button" class="nav-link active" >
+                                    <a type="button" class="nav-link active" href="{{ route('admin.ExportTopProduct') }}">
                                         <i class='bx bxs-download'></i>
                                         Xuất file
-                                    </button>
+                                    </a>
                                 </li>
                             </ul>
                         </div>
