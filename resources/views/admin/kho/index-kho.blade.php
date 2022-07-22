@@ -24,12 +24,6 @@
               <li class="nav-item" >
                   <a class="nav-link active" href="{{ route('phieukho.create') }}"><i class="bx bx-plus"></i> Thêm mới</a>
               </li>
-              <li class="nav-item" style="margin-left: 10px;">
-                <a type="button"  href="{{ route('admin.ExportPhieuKho') }}" class="nav-link active" >
-                    <i class='bx bxs-download'></i>
-                    Xuất file
-                </a>
-             </li>
             </ul>
             <ul class="nav nav-pills align-items-end flex-column flex-md-row mb-3">
               <li class="nav-item" style="margin-left: 10px;">

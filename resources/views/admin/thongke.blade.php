@@ -88,14 +88,7 @@
                             <h5 class="card-header m-0 me-2 pb-1" id="title-thongle-hoadon">Báo cáo bán hàng 7 ngày qua</h5>
                             <div class="card-header-custom d-flex align-items-end justify-content-between mb-3">
                                 <div class="header-left">
-                                    <ul class="nav nav-pills" >
-                                        <li class="nav-item">
-                                            <a type="button"  href="{{ route('admin.ExportBaoCao') }}" class="nav-link active" >
-                                                <i class='bx bxs-download'></i>
-                                                Xuất file
-                                            </a>
-                                        </li>
-                                    </ul>
+                                   
                                 </div>
                                 <div class="header-right d-flex align-items-end gap-2">
                                     <div class="header-right-item d-flex align-items-start flex-column text-left gap-1">
@@ -259,15 +252,9 @@
             <div class="card my-2">
                 <div class="table-responsive text-nowrap">
                    <h5 class="card-header m-0 me-2 pb-1">Sản phẩm bán chạy</h5>
-                   <div class="card-header-custom d-flex align-items-end justify-content-between mb-3">
+                   <div class="card-header-custom d-flex align-items-end justify-content-between">
                         <div class="header-left">
                             <ul class="nav nav-pills" >
-                                <li class="nav-item">
-                                    <a type="button" class="nav-link active" href="{{ route('admin.ExportTopProduct') }}">
-                                        <i class='bx bxs-download'></i>
-                                        Xuất file
-                                    </a>
-                                </li>
                             </ul>
                         </div>
                         <div class="header-right d-flex align-items-end gap-2">

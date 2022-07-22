@@ -2,7 +2,43 @@
 
 @section('title','Test')
 @section('css')
+    <style>
+      .img {
+        width: 60px;
+        position: relative;
+      }
+      .image-product {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
 
+      th:nth-of-type(2) {
+        width: 60%;
+      }
+      .loading-item {
+    display: none;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1099;
+  }
+
+  .loading-item.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+    .modal-backdrop.fade {
+    display: none;
+  } 
+  .modal-backdrop.show {
+    z-index: 1089;
+    display: block;
+  }
+    </style>
 @endsection
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -97,8 +133,57 @@
         <div class="row row-bordered g-0">
           <div class="col-md-12">
             <div class="p-2">
-              <h5 class="card-header m-0 me-2 pb-3">Thống kê doanh thu</h5>
-              <canvas id="myChart"></canvas>
+              <div class="header-right-item d-flex align-items-start flex-column text-left gap-1">
+                  <h5 class="card-header m-0 me-2 pb-3">Sản phẩm gần hết hàng </h5>
+                  <div class="mb-3">
+                    <select id="topSanPham" name="topSanPham" class="form-select">
+                      <option value="">Tuỳ chọn</option>
+                      <option value="top5">Top 5</option>
+                      <option value="top10">Top 10</option>
+                      <option value="top15">Top 15</option>
+                  </select>
+                  </div>
+              </div>
+              <div class="table-responsive text-wrap">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <td>STT</td>
+                        <th>Hình Ảnh</th>
+                        <th>Tên Sản Phẩm</th>
+                        <th>Tồn kho</th>              
+                      </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0" id="top-het-hang">
+                      @php
+                      $count = 0;
+                      @endphp
+                      @foreach ($lstSanPham as $key => $item)
+                      <tr>
+                        <td> {{ ++$count }}</td>
+                        <td>
+                          <div class="img">
+                            @foreach ($item->hinhanhs as $key => $item2)
+                              @if($key == 1) <?php break; ?> @endif
+                                <img src="{{ asset('storage/'.$item2->hinhAnh) }}" class="image-product" alt="{{ $item->tenSanPham }}">
+                            @endforeach
+                          </div>
+                          
+                        </td>
+                        <td style="width: 20%;"><strong>
+                          <a href="{{ route('chitietsanpham', ['slug' => $item->slug]) }}" target="_blank">
+                          {{ $item->tenSanPham }}
+                        </a>  
+                        </strong>
+                        </td>
+                        <td>
+                          {{ $item->sizes_sum_so_luong }}
+                        </td>
+                      </tr>
+                     @endforeach
+                    </tbody>
+                  </table>
+                </div>
             </div>
           </div>
         </div>
@@ -158,68 +243,49 @@
     </div>
   </div>
 </div>
+<div class="loading-item">
+    <div role="status" class="spinner-border spinner-border-lg text-primary ">
+</div>
+</div>
+<div class="modal-backdrop fade"></div>
 @endsection
+
 @section('js')
-  <script>
-    $(document).ready(function(){
-		$.ajax({
-			type: "GET",
-			url: "/admin/thong-ke",
-			dataType: "json",
-			success: function (response) {
-        const ctx2 = document.getElementById('myChart').getContext('2d');
-  const myChart2 = new Chart(ctx2, {
-      type: 'bar',
-      data: {
-          labels: [
-              'Tháng 1',
-              'Tháng 2',
-              'Tháng 3',
-              'Tháng 4',
-              'Tháng 5',
-              'Tháng 6',
-              'Tháng 7',
-              'Tháng 8',
-              'Tháng 9',
-              'Tháng 10',
-              'Tháng 11',
-              'Tháng 12',
-          ],
-          datasets: [{
-              label: 'Thống kê doanh thu',
-              data: response,
-              backgroundColor: [
-                  'rgba(255, 99, 132, 0.2)',
-                  'rgba(255, 159, 64, 0.2)',
-                  'rgba(255, 205, 86, 0.2)',
-                  'rgba(75, 192, 192, 0.2)',
-                  'rgba(54, 162, 235, 0.2)',
-                  'rgba(153, 102, 255, 0.2)',
-                  'rgba(201, 203, 207, 0.2)'
-              ],
-              borderColor: [
-                  'rgb(255, 99, 132)',
-                  'rgb(255, 159, 64)',
-                  'rgb(255, 205, 86)',
-                  'rgb(75, 192, 192)',
-                  'rgb(54, 162, 235)',
-                  'rgb(153, 102, 255)',
-                  'rgb(201, 203, 207)'
-              ],
-              borderWidth: 1,
-          }]
-      },
-      options: {
-          scales: {
-              y: {
-                  beginAtZero: true
-              }
-          }
-      }
-  });
-			}
-		});
-	})
-  
+<script>
+  let lstType = ["top5","top10","top15"];
+  let optionTopProducts = document.querySelector("#topSanPham");
+  let overlay = document.querySelector(".modal-backdrop");
+  let loading = document.querySelector(".loading-item");
+
+ optionTopProducts.addEventListener('change', function(e) {
+            let currentValue = e.target.value;
+            let lstType = ["top5","top10","top15"];
+            let validateValue = lstType.find((value) => value == currentValue);
+            if(!!validateValue) {
+                overlay.classList.remove("fade");
+                overlay.classList.add("show");
+                loading.classList.add("active");
+                
+                $.ajax({
+                    type: "GET",
+                    url: "/admin/thong-ke-het-hang",
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        type: currentValue
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        overlay.classList.add("fade");
+                        overlay.classList.remove("show");
+                        loading.classList.remove("active");
+                        
+                        if(response.success) {
+                             $("#top-het-hang").html(response.data);
+                            
+                        }
+                    }
+                });
+            }
+        }); 
 </script>
 @endsection

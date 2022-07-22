@@ -18,11 +18,11 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'hoTen' => $this->faker->name(),
-            'email' => $this->faker->unique()->safeEmail(),
-            'anhDaiDien' => '',
+            'hoTen' => 'root',
+            'email' => 'root@gmail.com',
+            'anhDaiDien' => 'images/user-default.jpg',
             'soDienThoai' => '0323456789',
-            'diaChi' => '1',
+            'diaChi' => 'TP HCM',
             'phan_quyen_id' => 0,
             'email_verified_at' => now(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password

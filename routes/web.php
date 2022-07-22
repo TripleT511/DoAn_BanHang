@@ -173,6 +173,8 @@ Route::prefix('admin')->group(function () {
 
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+        Route::get('/thong-ke-het-hang', [DashboardController::class, 'sanPhamHetHang'])->name('sanPhamHetHang');
+
         // *** Thống Kê *** //
         Route::get('/bao-cao-thong-ke', [ThongKeController::class, 'index'])->name('admin.thongke');
 
@@ -217,6 +219,10 @@ Route::prefix('admin')->group(function () {
 
         // Mã giảm giá hết hạn
         Route::get('/discount-het-han', [MaGiamGiaController::class, 'indexDie'])->name('maHetHan');
+
+        // Mã giảm giá sắp và đang chạy
+        Route::get('/discount-sap-dang-chay', [MaGiamGiaController::class, 'indexRun'])->name('maDangChay');
+
 
         // *** Tìm kiếm *** //
         Route::get('search/danhmuc', [DanhMucController::class, 'searchDanhMuc'])->name('searchDanhMuc');

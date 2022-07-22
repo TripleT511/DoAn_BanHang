@@ -90,7 +90,7 @@ class DanhGiaController extends Controller
 
         $checkMuaSanPham = HoaDon::with('chitiethoadons')->whereHas('chitiethoadons', function ($query) use ($request) {
             $query->where('san_pham_id', $request->sanphamId);
-        })->where('khach_hang_id', $request->user_id)->count();
+        })->where('khach_hang_id', $request->user_id)->where('trangThai', 4)->count();
 
         if ($checkMuaSanPham == 0) {
             return response()->json(['error' => '<li class="card-description" style="color: #fff;">Bạn cần phải mua sản phẩm này mới được phép đánh giá </li>']);

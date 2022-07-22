@@ -6,6 +6,7 @@ use App\Jobs\SendEmailReset;
 use App\Jobs\SendEmailResetUser;
 use App\Models\HoaDon;
 use App\Models\LuotTimKiem;
+use App\Models\SanPham;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -36,7 +37,63 @@ class DashboardController extends Controller
         $tongHoaDon = DB::table('hoa_dons')->get()->count();
         $tongKhachHang = DB::table('users')->where('phan_quyen_id', 2)->whereNotNull('email_verified_at')->get()->count();
 
-        return View('admin.dashboard', ['lstLuotTimKiem' => $lstLuotTimKiem, 'tongDoanhThu' => $tongDoanhThu, 'tongSanPham' => $tongSanPham, 'tongDonHang' => $tongHoaDon, 'tongKhachHang' => $tongKhachHang]);
+        $lstSanPham = SanPham::with('hinhanhs')->with('sizes')->withSum('sizes', 'soLuong')->orderBy('sizes_sum_so_luong')->take(5)->get();
+
+
+        return View('admin.dashboard', ['lstLuotTimKiem' => $lstLuotTimKiem, 'tongDoanhThu' => $tongDoanhThu, 'tongSanPham' => $tongSanPham, 'tongDonHang' => $tongHoaDon, 'tongKhachHang' => $tongKhachHang, 'lstSanPham' => $lstSanPham]);
+    }
+
+    public function sanPhamHetHang(Request $request)
+    {
+        $data = "";
+        switch ($request->type) {
+            case 'top5':
+                $data = SanPham::with('hinhanhs')->with('sizes')->withSum('sizes', 'soLuong')->orderBy('sizes_sum_so_luong')->take(5)->get();
+                break;
+            case 'top10':
+                $data = SanPham::with('hinhanhs')->with('sizes')->withSum('sizes', 'soLuong')->orderBy('sizes_sum_so_luong')->take(10)->get();
+                break;
+            case 'top15':
+                $data = SanPham::with('hinhanhs')->with('sizes')->withSum('sizes', 'soLuong')->orderBy('sizes_sum_so_luong')->take(15)->get();
+                break;
+            default:
+                $data = SanPham::with('hinhanhs')->with('sizes')->withSum('sizes', 'soLuong')->orderBy('sizes_sum_so_luong')->take(5)->get();
+                break;
+        }
+
+        $output = "";
+        $count = 0;
+        foreach ($data as $key => $item) {
+            $hinhAnh = "";
+            foreach ($item->hinhanhs as $key => $item2) {
+                if ($key == 1) break;
+                $hinhAnh = $item2->hinhAnh;
+            }
+
+            $output .= '
+                <tr>
+                <td>' . ++$count . '</td>
+                        <td>
+                          <div class="img">
+                            <img src="' . asset('storage/' . $hinhAnh) . '" class="image-product" alt="' . $item->tenSanPham . '">
+                          </div>
+                        </td>
+                        <td style="width: 20%;"><strong>
+                          <a href="' . route('chitietsanpham', ['slug' => $item->slug]) . '" target="_blank">
+                          ' . $item->tenSanPham . '
+                        </a>  
+                        </strong>
+                        </td>
+                        <td>
+                          ' . $item->sizes_sum_so_luong . '
+                        </td>
+                      </tr>
+            ';
+        }
+        return response()->json([
+            'success' => "Lấy dữ liệu thành công",
+            'data' => $output
+        ]);
     }
 
     public function thongKeDoanhThu(Request $request)

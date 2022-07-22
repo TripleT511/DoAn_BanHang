@@ -186,11 +186,13 @@ class TaiKhoanController extends Controller
             'hoTen' => 'required|string|max:255',
             'soDienThoai' => 'required|string',
             'email' => 'required|string|max:255',
+            'diaChi' => 'required'
 
         ], [
             'email.required' => 'Email không được bỏ trống',
             'hoTen.required' => 'Họ Tên không được bỏ trống',
             'soDienThoai.required' => 'Số điện thoại không được bỏ trống',
+            'diaChi.required' => 'Địa chỉ không được bỏ trống',
         ]);
 
         $phanquyen = $request->phan_quyen_id;
@@ -204,13 +206,9 @@ class TaiKhoanController extends Controller
             'diaChi' => $request->input('diaChi'),
             'soDienThoai' => $request->input('soDienThoai'),
             'phan_quyen_id' => $phanquyen,
-            'anhDaiDien' => $user->anhDaiDien
         ]);
         $user->save();
         if ($request->hasFile('anhDaiDien')) {
-            if ($user->hinhAnh != 'images/user-default.jpg') {
-                Storage::disk('public')->delete($user->hinhAnh);
-            }
             $user->anhDaiDien = $request->file('anhDaiDien')->store('images/tai-khoan', 'public');
         }
         $user->save();

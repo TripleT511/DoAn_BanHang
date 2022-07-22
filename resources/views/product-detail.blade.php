@@ -265,16 +265,10 @@
 	                <li class="nav-item">
 	                    <a id="tab-A" href="#pane-A" class="nav-link active" data-toggle="tab" role="tab">Nội dung chi tiết</a>
 	                </li>
-					@auth
-						
-						@if($checkRating > 0) 
-							<li class="nav-item">
-								<a id="tab-B" href="#pane-B" class="nav-link" data-toggle="tab" role="tab">Đánh giá sản phẩm</a>
-							</li>
-						@endif
-
-					@endauth
-	                
+				
+					<li class="nav-item">
+						<a id="tab-B" href="#pane-B" class="nav-link" data-toggle="tab" role="tab">Đánh giá sản phẩm</a>
+					</li>
 	            </ul>
 	        </div>
 	    </div>
@@ -331,6 +325,7 @@
 									</div>
 									<div class="col-lg-6">
 										@auth
+										@if($checkRating > 0) 
 										<div class="write_review">
 											<input type="hidden" name="_token" id="token" value="{{ csrf_token() }}">
 											<div class="rating_submit">
@@ -366,6 +361,7 @@
 											</div>
 											<a href="javascript:void(0)" id="review_btn" class="btn_1">Gửi</a>
 										</div>
+										@endif
 										@endauth
 									</div>
 									

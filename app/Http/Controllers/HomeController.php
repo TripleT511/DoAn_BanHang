@@ -177,7 +177,7 @@ class HomeController extends Controller
 
         $checkMuaSanPham = HoaDon::with('chitiethoadons')->whereHas('chitiethoadons', function ($query) use ($sanpham) {
             $query->where('san_pham_id',  $sanpham->id);
-        })->where('khach_hang_id', Auth()->user()->id)->count();
+        })->where('khach_hang_id', Auth()->user()->id)->where('trangThai', 4)->count();
 
         return view('product-detail', ['sanpham' => $sanpham, 'lstDanhGia' => $lstDanhGia, 'lstDanhMuc' => $lstDanhMuc, 'lstSanPhamLienQuan' => $lstSanPhamLienQuan, 'countRating' => $countRating, 'starActive' => $starActive, 'starNonActive' => $starNonActive, 'lstDanhMucHeader' => $lstDanhMucHeader, 'checkRating' => $checkMuaSanPham]);
     }
@@ -506,7 +506,7 @@ class HomeController extends Controller
         if ($hoadon->trangThaiThanhToan == 1) {
             return back()->with('error', "Không thể huỷ đơn hàng đã thanh toán trước");
         }
-        if ($hoadon->trangThai != 3) {
+        if ($hoadon->trangThai == 3) {
             return back()->with('error', "Không thể huỷ đơn hàng khi ở trạng thái đang giao hàng");
         }
         $hoadon->trangThai = 5;

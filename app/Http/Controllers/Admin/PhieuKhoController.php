@@ -735,13 +735,16 @@ class PhieuKhoController extends Controller
 
             $chitietpk = ChiTietPhieuKho::where('phieu_kho_id', $phieukho->id)->get();
             foreach ($chitietpk as $item) {
-                $sanpham = SanPham::whereId($item->san_pham_id)->withCount('soluongthuoctinh')->first();
+                $sanpham = SanPham::whereId($item->san_pham_id)->with('color')->withCount('soluongthuoctinh')->first();
                 if ($sanpham->soluongthuoctinh_count && $sanpham->soluongthuoctinh_count > 1) {
                     $bienTheSanPham = BienTheSanPham::where('sku', $item->sku)->first();
                     $bienTheSanPham->soLuong = (int)$bienTheSanPham->soLuong + $item->soLuong;
                     $bienTheSanPham->save();
                 } else {
                     $sanpham->tonKho = $sanpham->tonKho + $item->soLuong;
+                    $bienTheSanPham = BienTheSanPham::where('san_pham_id', $sanpham->id)->first();
+                    $bienTheSanPham->soLuong = $bienTheSanPham->soLuong + $item->soLuong;
+                    $bienTheSanPham->save();
                     $sanpham->save();
                 }
             }

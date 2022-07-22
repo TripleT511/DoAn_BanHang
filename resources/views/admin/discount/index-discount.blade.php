@@ -151,10 +151,10 @@
                   <a class="nav-link active" href="{{ route('discount.create') }}"><i class="bx bx-plus"></i> Thêm mới</a>
               </li>
               <li class="nav-item "  style="margin-left: 10px;">
-                  <a class="nav-link bg-success text-white" href="{{ route('discount.index') }}"><i class='bx bxs-gift'></i> Mã giảm giá sắp & đang chạy</a>
+                  <a class="nav-link bg-success text-white" href="{{ route('maDangChay') }}"><i class='bx bxs-gift'></i> Mã giảm giá sắp & đang chạy</a>
               </li>
               <li class="nav-item " style="margin-left: 10px;">
-                  <a class="nav-link bg-danger text-white"  href="{{ route('maHetHan') }}"><i class='bx bx-notification-off'></i> Mã giảm giá hết hạn</a>
+                  <a class="nav-link bg-danger text-white"  href="{{ route('maHetHan') }}"><i class='bx bx-notification-off'></i> Mã giảm giá đã & gần hết hạn</a>
               </li>
             </ul>
             <div class="list-discount">
