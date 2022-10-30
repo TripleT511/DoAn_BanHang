@@ -303,4 +303,4 @@ Route::get('/san-pham-{slug}', [HomeController::class, 'sanpham'])->name('chitie
 Route::get('/slider-{slug}', [HomeController::class, 'slider'])->name('slider');
 Route::get('/danh-muc-{slug}', [HomeController::class, 'danhmucsanpham'])->name('danhmucsanpham');
 
-// Get PULL SHARK Acheivement
+// Get Pull Shark Acheivement #2
